@@ -39,8 +39,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/#pricing" className="hover:text-accent transition-colors">
-                Pricing Preview
+              <Link href="/pricing" className="hover:text-accent transition-colors">
+                Pricing Plans
               </Link>
             </li>
             <li>
