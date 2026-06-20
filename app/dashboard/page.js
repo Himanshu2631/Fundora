@@ -14,6 +14,8 @@ import {
 import { EmptyState } from "@/components/ui/empty-state";
 import { LoadingState } from "@/components/ui/loading-state";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
+import SubscriptionWidget from "@/features/subscriptions/SubscriptionWidget";
 import { 
   Trophy, Flame, User, ExternalLink, ShieldCheck, Check, Sparkles, Inbox 
 } from "lucide-react";
@@ -23,20 +25,37 @@ export default function Dashboard() {
   const [isSimulatingLoading, setIsSimulatingLoading] = useState(false);
   const [isSimulatingEmpty, setIsSimulatingEmpty] = useState(false);
   const { user: authUser, profile, loading: authLoading } = useAuth();
+  const { subscription, status } = useSubscription();
+
+  const plans = {
+    scout: "Eco Scout",
+    advocate: "Global Advocate",
+    builder: "Legacy Builder",
+  };
+
+  const currentTier = profile?.role === "admin" 
+    ? "Platform Admin" 
+    : (status === "active" || status === "cancelled")
+      ? plans[subscription?.plan_type] || "Member"
+      : "No Active Plan";
+
+  const monthlyContribution = (status === "active" || status === "cancelled")
+    ? subscription?.plan_type === "scout" ? 10 : subscription?.plan_type === "advocate" ? 25 : 100
+    : 0;
 
   // Simulated metrics combined with real user profile details
   const displayUser = {
     name: profile?.full_name || authUser?.email?.split("@")[0] || "Member",
     email: authUser?.email || "user@example.com",
-    tier: profile?.role === "admin" ? "Platform Admin" : "Global Advocate",
+    tier: currentTier,
     joinedDate: authUser?.created_at 
       ? `Joined ${new Date(authUser.created_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' })}`
       : "Joined Jan 2026",
     score: 145,
     streak: 5,
     rank: "#284",
-    monthlyContribution: 25.00,
-    totalContributed: 125.00
+    monthlyContribution: monthlyContribution,
+    totalContributed: (status === "active" || status === "cancelled") ? monthlyContribution : 0
   };
 
   const receipts = [
@@ -193,29 +212,7 @@ export default function Dashboard() {
                     {/* Two Column Offset */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       {/* Subscription Specs */}
-                      <Card className="p-6">
-                        <div className="flex justify-between items-start mb-6">
-                          <h3 className="font-heading font-bold text-lg text-foreground">Active Subscription</h3>
-                          <ShieldCheck className="w-5 h-5 text-accent" />
-                        </div>
-                        <div className="space-y-4">
-                          <div className="flex justify-between border-b border-border/40 pb-2">
-                            <span className="text-xs text-muted-foreground font-semibold">Monthly Allocation</span>
-                            <span className="text-sm font-bold text-foreground">${displayUser.monthlyContribution.toFixed(2)}/mo</span>
-                          </div>
-                          <div className="flex justify-between border-b border-border/40 pb-2">
-                            <span className="text-xs text-muted-foreground font-semibold">Total Contributed</span>
-                            <span className="text-sm font-bold text-foreground">${displayUser.totalContributed.toFixed(2)}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-xs text-muted-foreground font-semibold">Audited Routing</span>
-                            <span className="text-sm font-bold text-emerald-500">100.0% Verified</span>
-                          </div>
-                        </div>
-                        <Button variant="outline" className="w-full mt-6 h-9 text-xs font-bold uppercase tracking-wider">
-                          Manage Plan & Allocation
-                        </Button>
-                      </Card>
+                      <SubscriptionWidget />
 
                       {/* Impact Breakdown */}
                       <Card className="p-6">
