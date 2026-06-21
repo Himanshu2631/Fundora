@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -60,6 +60,32 @@ export default function DashboardOverview() {
   const { scores, loading: scoresLoading, error: scoresError } = useScores();
   const { allocations, loading: charitiesLoading, error: charitiesError } = useCharities();
   const { userEntries, draws, loading: drawsLoading } = useDraws();
+
+  const [timeLeft, setTimeLeft] = useState({ days: 4, hours: 11, minutes: 24, seconds: 45 });
+  const activeDraw = draws ? draws.find(d => d.status === "active") : null;
+  const activePrize = activeDraw ? (typeof activeDraw.prize_value === 'number' ? `$${activeDraw.prize_value.toLocaleString()}` : activeDraw.prize_value) : "$24,950";
+
+  useEffect(() => {
+    const targetDate = activeDraw?.draw_date 
+      ? new Date(activeDraw.draw_date)
+      : new Date(Date.now() + 4 * 24 * 3600000 + 11 * 3600000 + 24 * 60000 + 45000);
+
+    const timer = setInterval(() => {
+      const now = new Date();
+      const difference = targetDate.getTime() - now.getTime();
+      if (difference <= 0) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        clearInterval(timer);
+        return;
+      }
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((difference / 1000 / 60) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
+      setTimeLeft({ days, hours, minutes, seconds });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [draws, activeDraw]);
 
   const monthlyContribution = PLAN_PRICES[subscription?.plan_type] ?? 0;
   const hasActivePlan = status === "active" || status === "cancelled";
@@ -138,92 +164,165 @@ export default function DashboardOverview() {
         initial="hidden"
         animate="visible"
       >
-        <motion.div
-          variants={itemVariants}
-          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8"
-        >
-          <div>
-            <h2 className="font-heading text-2xl font-extrabold text-foreground">
-              Welcome back, {displayUser.name.split(" ")[0]}.
-            </h2>
-            <p className="text-xs text-muted-foreground mt-1">
-              {displayUser.joinedDate} · {displayUser.email}
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            {/* Score pill */}
-            <div className="flex items-center gap-2 bg-card border border-border px-4 py-2 rounded-sm shadow-sm">
-              <Trophy className="w-3.5 h-3.5 text-accent animate-pulse" />
-              <div>
-                <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground block leading-none">
-                  Giving Score
-                </span>
-                <span className="text-sm font-bold text-foreground">{displayUser.score} pts</span>
-              </div>
-            </div>
-            {/* Streak pill */}
-            <div className="flex items-center gap-2 bg-card border border-border px-4 py-2 rounded-sm shadow-sm">
-              <Flame className="w-3.5 h-3.5 text-orange-500" />
-              <div>
-                <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground block leading-none">
-                  Streak
-                </span>
-                <span className="text-sm font-bold text-foreground">{displayUser.streak}wk</span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        <motion.div variants={itemVariants} className="w-full mb-8">
+          <Card className="bg-gradient-to-br from-[#061511] via-[#0A1C16] to-[#040D09] border-[#162520] relative overflow-hidden shadow-2xl rounded-lg p-6 md:p-8">
+            {/* Ambient Background Blur / Glow */}
+            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-accent/5 blur-3xl rounded-full -z-10 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-emerald-800/5 blur-3xl rounded-full -z-10 pointer-events-none" />
+            {/* Grid Pattern mask */}
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c1d18_1px,transparent_1px),linear-gradient(to_bottom,#0c1d18_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-25 -z-10 pointer-events-none" />
 
-        {/* ── Quick Stats Row ── */}
-        <motion.div
-          variants={itemVariants}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
-        >
-          {[
-            {
-              label: "Giving Rank",
-              value: displayUser.rank,
-              sub: "Global leaderboard",
-              icon: TrendingUp,
-              accent: false,
-            },
-            {
-              label: "Monthly Contribution",
-              value: hasActivePlan ? `$${displayUser.monthlyContribution}` : "—",
-              sub: hasActivePlan ? displayUser.tier : "No active plan",
-              icon: ShieldCheck,
-              accent: true,
-            },
-            {
-              label: "Active Draw Tickets",
-              value: hasActivePlan ? String(activeTicketsCount) : "0",
-              sub: hasActivePlan ? activeDrawSub : "No active plan",
-              icon: Ticket,
-              accent: false,
-            },
-            {
-              label: "Giving Score",
-              value: `${displayUser.score} pts`,
-              sub: `+${displayUser.streak * 5} streak bonus`,
-              icon: Trophy,
-              accent: false,
-            },
-          ].map((stat, i) => (
-            <Card key={i} className="p-5 hover:border-accent/30 transition-colors group bg-card">
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
-                  {stat.label}
-                </span>
-                <stat.icon
-                  className={`w-4 h-4 shrink-0 ${stat.accent ? "text-accent" : "text-muted-foreground/50"}`}
-                />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              {/* Left Column - Target Draw Sweepstakes details */}
+              <div className="lg:col-span-7 flex flex-col justify-between h-full">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Badge variant="accent" className="gap-1 px-2.5 py-0.5 text-[10px] uppercase font-bold tracking-wider">
+                      <Flame className="w-3 h-3 text-[#060C0A] animate-pulse" /> Live Reward Sweepstakes
+                    </Badge>
+                    <span className="text-[10px] text-muted-foreground font-semibold">
+                      Logged as <strong className="text-foreground">{displayUser.name.split(" ")[0]}</strong>
+                    </span>
+                  </div>
+                  
+                  <h2 className="font-heading text-2xl md:text-3xl font-extrabold text-foreground mb-6 leading-tight">
+                    What are you working toward?
+                  </h2>
+                </div>
+
+                <div className="flex flex-col md:flex-row items-stretch md:items-center gap-5 mb-6">
+                  {/* Jackpot Pool Card */}
+                  <div className="bg-[#05110D]/90 border border-border/20 p-5 rounded-md flex-1 relative overflow-hidden shadow-inner">
+                    <div className="absolute top-0 left-0 w-[3px] h-full bg-accent" />
+                    <span className="text-[9px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-1">
+                      Current Jackpot Pool
+                    </span>
+                    <span className="text-3xl md:text-4xl font-extrabold text-accent font-heading block tracking-tight">
+                      {activePrize}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground font-medium mt-1.5 block">
+                      Active Prize Draw: Eco-Retreat
+                    </span>
+                  </div>
+
+                  {/* Countdown Timer Card */}
+                  <div className="bg-[#05110D]/90 border border-border/20 p-5 rounded-md flex-1 relative overflow-hidden shadow-inner">
+                    <div className="absolute top-0 left-0 w-[3px] h-full bg-emerald-600" />
+                    <span className="text-[9px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-2.5">
+                      Time Remaining Until Draw
+                    </span>
+                    <div className="flex items-center gap-2 text-foreground font-heading">
+                      <div className="flex flex-col items-center">
+                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-sm border border-border/30 text-foreground w-[44px] text-center">
+                          {String(timeLeft.days).padStart(2, "0")}
+                        </span>
+                        <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground mt-1">Days</span>
+                      </div>
+                      <span className="text-lg font-black text-muted-foreground/60 -mt-3">:</span>
+                      <div className="flex flex-col items-center">
+                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-sm border border-border/30 text-foreground w-[44px] text-center">
+                          {String(timeLeft.hours).padStart(2, "0")}
+                        </span>
+                        <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground mt-1">Hrs</span>
+                      </div>
+                      <span className="text-lg font-black text-muted-foreground/60 -mt-3">:</span>
+                      <div className="flex flex-col items-center">
+                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-sm border border-border/30 text-foreground w-[44px] text-center">
+                          {String(timeLeft.minutes).padStart(2, "0")}
+                        </span>
+                        <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground mt-1">Min</span>
+                      </div>
+                      <span className="text-lg font-black text-muted-foreground/60 -mt-3">:</span>
+                      <div className="flex flex-col items-center">
+                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-sm border border-accent/40 text-accent w-[44px] text-center animate-pulse">
+                          {String(timeLeft.seconds).padStart(2, "0")}
+                        </span>
+                        <span className="text-[8px] uppercase font-bold tracking-wider text-accent mt-1">Sec</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Score Progress bar */}
+                <div className="space-y-2.5 bg-[#05110D]/40 border border-border/10 p-4 rounded-md">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-bold text-foreground">Weekly Score Logging Progress</span>
+                    <span className="font-extrabold text-accent">{scores?.length || 0} / 5 Logged</span>
+                  </div>
+                  <div className="w-full h-2.5 bg-[#05110D] border border-border/20 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${Math.min(((scores?.length || 0) / 5) * 100, 100)}%` }}
+                      transition={{ duration: 1.2, ease: "easeOut" }}
+                      className="h-full bg-gradient-to-r from-emerald-600 to-accent"
+                    />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground flex items-center gap-1.5 leading-none">
+                    {scores?.length === 5 
+                      ? "✓ All weekly scores logged! Multipliers are active." 
+                      : `Log ${5 - (scores?.length || 0)} more golf Stableford score${5 - (scores?.length || 0) > 1 ? "s" : ""} to unlock maximum draw entry bonuses.`}
+                  </p>
+                </div>
               </div>
-              <p className={`font-heading text-2xl font-extrabold ${stat.accent ? "text-accent" : "text-foreground"}`}>
-                {stat.value}
-              </p>
-              <p className="text-[10px] text-muted-foreground mt-1">{stat.sub}</p>
-            </Card>
-          ))}
+
+              {/* Right Column - User standings grid */}
+              <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4">
+                {/* Score Widget */}
+                <div className="bg-[#05110D]/50 border border-border/20 p-4 rounded-md relative flex items-center justify-between group hover:border-accent/40 transition-colors">
+                  <div>
+                    <span className="text-[8px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-1">
+                      Your Current Score
+                    </span>
+                    <span className="text-2xl font-extrabold text-foreground font-heading block">
+                      {displayUser.score} <span className="text-xs text-muted-foreground font-normal">pts</span>
+                    </span>
+                    <span className="text-[9px] text-accent font-semibold block mt-1.5">
+                      +{displayUser.streak * 5}wk streak bonus active
+                    </span>
+                  </div>
+                  <div className="w-10 h-10 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-sm text-accent group-hover:scale-105 transition-transform">
+                    <Trophy className="w-5 h-5" />
+                  </div>
+                </div>
+
+                {/* Draw Entries Widget */}
+                <div className="bg-[#05110D]/50 border border-border/20 p-4 rounded-md relative flex items-center justify-between group hover:border-accent/40 transition-colors">
+                  <div>
+                    <span className="text-[8px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-1">
+                      Your Draw Entries
+                    </span>
+                    <span className="text-2xl font-extrabold text-foreground font-heading block">
+                      {activeTicketsCount} <span className="text-xs text-muted-foreground font-normal">tickets</span>
+                    </span>
+                    <span className="text-[9px] text-emerald-500 font-semibold block mt-1.5">
+                      {subscription?.plan_type ? `${PLAN_LABELS[subscription?.plan_type]} Tier Active` : "No multiplier active"}
+                    </span>
+                  </div>
+                  <div className="w-10 h-10 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-sm text-emerald-500 group-hover:scale-105 transition-transform">
+                    <Ticket className="w-5 h-5" />
+                  </div>
+                </div>
+
+                {/* Global Rank Widget */}
+                <div className="bg-[#05110D]/50 border border-border/20 p-4 rounded-md relative flex items-center justify-between group hover:border-accent/40 transition-colors">
+                  <div>
+                    <span className="text-[8px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-1">
+                      Your Standings Rank
+                    </span>
+                    <span className="text-2xl font-extrabold text-accent font-heading block">
+                      {displayUser.rank}
+                    </span>
+                    <span className="text-[9px] text-muted-foreground block mt-1.5">
+                      Top 25% of global golfers
+                    </span>
+                  </div>
+                  <div className="w-10 h-10 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-sm text-accent group-hover:scale-105 transition-transform">
+                    <TrendingUp className="w-5 h-5" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Card>
         </motion.div>
 
         {/* ── Tab navigation ── */}
