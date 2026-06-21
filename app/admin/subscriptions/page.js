@@ -36,6 +36,9 @@ import {
   RefreshCw,
   Ban,
   Play,
+  ArrowUpDown,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 
 const containerVariants = {
@@ -83,12 +86,30 @@ export default function AdminSubscriptionsPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [planFilter, setPlanFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState("startDate");
+  const [sortOrder, setSortOrder] = useState("desc");
   const [actionLoading, setActionLoading] = useState({});
   const [actionFeedback, setActionFeedback] = useState(null);
 
-  // ── Filtering ──
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const renderSortIcon = (field) => {
+    if (sortBy !== field) return <ArrowUpDown className="w-2.5 h-2.5 text-[#8A9690]/30" />;
+    return sortOrder === "asc" 
+      ? <ChevronUp className="w-2.5 h-2.5 text-red-400" />
+      : <ChevronDown className="w-2.5 h-2.5 text-red-400" />;
+  };
+
+  // ── Filtering & Sorting ──
   const filtered = useMemo(() => {
-    return subscriptions.filter((s) => {
+    const list = subscriptions.filter((s) => {
       const matchesSearch =
         s.user.toLowerCase().includes(searchQuery.toLowerCase()) ||
         s.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -97,7 +118,30 @@ export default function AdminSubscriptionsPage() {
       const matchesPlan = planFilter === "all" || s.plan === planFilter;
       return matchesSearch && matchesStatus && matchesPlan;
     });
-  }, [subscriptions, searchQuery, statusFilter, planFilter]);
+
+    return [...list].sort((a, b) => {
+      let valA = a[sortBy];
+      let valB = b[sortBy];
+
+      if (sortBy === "amount") {
+        valA = parseFloat(String(valA).replace("$", ""));
+        valB = parseFloat(String(valB).replace("$", ""));
+      }
+
+      if (valA === undefined || valA === null) valA = "";
+      if (valB === undefined || valB === null) valB = "";
+
+      if (typeof valA === "string" && typeof valB === "string") {
+        return sortOrder === "asc" 
+          ? valA.localeCompare(valB) 
+          : valB.localeCompare(valA);
+      }
+
+      if (valA < valB) return sortOrder === "asc" ? -1 : 1;
+      if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [subscriptions, searchQuery, statusFilter, planFilter, sortBy, sortOrder]);
 
   // ── Pagination ──
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
@@ -294,12 +338,32 @@ export default function AdminSubscriptionsPage() {
             <Table>
               <TableHeader>
                 <TableRow className="border-[#162520] hover:bg-transparent">
-                  <TableHead className="pl-6 text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Subscriber</TableHead>
-                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Plan</TableHead>
-                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Amount</TableHead>
-                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Status</TableHead>
-                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Renewal</TableHead>
-                  <TableHead className="text-right pr-6 text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Actions</TableHead>
+                  <TableHead className="pl-6 text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none cursor-pointer" onClick={() => handleSort("user")}>
+                    <div className="flex items-center gap-1">
+                      Subscriber {renderSortIcon("user")}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none cursor-pointer" onClick={() => handleSort("plan")}>
+                    <div className="flex items-center gap-1">
+                      Plan {renderSortIcon("plan")}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none cursor-pointer" onClick={() => handleSort("amount")}>
+                    <div className="flex items-center gap-1">
+                      Amount {renderSortIcon("amount")}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none cursor-pointer" onClick={() => handleSort("status")}>
+                    <div className="flex items-center gap-1">
+                      Status {renderSortIcon("status")}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none cursor-pointer" onClick={() => handleSort("renewalDate")}>
+                    <div className="flex items-center gap-1">
+                      Renewal {renderSortIcon("renewalDate")}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-right pr-6 text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

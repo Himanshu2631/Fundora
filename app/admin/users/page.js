@@ -38,6 +38,9 @@ import {
   CreditCard,
   ArrowRight,
   Clock,
+  ArrowUpDown,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 
 const containerVariants = {
@@ -79,13 +82,31 @@ export default function AdminUsersPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [roleFilter, setRoleFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState("joinedAt");
+  const [sortOrder, setSortOrder] = useState("desc");
   const [selectedUser, setSelectedUser] = useState(null);
   const [actionLoading, setActionLoading] = useState({});
   const [actionFeedback, setActionFeedback] = useState(null);
 
-  // ── Filtering ──
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const renderSortIcon = (field) => {
+    if (sortBy !== field) return <ArrowUpDown className="w-2.5 h-2.5 text-[#8A9690]/30" />;
+    return sortOrder === "asc" 
+      ? <ChevronUp className="w-2.5 h-2.5 text-red-400" />
+      : <ChevronDown className="w-2.5 h-2.5 text-red-400" />;
+  };
+
+  // ── Filtering & Sorting ──
   const filtered = useMemo(() => {
-    return users.filter((u) => {
+    const list = users.filter((u) => {
       const matchesSearch =
         u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -94,7 +115,25 @@ export default function AdminUsersPage() {
       const matchesRole = roleFilter === "all" || u.role === roleFilter;
       return matchesSearch && matchesStatus && matchesRole;
     });
-  }, [users, searchQuery, statusFilter, roleFilter]);
+
+    return [...list].sort((a, b) => {
+      let valA = a[sortBy];
+      let valB = b[sortBy];
+
+      if (valA === undefined || valA === null) valA = "";
+      if (valB === undefined || valB === null) valB = "";
+
+      if (typeof valA === "string" && typeof valB === "string") {
+        return sortOrder === "asc" 
+          ? valA.localeCompare(valB) 
+          : valB.localeCompare(valA);
+      }
+
+      if (valA < valB) return sortOrder === "asc" ? -1 : 1;
+      if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [users, searchQuery, statusFilter, roleFilter, sortBy, sortOrder]);
 
   // ── Pagination ──
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
@@ -240,12 +279,32 @@ export default function AdminUsersPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="border-[#162520] hover:bg-transparent">
-                    <TableHead className="pl-6 text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">User</TableHead>
-                    <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Role</TableHead>
-                    <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Plan</TableHead>
-                    <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Status</TableHead>
-                    <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Joined</TableHead>
-                    <TableHead className="text-right pr-6 text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Actions</TableHead>
+                    <TableHead className="pl-6 text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none cursor-pointer" onClick={() => handleSort("name")}>
+                      <div className="flex items-center gap-1">
+                        User {renderSortIcon("name")}
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none cursor-pointer" onClick={() => handleSort("role")}>
+                      <div className="flex items-center gap-1">
+                        Role {renderSortIcon("role")}
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none cursor-pointer" onClick={() => handleSort("plan")}>
+                      <div className="flex items-center gap-1">
+                        Plan {renderSortIcon("plan")}
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none cursor-pointer" onClick={() => handleSort("status")}>
+                      <div className="flex items-center gap-1">
+                        Status {renderSortIcon("status")}
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none cursor-pointer" onClick={() => handleSort("joinedAt")}>
+                      <div className="flex items-center gap-1">
+                        Joined {renderSortIcon("joinedAt")}
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-right pr-6 text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

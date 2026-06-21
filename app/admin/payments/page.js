@@ -30,6 +30,9 @@ import {
   ExternalLink,
   ShieldCheck,
   RefreshCw,
+  ArrowUpDown,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 
 const containerVariants = {
@@ -52,6 +55,24 @@ export default function AdminPaymentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState("created_at");
+  const [sortOrder, setSortOrder] = useState("desc");
+
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("asc");
+    }
+  };
+
+  const renderSortIcon = (field) => {
+    if (sortBy !== field) return <ArrowUpDown className="w-2.5 h-2.5 text-[#8A9690]/30" />;
+    return sortOrder === "asc" 
+      ? <ChevronUp className="w-2.5 h-2.5 text-red-400" />
+      : <ChevronDown className="w-2.5 h-2.5 text-red-400" />;
+  };
 
   const fetchPaymentsData = async () => {
     try {
@@ -64,9 +85,12 @@ export default function AdminPaymentsPage() {
       
       if (paymentsError) throw paymentsError;
 
-      // Seed mock payments if table is empty (helpful for local testing)
+      // Seed mock payments if table is empty or lacks refunded items (helpful for local testing)
       let currentPayments = paymentsData || [];
-      if (currentPayments.length === 0) {
+      if (currentPayments.length === 0 || !currentPayments.some(p => p.status === "refunded")) {
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("fundora-mock-payments");
+        }
         // Fetch profiles to map user_ids
         const { data: profilesList } = await supabase.from("profiles").select("id");
         const defaultUsers = profilesList && profilesList.length > 0 
@@ -82,8 +106,8 @@ export default function AdminPaymentsPage() {
           { user_id: defaultUsers[2] || "USR-003", amount: 10.00, status: "succeeded", stripe_invoice_id: "in_1NjbC7LkdGj5vH03", created_at: new Date(Date.now() - 3600000 * 72).toISOString() },
           { user_id: defaultUsers[1] || "USR-002", amount: 100.00, status: "succeeded", stripe_invoice_id: "in_1NjaE2LkdGj5vY50", created_at: new Date(Date.now() - 3600000 * 96).toISOString() },
           { user_id: defaultUsers[3] || "USR-005", amount: 25.00, status: "failed", stripe_invoice_id: "in_1NjZF9LkdGj5vZ88", created_at: new Date(Date.now() - 3600000 * 120).toISOString() },
-          { user_id: defaultUsers[0] || "USR-001", amount: 25.00, status: "succeeded", stripe_invoice_id: "in_1NjYF1LkdGj5vX71", created_at: new Date(Date.now() - 3600000 * 144).toISOString() },
-          { user_id: defaultUsers[2] || "USR-003", amount: 10.00, status: "succeeded", stripe_invoice_id: "in_1NjXG0LkdGj5vW52", created_at: new Date(Date.now() - 3600000 * 168).toISOString() }
+          { user_id: defaultUsers[0] || "USR-001", amount: 25.00, status: "refunded", stripe_invoice_id: "in_1NjYF1LkdGj5vR99", created_at: new Date(Date.now() - 3600000 * 144).toISOString() },
+          { user_id: defaultUsers[2] || "USR-003", amount: 10.00, status: "refunded", stripe_invoice_id: "in_1NjXG0LkdGj5vR88", created_at: new Date(Date.now() - 3600000 * 168).toISOString() }
         ];
 
         // Batch insert mock payments
@@ -131,7 +155,7 @@ export default function AdminPaymentsPage() {
 
   // Filter and Search Logic
   const filteredPayments = useMemo(() => {
-    return payments.filter(p => {
+    const list = payments.filter(p => {
       const profile = profiles[p.user_id] || {};
       const userLabel = profile.full_name || profile.email || p.user_id || "";
       const matchesSearch = 
@@ -144,7 +168,35 @@ export default function AdminPaymentsPage() {
       
       return matchesSearch && matchesStatus;
     });
-  }, [payments, profiles, searchQuery, statusFilter]);
+
+    return [...list].sort((a, b) => {
+      let valA = a[sortBy];
+      let valB = b[sortBy];
+
+      if (sortBy === "amount") {
+        valA = parseFloat(String(valA));
+        valB = parseFloat(String(valB));
+      } else if (sortBy === "customer") {
+        const profA = profiles[a.user_id] || {};
+        const profB = profiles[b.user_id] || {};
+        valA = profA.full_name || profA.email || a.user_id || "";
+        valB = profB.full_name || profB.email || b.user_id || "";
+      }
+
+      if (valA === undefined || valA === null) valA = "";
+      if (valB === undefined || valB === null) valB = "";
+
+      if (typeof valA === "string" && typeof valB === "string") {
+        return sortOrder === "asc" 
+          ? valA.localeCompare(valB) 
+          : valB.localeCompare(valA);
+      }
+
+      if (valA < valB) return sortOrder === "asc" ? -1 : 1;
+      if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
+  }, [payments, profiles, searchQuery, statusFilter, sortBy, sortOrder]);
 
   // Pagination Logic
   const totalPages = Math.max(1, Math.ceil(filteredPayments.length / ITEMS_PER_PAGE));
@@ -160,6 +212,7 @@ export default function AdminPaymentsPage() {
     const totalVolume = succeeded.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
     const pendingCount = payments.filter(p => p.status === "pending" || p.status === "processing").length;
     const failedCount = payments.filter(p => p.status === "failed" || p.status === "requires_payment_method").length;
+    const refundedCount = payments.filter(p => p.status === "refunded").length;
     const averageInvoice = succeeded.length > 0 ? (totalVolume / succeeded.length) : 0;
 
     return {
@@ -167,6 +220,7 @@ export default function AdminPaymentsPage() {
       succeededCount: succeeded.length,
       pendingCount,
       failedCount,
+      refundedCount,
       averageInvoice
     };
   }, [payments]);
@@ -281,7 +335,7 @@ export default function AdminPaymentsPage() {
             />
           </div>
           <div className="flex gap-2">
-            {["all", "succeeded", "pending", "failed"].map((status) => (
+            {["all", "succeeded", "pending", "failed", "refunded"].map((status) => (
               <Button
                 key={status}
                 variant="outline"
@@ -293,9 +347,12 @@ export default function AdminPaymentsPage() {
                     : "bg-transparent border-[#162520] text-[#8A9690] hover:text-white hover:border-[#1E3A2E]"
                 }`}
               >
-                {status === "all" ? "All Payments" : status}
+                {status === "all" ? "All Payments" : status === "failed" ? "Failed" : status}
                 {status === "failed" && metrics.failedCount > 0 && (
                   <span className="ml-1 bg-red-500/20 text-red-400 text-[8px] px-1 rounded-md font-bold">{metrics.failedCount}</span>
+                )}
+                {status === "refunded" && metrics.refundedCount > 0 && (
+                  <span className="ml-1 bg-purple-500/20 text-purple-400 text-[8px] px-1 rounded-md font-bold">{metrics.refundedCount}</span>
                 )}
               </Button>
             ))}
@@ -308,12 +365,32 @@ export default function AdminPaymentsPage() {
             <Table>
               <TableHeader>
                 <TableRow className="border-[#162520] hover:bg-transparent">
-                  <TableHead className="pl-6 text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Stripe Invoice / ID</TableHead>
-                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Customer</TableHead>
-                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Amount</TableHead>
-                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Status</TableHead>
-                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Charge Date</TableHead>
-                  <TableHead className="text-right pr-6 text-[#8A9690] text-[10px] uppercase tracking-widest font-bold">Invoices</TableHead>
+                  <TableHead className="pl-6 text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none cursor-pointer" onClick={() => handleSort("stripe_invoice_id")}>
+                    <div className="flex items-center gap-1">
+                      Stripe Invoice / ID {renderSortIcon("stripe_invoice_id")}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none cursor-pointer" onClick={() => handleSort("customer")}>
+                    <div className="flex items-center gap-1">
+                      Customer {renderSortIcon("customer")}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none cursor-pointer" onClick={() => handleSort("amount")}>
+                    <div className="flex items-center gap-1">
+                      Amount {renderSortIcon("amount")}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none cursor-pointer" onClick={() => handleSort("status")}>
+                    <div className="flex items-center gap-1">
+                      Status {renderSortIcon("status")}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none cursor-pointer" onClick={() => handleSort("created_at")}>
+                    <div className="flex items-center gap-1">
+                      Charge Date {renderSortIcon("created_at")}
+                    </div>
+                  </TableHead>
+                  <TableHead className="text-right pr-6 text-[#8A9690] text-[10px] uppercase tracking-widest font-bold select-none">Invoices</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -347,10 +424,13 @@ export default function AdminPaymentsPage() {
                             ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/25 hover:bg-emerald-500/20"
                             : p.status === "pending" || p.status === "processing"
                               ? "bg-amber-500/15 text-amber-400 border-amber-500/25 hover:bg-amber-500/20"
-                              : "bg-red-500/15 text-red-400 border-red-500/25 hover:bg-red-500/20"
+                              : p.status === "refunded"
+                                ? "bg-purple-500/15 text-purple-400 border-purple-500/25 hover:bg-purple-500/20"
+                                : "bg-red-500/15 text-red-400 border-red-500/25 hover:bg-red-500/20"
                         }`}>
                           {p.status === "succeeded" && <CheckCircle className="w-2.5 h-2.5 mr-0.5" />}
                           {(p.status === "pending" || p.status === "processing") && <Clock className="w-2.5 h-2.5 mr-0.5" />}
+                          {p.status === "refunded" && <RefreshCw className="w-2.5 h-2.5 mr-0.5 animate-spin" style={{ animationDuration: "6s" }} />}
                           {(p.status === "failed" || p.status === "requires_payment_method") && <XCircle className="w-2.5 h-2.5 mr-0.5" />}
                           {p.status === "requires_payment_method" ? "failed" : p.status}
                         </Badge>
