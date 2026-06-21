@@ -528,7 +528,7 @@ export async function getUserClaims(userId, supabaseClient) {
  * @param {object} [supabaseClient] - Optional server-side Supabase client.
  * @returns {Promise<object>} The updated claim.
  */
-export async function reviewWinnerClaim(claimId, status, supabaseClient) {
+export async function reviewWinnerClaim(claimId, status, notes = "", supabaseClient) {
   const supabase = supabaseClient || createClient();
 
   // Validate status
@@ -540,7 +540,7 @@ export async function reviewWinnerClaim(claimId, status, supabaseClient) {
   // Update claim
   const { data: updatedClaim, error } = await supabase
     .from("winner_claims")
-    .update({ status })
+    .update({ status, notes })
     .eq("id", claimId)
     .select()
     .single();

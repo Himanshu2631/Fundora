@@ -186,11 +186,11 @@ export function useDraws() {
   /**
    * Review winner claim status (Admin operation).
    */
-  const reviewClaim = async (claimId, status) => {
+  const reviewClaim = async (claimId, status, notes = "") => {
     setLoading(true);
     setError(null);
     try {
-      const updatedClaim = await reviewWinnerClaim(claimId, status);
+      const updatedClaim = await reviewWinnerClaim(claimId, status, notes);
       setClaims(prev => prev.map(c => c.id === claimId ? updatedClaim : c));
       return updatedClaim;
     } catch (err) {
