@@ -178,7 +178,7 @@ export async function getSubscriptionPlans(supabaseClient) {
  * @param {string} renewalDate - Renewal date ISO string.
  * @param {object} [supabaseClient] - Optional server-side Supabase client.
  */
-export async function syncStripeSubscriptionToDatabase(userId, stripeSubId, priceId, status, renewalDate, supabaseClient, cardBrand = null, cardLast4 = null) {
+export async function syncStripeSubscriptionToDatabase(userId, stripeSubId, priceId, status, renewalDate, supabaseClient, cardBrand = null, cardLast4 = null, stripeCustomerId = null) {
   const supabase = supabaseClient || createClient();
 
   // 1. Fetch the plan details to get plan_name (scout, advocate, builder)
@@ -210,6 +210,34 @@ export async function syncStripeSubscriptionToDatabase(userId, stripeSubId, pric
     dbStatus = status;
   }
 
+  // Resolve Customer ID from profiles if not passed directly
+  let customerId = stripeCustomerId;
+  if (!customerId) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("stripe_customer_id")
+      .eq("id", userId)
+      .maybeSingle();
+    customerId = profile?.stripe_customer_id || null;
+  }
+
+  // Fetch user email for temporary logging
+  const { data: profileObj } = await supabase
+    .from("profiles")
+    .select("email")
+    .eq("id", userId)
+    .maybeSingle();
+  const userEmail = profileObj?.email || "Unknown Email";
+
+  // Temporary logging for database synchronization audit
+  console.log(`[Subscription Service Sync] Reconciling subscription for user ${userId}:`);
+  console.log(`- Stripe Customer ID: ${customerId || "None"}`);
+  console.log(`- Stripe Subscription ID: ${stripeSubId}`);
+  console.log(`- User Email: ${userEmail}`);
+  console.log(`- Plan Purchased (Price ID): ${priceId}`);
+  console.log(`- Database Status: ${dbStatus}`);
+  console.log(`- Renewal Date: ${renewalDate}`);
+
   // Check for existing subscription row
   const { data: existing } = await supabase
     .from("subscriptions")
@@ -220,10 +248,13 @@ export async function syncStripeSubscriptionToDatabase(userId, stripeSubId, pric
   const subPayload = {
     user_id: userId,
     plan_type: planType,
+    plan_name: planType, // Required Field
     status: dbStatus,
     renewal_date: renewalDate,
     stripe_subscription_id: stripeSubId,
+    subscription_id: stripeSubId, // Required Field
     stripe_price_id: priceId,
+    customer_id: customerId, // Required Field
     card_brand: cardBrand,
     card_last4: cardLast4,
   };
@@ -235,6 +266,11 @@ export async function syncStripeSubscriptionToDatabase(userId, stripeSubId, pric
     }
     if (cardLast4 === null && existing.card_last4) {
       subPayload.card_last4 = existing.card_last4;
+    }
+
+    // Keep existing customer_id if new one is null but existing is not
+    if (customerId === null && existing.customer_id) {
+      subPayload.customer_id = existing.customer_id;
     }
 
     const { data, error } = await supabase

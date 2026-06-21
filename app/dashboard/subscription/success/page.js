@@ -71,7 +71,7 @@ function SuccessContent() {
           {/* Call to Actions */}
           <div className="flex flex-col gap-3">
             <Button asChild variant="accent" className="w-full font-bold uppercase tracking-wider py-5 text-xs">
-              <Link href="/dashboard/subscription">
+              <Link href="/dashboard/subscription?checkout_success=true">
                 Go to Dashboard <ArrowRight className="w-4 h-4 ml-1.5" />
               </Link>
             </Button>

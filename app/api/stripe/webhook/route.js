@@ -7,6 +7,11 @@ import { syncStripeSubscriptionToDatabase } from "@/services/subscriptionService
 export const dynamic = "force-dynamic";
 
 export async function POST(req) {
+  if (!stripe) {
+    console.warn("[Stripe Webhook] Received webhook POST, but Stripe is in mock mode.");
+    return NextResponse.json({ error: "Stripe is in mock mode" }, { status: 400 });
+  }
+
   const sig = req.headers.get("stripe-signature");
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
@@ -81,6 +86,21 @@ export async function POST(req) {
           }
         }
 
+        // Fetch user email from profile for logging
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("email")
+          .eq("id", userId)
+          .maybeSingle();
+        const userEmail = profile?.email || session.customer_details?.email || "Unknown Email";
+
+        console.log(`[Stripe Webhook LOG] Event: checkout.session.completed`);
+        console.log(`- Stripe Customer ID: ${stripeCustomerId}`);
+        console.log(`- Stripe Subscription ID: ${stripeSubscriptionId}`);
+        console.log(`- User Email: ${userEmail}`);
+        console.log(`- Plan Purchased: ${priceId}`);
+        console.log(`- Webhook Status: ${status}`);
+
         // 1. Save stripe_customer_id on user profile for future lookups
         await supabase
           .from("profiles")
@@ -88,8 +108,8 @@ export async function POST(req) {
           .eq("id", userId);
 
         // 2. Sync subscription details to database
-        await syncStripeSubscriptionToDatabase(userId, stripeSubscriptionId, priceId, status, renewalDate, supabase, cardBrand, cardLast4);
-        console.log(`[Stripe Webhook] Handled checkout.session.completed for user ${userId}`);
+        await syncStripeSubscriptionToDatabase(userId, stripeSubscriptionId, priceId, status, renewalDate, supabase, cardBrand, cardLast4, stripeCustomerId);
+        console.log(`[Stripe Webhook] Handled checkout.session.completed successfully for user ${userId}`);
         break;
       }
 
@@ -139,8 +159,29 @@ export async function POST(req) {
           }
         }
 
-        await syncStripeSubscriptionToDatabase(userId, stripeSubscriptionId, priceId, status, renewalDate, supabase, cardBrand, cardLast4);
-        console.log(`[Stripe Webhook] Handled customer.subscription.updated for user ${userId}`);
+        // Fetch user email from profile for logging
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("email")
+          .eq("id", userId)
+          .maybeSingle();
+        const userEmail = profile?.email || "Unknown Email";
+
+        console.log(`[Stripe Webhook LOG] Event: ${event.type}`);
+        console.log(`- Stripe Customer ID: ${stripeCustomerId}`);
+        console.log(`- Stripe Subscription ID: ${stripeSubscriptionId}`);
+        console.log(`- User Email: ${userEmail}`);
+        console.log(`- Plan Purchased: ${priceId}`);
+        console.log(`- Webhook Status: ${status}`);
+
+        // Save stripe_customer_id on user profile if not set yet
+        await supabase
+          .from("profiles")
+          .update({ stripe_customer_id: stripeCustomerId })
+          .eq("id", userId);
+
+        await syncStripeSubscriptionToDatabase(userId, stripeSubscriptionId, priceId, status, renewalDate, supabase, cardBrand, cardLast4, stripeCustomerId);
+        console.log(`[Stripe Webhook] Handled customer.subscription.updated successfully for user ${userId}`);
         break;
       }
 
@@ -216,26 +257,68 @@ export async function POST(req) {
             created_at: new Date().toISOString()
           });
 
-          // Also update renewal date and status if subscription details are present
+          // Retrieve extra details for logging
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("email")
+            .eq("id", userId)
+            .maybeSingle();
+          const userEmail = profile?.email || invoice.customer_email || "Unknown Email";
+          const priceId = invoice.lines?.data?.[0]?.price?.id || "Unknown Price";
+          
+          let subStatus = "active";
+          let renewalDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+          let cardBrand = null;
+          let cardLast4 = null;
+
+          // Sync subscription details if subscription ID is present
           if (stripeSubscriptionId) {
             try {
               const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
-              let status = sub.status;
+              subStatus = sub.status;
               if (sub.cancel_at_period_end) {
-                status = "canceled";
+                subStatus = "canceled";
               }
-              const renewalDate = new Date(sub.current_period_end * 1000).toISOString();
-              await supabase
-                .from("subscriptions")
-                .update({ 
-                  renewal_date: renewalDate,
-                  status: status
-                })
-                .eq("user_id", userId);
+              renewalDate = new Date(sub.current_period_end * 1000).toISOString();
+
+              const defaultPaymentMethodId = sub.default_payment_method;
+              if (defaultPaymentMethodId) {
+                try {
+                  const pm = await stripe.paymentMethods.retrieve(
+                    typeof defaultPaymentMethodId === "string" ? defaultPaymentMethodId : defaultPaymentMethodId.id
+                  );
+                  if (pm.card) {
+                    cardBrand = pm.card.brand;
+                    cardLast4 = pm.card.last4;
+                  }
+                } catch (e) {
+                  console.error("[Stripe Webhook] Error retrieving payment method from Stripe:", e.message);
+                }
+              }
+
+              // Reconcile and create/update subscription in DB using the main service function
+              await syncStripeSubscriptionToDatabase(
+                userId,
+                stripeSubscriptionId,
+                priceId,
+                subStatus,
+                renewalDate,
+                supabase,
+                cardBrand,
+                cardLast4,
+                stripeCustomerId
+              );
             } catch (err) {
-              console.error("[Stripe Webhook] Failed to update renewal date on payment success:", err.message);
+              console.error("[Stripe Webhook] Failed to retrieve subscription or sync database in invoice.payment_succeeded:", err.message);
             }
           }
+
+          console.log(`[Stripe Webhook LOG] Event: invoice.payment_succeeded`);
+          console.log(`- Stripe Customer ID: ${stripeCustomerId}`);
+          console.log(`- Stripe Subscription ID: ${stripeSubscriptionId || "None"}`);
+          console.log(`- User Email: ${userEmail}`);
+          console.log(`- Plan Purchased: ${priceId}`);
+          console.log(`- Webhook Status: ${subStatus}`);
 
           console.log(`[Stripe Webhook] Logged successful payment of $${amount} for user ${userId}`);
         }

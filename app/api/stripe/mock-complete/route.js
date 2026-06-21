@@ -59,7 +59,8 @@ export async function POST(req) {
         renewalDate.toISOString(),
         supabase,
         "Visa",
-        "4242"
+        "4242",
+        stripeCustomerId
       );
 
       // Log a simulated payment succeeded record

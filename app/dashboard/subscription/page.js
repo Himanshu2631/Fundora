@@ -22,7 +22,8 @@ import {
   Clock,
   Sparkles,
   HelpCircle,
-  AlertCircle
+  AlertCircle,
+  RefreshCw
 } from "lucide-react";
 
 const PLAN_DETAILS = {
@@ -55,6 +56,8 @@ export default function SubscriptionPage() {
   const { subscription, status, loading, error, refresh } = useSubscription();
   const [isMock, setIsMock] = useState(false);
   const [showMockPortalNotice, setShowMockPortalNotice] = useState(false);
+  const [isActivating, setIsActivating] = useState(false);
+  const [activationError, setActivationError] = useState(false);
 
   useEffect(() => {
     // Check if Stripe is mock
@@ -73,8 +76,48 @@ export default function SubscriptionPage() {
       if (params.get("mock_portal") === "true") {
         setShowMockPortalNotice(true);
       }
+      if (params.get("checkout_success") === "true") {
+        setIsActivating(true);
+      }
     }
   }, []);
+
+  // Poll for subscription activation if checkout_success is true
+  useEffect(() => {
+    if (!isActivating) return;
+
+    // If subscription is now active, stop activating
+    if (status === "active") {
+      setIsActivating(false);
+      // Clean query parameters from URL without reloading
+      if (typeof window !== "undefined" && window.history.replaceState) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete("checkout_success");
+        window.history.replaceState({}, "", url.pathname + url.search);
+      }
+      return;
+    }
+
+    let pollCount = 0;
+    const maxPolls = 10; // 20 seconds total limit
+
+    const interval = setInterval(async () => {
+      pollCount++;
+      try {
+        await refresh();
+      } catch (err) {
+        console.error("Polling refresh failed:", err);
+      }
+
+      if (pollCount >= maxPolls) {
+        clearInterval(interval);
+        setIsActivating(false);
+        setActivationError(true);
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [isActivating, status, refresh]);
 
   const planKey = subscription?.plan_type;
   const plan = PLAN_DETAILS[planKey];
@@ -133,6 +176,24 @@ export default function SubscriptionPage() {
     );
   }
 
+  if (isActivating) {
+    return (
+      <div className="p-6 md:p-8 flex flex-col items-center justify-center min-h-[60vh] text-center gap-5">
+        <div className="w-12 h-12 bg-accent/15 border border-accent/25 rounded-full flex items-center justify-center text-accent animate-spin">
+          <RefreshCw className="w-6 h-6" />
+        </div>
+        <div className="space-y-2">
+          <h3 className="font-heading font-extrabold text-lg text-foreground">
+            Activating your membership...
+          </h3>
+          <p className="text-xs text-muted-foreground max-w-sm mx-auto leading-relaxed">
+            Verifying your payment credentials with secure routing gateways. Your subscription state will update in real-time.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 md:p-8">
       <motion.div
@@ -148,6 +209,22 @@ export default function SubscriptionPage() {
               <AlertCircle className="w-4 h-4" />
               <AlertTitle>Connection Error</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
+
+        {/* Activation Timeout Alert */}
+        {activationError && (
+          <motion.div variants={itemVariants}>
+            <Alert variant="destructive" className="bg-destructive/15 border-destructive/25 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-[3px] bg-destructive" />
+              <AlertCircle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+              <div>
+                <AlertTitle className="text-xs font-bold text-foreground">Activation Pending</AlertTitle>
+                <AlertDescription className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
+                  We are still waiting for confirmation from Stripe. Your membership is safe and will activate in the background. You can refresh the page in a few moments.
+                </AlertDescription>
+              </div>
             </Alert>
           </motion.div>
         )}
