@@ -111,51 +111,52 @@ function RecentWinnerCard({ winner }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <Card className="p-5 flex flex-col justify-between border-border bg-card/45 hover:border-accent/40 transition-all duration-300 relative overflow-hidden group">
-      <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+    <Card className="p-6 flex flex-col justify-between border-border bg-gradient-to-b from-[#0A1C16] to-[#040D09] hover:border-accent/60 hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden group shadow-lg hover:shadow-accent/5">
+      {/* Premium accent border on hover */}
+      <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-accent via-accent-foreground to-accent opacity-20 group-hover:opacity-100 transition-opacity" />
       
-      <div className="space-y-4">
-        {/* Header Block */}
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            {/* Trophy icon */}
-            <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0">
-              <Trophy className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1">
-                <span className="text-[10px] uppercase font-extrabold tracking-wider text-muted-foreground">
-                  {winner.tier}
-                </span>
-              </div>
-              <Badge variant="outline" className="mt-1 text-[8px] uppercase tracking-wider font-extrabold text-emerald-500 border-emerald-500/20 bg-emerald-500/5 px-2 py-0.5">
-                {winner.status}
-              </Badge>
-            </div>
-          </div>
-          
-          <span className="text-[10px] text-muted-foreground/80 font-medium">
-            {winner.date}
+      {/* Glowing background bubble */}
+      <div className="absolute -top-10 -right-10 w-24 h-24 bg-accent/5 rounded-full blur-2xl group-hover:bg-accent/10 transition-colors pointer-events-none" />
+
+      <div className="space-y-5">
+        {/* Tier and Status Row */}
+        <div className="flex items-center justify-between border-b border-white/[0.04] pb-3">
+          <span className="text-[9px] uppercase font-black tracking-widest text-[#8a9690] bg-[#07130F] border border-white/[0.05] px-2 py-1 rounded-md">
+            {winner.tier}
           </span>
-        </div>
-
-        {/* Primary Information: Prize */}
-        <div className="space-y-1">
-          <span className="text-[10px] uppercase font-bold tracking-wider text-accent">🏆 Prize Won</span>
-          <h4 className="text-base font-extrabold text-white leading-tight font-heading group-hover:text-accent transition-colors">
-            {winner.prize}
-          </h4>
-        </div>
-
-        {/* Secondary Information: Category */}
-        <div className="flex justify-between items-center text-xs py-1 border-t border-b border-white/[0.04]">
-          <span className="text-muted-foreground font-semibold">Winning Class</span>
-          <Badge className="bg-accent/10 text-accent hover:bg-accent/15 border-accent/20 text-[10px] font-bold">
-            {winner.category}
+          <Badge variant="outline" className="text-[8px] uppercase tracking-wider font-extrabold text-emerald-400 border-emerald-500/20 bg-emerald-500/5 px-2 py-0.5">
+            ✓ Verified Payout
           </Badge>
         </div>
 
-        {/* Collapsible Technical Details */}
+        {/* Primary Title: Match Winner */}
+        <div className="space-y-1">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-accent flex items-center gap-1.5 font-heading">
+            🏆 {winner.category}
+          </span>
+          <p className="text-[10px] text-muted-foreground/80 leading-none font-semibold">Winner Reward</p>
+        </div>
+
+        {/* Primary Showcase Feature: The Prize */}
+        <div className="bg-[#05100D]/55 border border-white/[0.05] p-4 rounded-2xl space-y-2 relative overflow-hidden shadow-inner group-hover:bg-[#071612]/70 transition-colors">
+          <span className="text-[8px] font-extrabold uppercase tracking-widest text-muted-foreground block">
+            Prize Awarded
+          </span>
+          <h4 className="text-sm font-extrabold text-white leading-snug font-heading tracking-wide group-hover:text-accent transition-colors">
+            {winner.prize}
+          </h4>
+          <span className="text-[10px] text-muted-foreground block font-medium">
+            Draw: {winner.draw}
+          </span>
+        </div>
+
+        {/* Approval info */}
+        <div className="flex justify-between items-center text-[10px] text-muted-foreground py-0.5">
+          <span className="font-semibold">Verification status</span>
+          <span className="font-bold text-foreground/90">Approved {winner.date}</span>
+        </div>
+
+        {/* Collapsible details drawer */}
         <AnimatePresence initial={false}>
           {showDetails && (
             <motion.div
@@ -165,32 +166,26 @@ function RecentWinnerCard({ winner }) {
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="space-y-2 bg-secondary/15 p-3 rounded-xl border border-border/40 text-xs mt-3">
+              <div className="space-y-2 bg-[#05100D]/65 p-3 rounded-xl border border-white/[0.05] text-xs mt-2">
                 <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground font-semibold">Draw Source:</span>
-                  <span className="font-bold text-foreground text-right truncate max-w-[120px]">
-                    {winner.draw}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground font-semibold">Ticket ID:</span>
+                  <span className="text-muted-foreground font-semibold">Verification Code:</span>
                   <span className="font-mono text-[10px] font-bold text-foreground">
                     {winner.ticket}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground font-semibold">Audit Status:</span>
-                  <span className="text-emerald-500 font-bold flex items-center gap-1">
-                    <ShieldCheck className="w-3.5 h-3.5" /> Checked & Verified
+                  <span className="text-muted-foreground font-semibold">Audit Check:</span>
+                  <span className="text-emerald-400 font-bold flex items-center gap-1 text-[11px]">
+                    <ShieldCheck className="w-3.5 h-3.5 shrink-0" /> Compliance Verified
                   </span>
                 </div>
-                <div className="pt-1.5 border-t border-white/[0.04] mt-1 space-y-1">
+                <div className="pt-2 border-t border-white/[0.04] mt-1 space-y-1">
                   <div className="flex justify-between items-center text-[10px]">
-                    <span className="text-muted-foreground font-semibold">Verified On:</span>
+                    <span className="text-muted-foreground font-semibold">Approval Date:</span>
                     <span className="text-foreground font-bold">{winner.date}</span>
                   </div>
                   <div className="flex justify-between items-center text-[10px]">
-                    <span className="text-muted-foreground font-semibold">Approval Date:</span>
+                    <span className="text-muted-foreground font-semibold">Verified On:</span>
                     <span className="text-foreground font-bold">{winner.date}</span>
                   </div>
                 </div>
@@ -200,20 +195,20 @@ function RecentWinnerCard({ winner }) {
         </AnimatePresence>
       </div>
 
-      {/* Action Area */}
-      <div className="pt-4 mt-4 border-t border-border/30 flex justify-between items-center text-[10px]">
+      {/* Footer / CTA Actions */}
+      <div className="pt-4 mt-5 border-t border-white/[0.06] flex justify-between items-center text-[10px]">
         <button
           type="button"
           onClick={() => setShowDetails(!showDetails)}
-          className="text-muted-foreground hover:text-foreground font-bold uppercase tracking-wider flex items-center gap-1 transition-colors"
+          className="text-[#8a9690] hover:text-foreground font-extrabold uppercase tracking-wider flex items-center gap-1 transition-colors"
         >
-          {showDetails ? "Hide Details" : "View Details"}
+          {showDetails ? "Hide Audit Data" : "View Audit Data"}
         </button>
         
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="text-accent hover:underline font-bold uppercase tracking-wider flex items-center gap-1"
+          className="text-accent hover:text-accent-foreground hover:scale-[1.03] active:scale-[0.97] font-black uppercase tracking-wider flex items-center gap-1 transition-all"
         >
           View Verification <ExternalLink className="w-3 h-3" />
         </button>
@@ -1268,9 +1263,9 @@ export default function DashboardOverview() {
                 <div className="w-8 h-8 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
-                <h3 className="font-heading text-lg font-bold text-foreground">Recent Verified Winners</h3>
+                <h3 className="font-heading text-lg font-bold text-foreground">Community Success Stories</h3>
                 <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold ml-auto">
-                  Cryptographically Verified Payouts
+                  Verified Platform Payouts
                 </span>
               </div>
 
