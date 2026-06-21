@@ -25,8 +25,18 @@ export default function SubscriptionWidget() {
   const { subscription, status, loading, error, subscribe, cancel, update } = useSubscription();
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError, setActionError] = useState(null);
-  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
-  const [isUpgradeModalOpen, setIsUpgradeModalOpen] = useState(false);
+  const [isCancelModalOpen, _setIsCancelModalOpen] = useState(false);
+  const [isUpgradeModalOpen, _setIsUpgradeModalOpen] = useState(false);
+
+  const setIsCancelModalOpen = (val) => {
+    if (val) _setIsUpgradeModalOpen(false);
+    _setIsCancelModalOpen(val);
+  };
+
+  const setIsUpgradeModalOpen = (val) => {
+    if (val) _setIsCancelModalOpen(false);
+    _setIsUpgradeModalOpen(val);
+  };
 
   const plans = {
     scout: { 

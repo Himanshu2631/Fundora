@@ -50,7 +50,7 @@ export default function AdminCharitiesPage() {
   const [categoryFilter, setCategoryFilter] = useState("All");
 
   // Form states
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, _setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("add"); // "add" or "edit"
   const [selectedCharity, setSelectedCharity] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -69,8 +69,18 @@ export default function AdminCharitiesPage() {
   });
 
   // Details view state
-  const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isDetailsOpen, _setIsDetailsOpen] = useState(false);
   const [detailsCharity, setDetailsCharity] = useState(null);
+
+  const setIsModalOpen = (val) => {
+    if (val) _setIsDetailsOpen(false);
+    _setIsModalOpen(val);
+  };
+
+  const setIsDetailsOpen = (val) => {
+    if (val) _setIsModalOpen(false);
+    _setIsDetailsOpen(val);
+  };
 
   const handleOpenAdd = () => {
     setModalMode("add");

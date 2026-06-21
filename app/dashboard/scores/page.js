@@ -39,7 +39,7 @@ export default function ScoresPage() {
   const [addError, setAddError] = useState(null);
 
   // Edit Modal States
-  const [editingScore, setEditingScore] = useState(null); // score object being edited
+  const [editingScore, _setEditingScore] = useState(null); // score object being edited
   const [editScoreValue, setEditScoreValue] = useState(36);
   const [editScoreDate, setEditScoreDate] = useState("");
   const [editLoading, setEditLoading] = useState(false);
@@ -47,8 +47,18 @@ export default function ScoresPage() {
   const [editError, setEditError] = useState(null);
 
   // Delete Modal States
-  const [deletingScore, setDeletingScore] = useState(null); // score object being deleted
+  const [deletingScore, _setDeletingScore] = useState(null); // score object being deleted
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const setEditingScore = (val) => {
+    if (val) _setDeletingScore(null);
+    _setEditingScore(val);
+  };
+
+  const setDeletingScore = (val) => {
+    if (val) _setEditingScore(null);
+    _setDeletingScore(val);
+  };
 
   // Initialize date input to today
   useEffect(() => {

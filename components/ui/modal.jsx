@@ -1,11 +1,29 @@
-"use client";
-
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function Modal({ isOpen, onClose, title, children, className }) {
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  // Lock body scroll when open
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
   // Listen to escape key
   React.useEffect(() => {
     const handleKeyDown = (e) => {
@@ -15,7 +33,9 @@ export function Modal({ isOpen, onClose, title, children, className }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose]);
 
-  return (
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -25,7 +45,7 @@ export function Modal({ isOpen, onClose, title, children, className }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-[#060C0A]/80 backdrop-blur-sm"
+            className="fixed inset-0 bg-[#060C0A]/80 backdrop-blur-sm z-40"
           />
 
           {/* Modal Container */}
@@ -35,7 +55,7 @@ export function Modal({ isOpen, onClose, title, children, className }) {
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ type: "spring", duration: 0.4 }}
             className={cn(
-              "w-full max-w-lg bg-card border border-border rounded-2xl shadow-xl relative z-10 overflow-hidden text-left flex flex-col max-h-[90vh]",
+              "w-full max-w-lg bg-card border border-border rounded-2xl shadow-xl z-50 overflow-hidden text-left flex flex-col max-h-[90vh] relative",
               className
             )}
           >
@@ -59,6 +79,8 @@ export function Modal({ isOpen, onClose, title, children, className }) {
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
+

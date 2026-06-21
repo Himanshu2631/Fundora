@@ -58,9 +58,19 @@ export default function AdminDrawsPage() {
   const [loadingExtra, setLoadingExtra] = useState(true);
 
   // Modals state
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [isResultsOpen, setIsResultsOpen] = useState(false);
+  const [isCreateOpen, _setIsCreateOpen] = useState(false);
+  const [isResultsOpen, _setIsResultsOpen] = useState(false);
   const [resultsDraw, setResultsDraw] = useState(null);
+
+  const setIsCreateOpen = (val) => {
+    if (val) _setIsResultsOpen(false);
+    _setIsCreateOpen(val);
+  };
+
+  const setIsResultsOpen = (val) => {
+    if (val) _setIsCreateOpen(false);
+    _setIsResultsOpen(val);
+  };
   
   const [actionLoading, setActionLoading] = useState({});
   const [successMsg, setSuccessMsg] = useState("");
