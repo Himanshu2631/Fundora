@@ -115,3 +115,58 @@ export async function deleteScore(scoreId, supabaseClient) {
     throw error;
   }
 }
+
+/**
+ * Update an existing score record.
+ * @param {string} scoreId - The score ID.
+ * @param {string} userId - The user's ID.
+ * @param {object} updates - Attributes to update (score, score_date).
+ * @param {object} [supabaseClient] - Optional server-side Supabase client.
+ * @returns {Promise<object>} The updated score row.
+ */
+export async function updateScore(scoreId, userId, updates, supabaseClient) {
+  const supabase = supabaseClient || createClient();
+  
+  // 1. Fetch current scores
+  const existingScores = await getUserScores(userId, supabase);
+
+  // 2. Validate. We need to check score and score_date if they are in updates
+  const currentScoreRow = existingScores.find(s => s.id === scoreId);
+  if (!currentScoreRow) {
+    throw new Error("Score record not found.");
+  }
+
+  const scoreVal = updates.score !== undefined ? updates.score : currentScoreRow.score;
+  const scoreDate = updates.score_date !== undefined ? updates.score_date : currentScoreRow.score_date;
+  
+  // Exclude the score being updated from duplicate date check
+  const otherScores = existingScores.filter(s => s.id !== scoreId);
+
+  const validation = validateScore({
+    score: scoreVal,
+    scoreDate,
+    existingScores: otherScores
+  });
+
+  if (!validation.isValid) {
+    throw new Error(validation.error);
+  }
+
+  // 3. Perform update
+  const { data, error } = await supabase
+    .from("scores")
+    .update({
+      score: parseInt(scoreVal, 10),
+      score_date: scoreDate
+    })
+    .eq("id", scoreId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error updating score:", error);
+    throw error;
+  }
+
+  return data;
+}

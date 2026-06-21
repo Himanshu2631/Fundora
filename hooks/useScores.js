@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { getUserScores, addScore as apiAddScore, deleteScore as apiDeleteScore } from "@/services/scoreService";
+import { getUserScores, addScore as apiAddScore, deleteScore as apiDeleteScore, updateScore as apiUpdateScore } from "@/services/scoreService";
 
 export function useScores() {
   const { user } = useAuth();
@@ -68,6 +68,29 @@ export function useScores() {
   };
 
   /**
+   * Update a golf score by ID.
+   * @param {string} scoreId - The score ID to update.
+   * @param {object} updates - Updates to apply (score, score_date).
+   */
+  const update = async (scoreId, updates) => {
+    if (!user) throw new Error("Must be logged in to update scores");
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await apiUpdateScore(scoreId, user.id, updates);
+      // Re-fetch scores to ensure database state is perfectly synced
+      const updated = await getUserScores(user.id);
+      setScores(updated);
+      return data;
+    } catch (err) {
+      setError(err.message || "Failed to update score");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
    * Remove a golf score by ID.
    * @param {string} scoreId - The score ID to delete.
    */
@@ -91,6 +114,7 @@ export function useScores() {
     loading,
     error,
     addScore: add,
+    updateScore: update,
     deleteScore: remove,
     refreshScores: fetchScores,
   };
