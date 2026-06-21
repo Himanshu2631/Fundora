@@ -61,6 +61,8 @@ export async function POST(req) {
       amount: amount,
       status: "succeeded",
       stripe_invoice_id: stripeInvoiceId,
+      invoice_pdf_url: `/dashboard/billing/invoice?payment_id=${stripeInvoiceId}`,
+      hosted_invoice_url: `/dashboard/billing/invoice?payment_id=${stripeInvoiceId}`,
       created_at: new Date().toISOString()
     });
 

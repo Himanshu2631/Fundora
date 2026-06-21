@@ -251,3 +251,23 @@ export async function syncStripeSubscriptionToDatabase(userId, stripeSubId, pric
   }
 }
 
+/**
+ * Fetch transaction payments for a user.
+ * @param {string} userId - User ID.
+ * @param {object} [supabaseClient] - Optional server-side Supabase client.
+ */
+export async function getUserPayments(userId, supabaseClient) {
+  const supabase = supabaseClient || createClient();
+  const { data, error } = await supabase
+    .from("payments")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error in getUserPayments:", error);
+    throw error;
+  }
+  return data;
+}
+

@@ -157,6 +157,8 @@ export async function POST(req) {
             amount: amount,
             status: "succeeded",
             stripe_invoice_id: stripeInvoiceId,
+            invoice_pdf_url: invoice.invoice_pdf || null,
+            hosted_invoice_url: invoice.hosted_invoice_url || null,
             created_at: new Date().toISOString()
           });
 
@@ -216,6 +218,8 @@ export async function POST(req) {
             amount: amount,
             status: "failed",
             stripe_invoice_id: stripeInvoiceId,
+            invoice_pdf_url: invoice.invoice_pdf || null,
+            hosted_invoice_url: invoice.hosted_invoice_url || null,
             created_at: new Date().toISOString()
           });
           

@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Shield,
   User,
+  Receipt,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -29,6 +30,7 @@ const BASE_NAV_SECTIONS = [
     items: [
       { name: "Overview", href: "/dashboard", icon: LayoutDashboard, exact: true },
       { name: "Subscription", href: "/dashboard/subscription", icon: CreditCard },
+      { name: "Billing & History", href: "/dashboard/billing", icon: Receipt },
       { name: "My Scores", href: "/dashboard/scores", icon: Trophy },
     ],
   },

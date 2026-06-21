@@ -18,6 +18,10 @@ const ROUTE_META = {
     title: "Subscription",
     sub: "Manage your giving tier and billing.",
   },
+  "/dashboard/billing": {
+    title: "Billing & History",
+    sub: "Manage your billing summary and check contributions history.",
+  },
   "/dashboard/scores": {
     title: "My Scores",
     sub: "Track your Giving Score and leaderboard rank.",
