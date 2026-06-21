@@ -285,7 +285,7 @@ function PlanCard({ plan, isYearly, onSubscribe, activeStatus, currentPlanKey, i
         {/* Yearly savings ribbon */}
         {isYearly && savedAmount > 0 && (
           <div className="absolute top-4 right-4">
-            <span className="bg-accent text-[#060C0A] text-[9px] font-extrabold uppercase tracking-wider px-2 py-1 rounded-sm">
+            <span className="bg-accent text-[#060C0A] text-[9px] font-extrabold uppercase tracking-wider px-2 py-1 rounded-xl">
               Save ${savedAmount}/yr
             </span>
           </div>
@@ -501,7 +501,7 @@ export default function PricingPage() {
                   >
                     Yearly
                     <span
-                      className={`text-[9px] px-1.5 py-0.5 rounded-sm font-extrabold leading-none ${
+                      className={`text-[9px] px-1.5 py-0.5 rounded-xl font-extrabold leading-none ${
                         isYearly
                           ? "bg-[#060C0A]/20 text-[#060C0A]"
                           : "bg-accent/20 text-accent"
@@ -606,7 +606,7 @@ export default function PricingPage() {
                   variants={itemVariants}
                   className="border-t border-l border-border/60 p-8 group hover:bg-card transition-colors duration-300 first:border-l-0 [&:nth-child(3n+1)]:border-l-0 sm:[&:nth-child(2n+1)]:border-l-0 lg:[&:nth-child(3n+1)]:border-l-0 lg:[&:nth-child(3n+2)]:border-l lg:[&:nth-child(3n+3)]:border-l sm:[&:nth-child(2n+2)]:border-l"
                 >
-                  <div className="w-10 h-10 flex items-center justify-center bg-accent/10 border border-accent/20 rounded-sm mb-5 group-hover:bg-accent/15 transition-colors">
+                  <div className="w-10 h-10 flex items-center justify-center bg-accent/10 border border-accent/20 rounded-xl mb-5 group-hover:bg-accent/15 transition-colors">
                     <b.icon className="w-4.5 h-4.5 text-accent" />
                   </div>
                   <h3 className="font-heading font-bold text-base text-foreground mb-2">

@@ -219,7 +219,7 @@ export default function CharityDashboard() {
         </div>
 
         {/* Global Stats */}
-        <div className="flex gap-4 shrink-0 bg-card border border-border/60 p-3 rounded-sm">
+        <div className="flex gap-4 shrink-0 bg-card border border-border/60 p-3 rounded-xl">
           <div className="text-center px-3 border-r border-border/40">
             <span className="text-[9px] uppercase font-bold text-muted-foreground block">Causes Backed</span>
             <span className="text-sm font-bold text-foreground">{allocations.length}</span>
@@ -325,12 +325,12 @@ export default function CharityDashboard() {
               </div>
               
               {remainingPercent > 0 ? (
-                <div className="flex items-center gap-1.5 text-[10.5px] text-amber-500 font-semibold bg-amber-500/5 p-2 rounded-sm border border-amber-500/10">
+                <div className="flex items-center gap-1.5 text-[10.5px] text-amber-500 font-semibold bg-amber-500/5 p-2 rounded-xl border border-amber-500/10">
                   <Info className="w-3.5 h-3.5 shrink-0" />
                   <span>You have {remainingPercent}% remaining. Pick a cause below to fully distribute your support.</span>
                 </div>
               ) : (
-                <div className="flex items-center gap-1.5 text-[10.5px] text-emerald-500 font-semibold bg-emerald-500/5 p-2 rounded-sm border border-emerald-500/10">
+                <div className="flex items-center gap-1.5 text-[10.5px] text-emerald-500 font-semibold bg-emerald-500/5 p-2 rounded-xl border border-emerald-500/10">
                   <Check className="w-3.5 h-3.5 shrink-0" />
                   <span>Your subscription is 100% active. Thank you for making a positive contribution!</span>
                 </div>
@@ -344,7 +344,7 @@ export default function CharityDashboard() {
               </span>
 
               {allocations.length === 0 ? (
-                <div className="border border-dashed border-border/50 p-6 text-center rounded-sm bg-secondary/5">
+                <div className="border border-dashed border-border/50 p-6 text-center rounded-xl bg-secondary/5">
                   <Heart className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
                   <p className="text-xs font-semibold text-foreground/80">No Active Allocations</p>
                   <p className="text-[10.5px] text-muted-foreground mt-1">
@@ -356,7 +356,7 @@ export default function CharityDashboard() {
                   {allocations.map((item) => (
                     <div 
                       key={item.id} 
-                      className="flex items-center justify-between p-3 rounded-sm border border-border/40 bg-secondary/15 hover:border-accent/20 transition-all duration-200"
+                      className="flex items-center justify-between p-3 rounded-xl border border-border/40 bg-secondary/15 hover:border-accent/20 transition-all duration-200"
                     >
                       <div className="space-y-0.5">
                         <span className="text-xs font-bold text-foreground line-clamp-1">
@@ -436,20 +436,20 @@ export default function CharityDashboard() {
                 </p>
 
                 {featuredCharity.why_matters && (
-                  <div className="bg-accent/5 border border-accent/15 p-2.5 rounded-sm text-[10.5px] leading-relaxed text-muted-foreground">
+                  <div className="bg-accent/5 border border-accent/15 p-2.5 rounded-xl text-[10.5px] leading-relaxed text-muted-foreground">
                     <span className="text-[9px] font-extrabold uppercase text-accent tracking-widest block mb-1">Why This Cause Matters</span>
                     {featuredCharity.why_matters}
                   </div>
                 )}
                 
                 {/* Verified Impact Highlight */}
-                <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-sm p-2 text-[11px] text-emerald-400 font-medium">
+                <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-xl p-2 text-[11px] text-emerald-400 font-medium">
                   <strong>Quarterly Impact:</strong> {featuredCharity.impact}
                 </div>
               </div>
 
               {/* Verified Metrics Row */}
-              <div className="grid grid-cols-3 gap-2 bg-secondary/10 p-2.5 rounded-sm border border-border/30">
+              <div className="grid grid-cols-3 gap-2 bg-secondary/10 p-2.5 rounded-xl border border-border/30">
                 <div className="text-center">
                   <span className="text-[8px] uppercase font-bold text-muted-foreground block">Auditor Rating</span>
                   <span className="text-[12.5px] font-bold text-foreground">{featuredCharity.auditor_score || featuredCharity.auditorScore}/10</span>
@@ -526,7 +526,7 @@ export default function CharityDashboard() {
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all duration-200 border rounded-sm ${
+              className={`px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all duration-200 border rounded-xl ${
                 (selectedCategory === cat) 
                   ? "bg-secondary text-secondary-foreground border-accent text-accent" 
                   : "bg-transparent text-muted-foreground border-border/40 hover:bg-secondary/20 hover:text-foreground"
@@ -615,7 +615,7 @@ export default function CharityDashboard() {
                                   transition={{ duration: 0.2 }}
                                   className="overflow-hidden"
                                 >
-                                  <p className="text-[10.5px] leading-relaxed text-muted-foreground bg-accent/5 border border-accent/15 p-2 rounded-sm mt-2">
+                                  <p className="text-[10.5px] leading-relaxed text-muted-foreground bg-accent/5 border border-accent/15 p-2 rounded-xl mt-2">
                                     {charity.why_matters}
                                   </p>
                                 </motion.div>
@@ -626,7 +626,7 @@ export default function CharityDashboard() {
                       </div>
 
                       {/* Auditor efficiency values */}
-                      <div className="grid grid-cols-2 gap-2 bg-secondary/15 p-2 rounded-sm border border-border/40 text-[10.5px]">
+                      <div className="grid grid-cols-2 gap-2 bg-secondary/15 p-2 rounded-xl border border-border/40 text-[10.5px]">
                         <div className="text-center border-r border-border/40">
                           <span className="text-muted-foreground block text-[8px] uppercase font-bold">Auditor score</span>
                           <span className="font-bold text-foreground">{charity.auditor_score || charity.auditorScore}/10</span>
@@ -702,11 +702,11 @@ export default function CharityDashboard() {
 
           return (
             <div className="space-y-5">
-              <div className="flex items-start gap-3 bg-secondary/20 p-3 rounded-sm border border-border/40">
+              <div className="flex items-start gap-3 bg-secondary/20 p-3 rounded-xl border border-border/40">
                 <img 
                   src={selectedCharity.image_url} 
                   alt={selectedCharity.name} 
-                  className="w-14 h-14 object-cover rounded-sm border border-border/40 shrink-0" 
+                  className="w-14 h-14 object-cover rounded-xl border border-border/40 shrink-0" 
                 />
                 <div className="space-y-0.5">
                   <h4 className="text-xs font-bold text-foreground">{selectedCharity.name}</h4>
@@ -720,7 +720,7 @@ export default function CharityDashboard() {
               </div>
 
               {selectedCharity.why_matters && (
-                <div className="bg-accent/5 border border-accent/15 p-3 rounded-sm text-[10.5px] leading-relaxed text-muted-foreground">
+                <div className="bg-accent/5 border border-accent/15 p-3 rounded-xl text-[10.5px] leading-relaxed text-muted-foreground">
                   <span className="text-[9px] font-extrabold uppercase text-accent tracking-widest block mb-1">Why This Cause Matters</span>
                   {selectedCharity.why_matters}
                 </div>
@@ -743,7 +743,7 @@ export default function CharityDashboard() {
               )}
 
               {!isEligible ? (
-                <div className="space-y-3 bg-destructive/5 p-3 rounded-sm border border-destructive/10">
+                <div className="space-y-3 bg-destructive/5 p-3 rounded-xl border border-destructive/10">
                   <div className="flex gap-2 text-destructive">
                     <AlertTriangle className="w-4 h-4 shrink-0" />
                     <span className="text-xs font-bold">Allocation Limit Exceeded</span>
@@ -762,7 +762,7 @@ export default function CharityDashboard() {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center text-xs">
                       <span className="font-semibold text-muted-foreground">Allocation Percentage</span>
-                      <span className="font-bold text-accent text-sm bg-accent/10 px-2 py-0.5 rounded-sm border border-accent/20">
+                      <span className="font-bold text-accent text-sm bg-accent/10 px-2 py-0.5 rounded-xl border border-accent/20">
                         {allocationPercent}%
                       </span>
                     </div>
@@ -772,7 +772,7 @@ export default function CharityDashboard() {
                         type="button"
                         onClick={() => setAllocationPercent(prev => Math.max(10, prev - 5))}
                         disabled={allocationPercent <= 10 || isPending}
-                        className="w-8 h-8 rounded-sm bg-secondary hover:bg-secondary/80 flex items-center justify-center font-bold text-foreground select-none disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        className="w-8 h-8 rounded-xl hover:bg-secondary/80 flex items-center justify-center font-bold text-foreground select-none disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                       >
                         -
                       </button>
@@ -785,14 +785,14 @@ export default function CharityDashboard() {
                         value={allocationPercent}
                         onChange={(e) => setAllocationPercent(parseInt(e.target.value, 10))}
                         disabled={isPending}
-                        className="flex-1 h-1.5 bg-secondary rounded-lg appearance-none cursor-pointer accent-accent"
+                        className="flex-1 h-1.5 bg-secondary rounded-2xl appearance-none cursor-pointer accent-accent"
                       />
 
                       <button 
                         type="button"
                         onClick={() => setAllocationPercent(prev => Math.min(maxAllowedPercent, prev + 5))}
                         disabled={allocationPercent >= maxAllowedPercent || isPending}
-                        className="w-8 h-8 rounded-sm bg-secondary hover:bg-secondary/80 flex items-center justify-center font-bold text-foreground select-none disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                        className="w-8 h-8 rounded-xl hover:bg-secondary/80 flex items-center justify-center font-bold text-foreground select-none disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                       >
                         +
                       </button>
@@ -805,7 +805,7 @@ export default function CharityDashboard() {
                   </div>
 
                   {/* Impact projection comparison */}
-                  <div className="bg-secondary/15 p-3 rounded-sm border border-border/40 space-y-2 text-[11px]">
+                  <div className="bg-secondary/15 p-3 rounded-xl border border-border/40 space-y-2 text-[11px]">
                     <span className="font-bold uppercase tracking-wider text-[9px] text-muted-foreground block">
                       Allocation Simulation
                     </span>

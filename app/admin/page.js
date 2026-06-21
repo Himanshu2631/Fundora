@@ -113,7 +113,7 @@ export default function AdminDashboard() {
           {STATS.map((stat, i) => (
             <Card key={i} className="p-5 bg-[#0A1C16] border-[#162520] hover:border-[#1E3A2E] transition-colors group">
               <div className="flex items-start justify-between mb-4">
-                <div className={`w-10 h-10 rounded-sm ${stat.bgColor} ${stat.borderColor} border flex items-center justify-center`}>
+                <div className={`w-10 h-10 rounded-xl ${stat.bgColor} ${stat.borderColor} border flex items-center justify-center`}>
                   <stat.icon className={`w-5 h-5 ${stat.color}`} />
                 </div>
                 <div className="flex items-center gap-1 text-[10px] font-semibold text-emerald-400">
@@ -154,8 +154,8 @@ export default function AdminDashboard() {
               <CardContent className="pt-5">
                 <div className="space-y-1">
                   {ACTIVITY_FEED.map((event, i) => (
-                    <div key={i} className="flex items-start gap-3 p-3 rounded-sm hover:bg-[#0D2B20]/40 transition-colors group/item">
-                      <div className={`w-8 h-8 rounded-sm bg-[#0D2B20] border border-[#162520] flex items-center justify-center shrink-0 group-hover/item:border-[#1E3A2E]`}>
+                    <div key={i} className="flex items-start gap-3 p-3 rounded-xl hover:bg-[#0D2B20]/40 transition-colors group/item">
+                      <div className={`w-8 h-8 rounded-xl bg-[#0D2B20] border border-[#162520] flex items-center justify-center shrink-0 group-hover/item:border-[#1E3A2E]`}>
                         <event.icon className={`w-3.5 h-3.5 ${event.color}`} />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -183,7 +183,7 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {QUICK_ACTIONS.map((action) => (
                     <Link key={action.href} href={action.href}>
-                      <div className="p-4 bg-[#0D2B20]/30 border border-[#162520] rounded-sm hover:border-red-500/25 hover:bg-[#0D2B20]/50 transition-all group/action cursor-pointer">
+                      <div className="p-4 bg-[#0D2B20]/30 border border-[#162520] rounded-xl hover:border-red-500/25 hover:bg-[#0D2B20]/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 group/action cursor-pointer">
                         <div className="flex items-center justify-between mb-2">
                           <action.icon className="w-4 h-4 text-[#8A9690] group-hover/action:text-red-400 transition-colors" />
                           <ArrowRight className="w-3.5 h-3.5 text-[#8A9690]/40 group-hover/action:text-red-400 transition-colors" />
@@ -214,7 +214,7 @@ export default function AdminDashboard() {
               <CardContent className="pt-5">
                 <div className="space-y-3">
                   {SYSTEM_HEALTH.map((service) => (
-                    <div key={service.name} className="flex items-center justify-between p-3 bg-[#0D2B20]/30 border border-[#162520] rounded-sm">
+                    <div key={service.name} className="flex items-center justify-between p-3 bg-[#0D2B20]/30 border border-[#162520] rounded-xl">
                       <div className="flex items-center gap-3">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                         <span className="text-xs font-semibold text-white">{service.name}</span>
@@ -277,7 +277,7 @@ export default function AdminDashboard() {
                   { label: "Avg Score", value: "284 pts", icon: Trophy },
                   { label: "Active Draws", value: "2", icon: Ticket },
                 ].map((metric) => (
-                  <div key={metric.label} className="p-3 bg-[#0D2B20]/30 border border-[#162520] rounded-sm text-center">
+                  <div key={metric.label} className="p-3 bg-[#0D2B20]/30 border border-[#162520] rounded-xl text-center">
                     <metric.icon className="w-3.5 h-3.5 text-[#8A9690] mx-auto mb-1.5" />
                     <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A9690]">{metric.label}</p>
                     <p className="font-heading text-sm font-extrabold text-white mt-0.5">{metric.value}</p>

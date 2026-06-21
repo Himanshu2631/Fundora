@@ -154,7 +154,7 @@ export default function AdminUsersPage() {
           ].map((stat, i) => (
             <Card key={i} className="p-4 bg-[#0A1C16] border-[#162520]">
               <div className="flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-sm ${stat.bg} flex items-center justify-center`}>
+                <div className={`w-9 h-9 rounded-xl ${stat.bg} flex items-center justify-center`}>
                   <stat.icon className={`w-4 h-4 ${stat.color}`} />
                 </div>
                 <div>
@@ -317,7 +317,7 @@ export default function AdminUsersPage() {
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => setSelectedUser(user)}
-                            className="w-7 h-7 rounded-sm flex items-center justify-center text-[#8A9690] hover:text-white hover:bg-[#0D2B20] transition-colors"
+                            className="w-7 h-7 rounded-xl flex items-center justify-center text-[#8A9690] hover:text-white hover:bg-[#0D2B20] hover:scale-[1.05] active:scale-[0.95] transition-all duration-200"
                             title="View Details"
                           >
                             <Eye className="w-3.5 h-3.5" />
@@ -326,7 +326,7 @@ export default function AdminUsersPage() {
                             <button
                               onClick={() => handleSuspend(user.id)}
                               disabled={actionLoading[user.id] === "suspend"}
-                              className="w-7 h-7 rounded-sm flex items-center justify-center text-[#8A9690] hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                              className="w-7 h-7 rounded-xl flex items-center justify-center text-[#8A9690] hover:text-red-400 hover:bg-red-500/10 hover:scale-[1.05] active:scale-[0.95] transition-all duration-200 disabled:opacity-50"
                               title="Suspend User"
                             >
                               {actionLoading[user.id] === "suspend" ? (
@@ -340,7 +340,7 @@ export default function AdminUsersPage() {
                             <button
                               onClick={() => handleReactivate(user.id)}
                               disabled={actionLoading[user.id] === "reactivate"}
-                              className="w-7 h-7 rounded-sm flex items-center justify-center text-[#8A9690] hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors disabled:opacity-50"
+                              className="w-7 h-7 rounded-xl flex items-center justify-center text-[#8A9690] hover:text-emerald-400 hover:bg-emerald-500/10 hover:scale-[1.05] active:scale-[0.95] transition-all duration-200 disabled:opacity-50"
                               title="Reactivate User"
                             >
                               {actionLoading[user.id] === "reactivate" ? (
@@ -456,7 +456,7 @@ export default function AdminUsersPage() {
                     </div>
                     <button
                       onClick={() => setSelectedUser(null)}
-                      className="w-7 h-7 rounded-sm flex items-center justify-center text-[#8A9690] hover:text-white hover:bg-[#0D2B20] transition-colors"
+                      className="w-7 h-7 rounded-xl flex items-center justify-center text-[#8A9690] hover:text-white hover:bg-[#0D2B20] hover:scale-[1.05] active:scale-[0.95] transition-all duration-200"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -471,7 +471,7 @@ export default function AdminUsersPage() {
                         { label: "Charities", value: String(selectedUser.charities), icon: Heart, color: "text-rose-400" },
                         { label: "Draw Tickets", value: String(selectedUser.tickets), icon: Ticket, color: "text-emerald-400" },
                       ].map((metric) => (
-                        <div key={metric.label} className="p-3 bg-[#0D2B20]/30 border border-[#162520] rounded-sm text-center">
+                        <div key={metric.label} className="p-3 bg-[#0D2B20]/30 border border-[#162520] rounded-xl text-center">
                           <metric.icon className={`w-3.5 h-3.5 ${metric.color} mx-auto mb-1`} />
                           <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A9690]">{metric.label}</p>
                           <p className="font-heading text-sm font-extrabold text-white mt-0.5">{metric.value}</p>
@@ -539,7 +539,7 @@ export default function AdminUsersPage() {
                           </Button>
                         )}
                         {selectedUser.status === "inactive" && (
-                          <div className="text-center py-3 text-[10px] text-[#8A9690] bg-[#0D2B20]/20 border border-[#162520] rounded-sm">
+                          <div className="text-center py-3 text-[10px] text-[#8A9690] bg-[#0D2B20]/20 border border-[#162520] rounded-2xl">
                             <Clock className="w-4 h-4 mx-auto mb-1 text-[#8A9690]/50" />
                             User has no active subscription. No admin actions available.
                           </div>

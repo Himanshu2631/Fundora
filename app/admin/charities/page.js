@@ -208,7 +208,7 @@ export default function AdminCharitiesPage() {
           ].map((stat, i) => (
             <Card key={i} className="p-4 bg-[#0A1C16] border-[#162520]">
               <div className="flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-sm ${stat.bg} flex items-center justify-center`}>
+                <div className={`w-9 h-9 rounded-xl ${stat.bg} flex items-center justify-center`}>
                   <stat.icon className={`w-4 h-4 ${stat.color}`} />
                 </div>
                 <div>
@@ -250,7 +250,7 @@ export default function AdminCharitiesPage() {
         {/* Global Error Display */}
         {error && (
           <motion.div variants={itemVariants}>
-            <div className="p-4 bg-red-500/10 border border-red-500/25 rounded-sm flex items-center gap-3 text-red-400 text-xs">
+            <div className="p-4 bg-red-500/10 border border-red-500/25 rounded-xl flex items-center gap-3 text-red-400 text-xs">
               <AlertTriangle className="w-4 h-4" />
               <span>{error}</span>
             </div>
@@ -283,7 +283,7 @@ export default function AdminCharitiesPage() {
                     <TableRow key={charity.id} className="border-[#162520] hover:bg-[#0D2B20]/30 transition-colors">
                       <TableCell className="pl-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-sm bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shrink-0">
+                          <div className="w-8 h-8 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center shrink-0">
                             <Heart className="w-3.5 h-3.5 text-rose-400" />
                           </div>
                           <div>
@@ -317,7 +317,7 @@ export default function AdminCharitiesPage() {
                       <TableCell>
                         <button
                           onClick={() => handleToggleFeature(charity)}
-                          className={`p-1.5 rounded-sm border transition-colors ${
+                          className={`p-1.5 rounded-xl border transition-all duration-200 hover:scale-[1.05] active:scale-[0.95] ${
                             isFeatured
                               ? "bg-amber-500/10 border-amber-500/30 text-amber-400 hover:bg-amber-500/20"
                               : "bg-transparent border-transparent text-[#8A9690] hover:text-white"
@@ -341,21 +341,21 @@ export default function AdminCharitiesPage() {
                         <div className="flex items-center justify-end gap-1">
                           <button
                             onClick={() => handleOpenDetails(charity)}
-                            className="w-7 h-7 rounded-sm flex items-center justify-center text-[#8A9690] hover:text-white hover:bg-[#0D2B20] transition-colors"
+                            className="w-7 h-7 rounded-xl flex items-center justify-center text-[#8A9690] hover:text-white hover:bg-[#0D2B20] hover:scale-[1.05] active:scale-[0.95] transition-all duration-200"
                             title="View details"
                           >
                             <Eye className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleOpenEdit(charity)}
-                            className="w-7 h-7 rounded-sm flex items-center justify-center text-[#8A9690] hover:text-amber-400 hover:bg-amber-500/10 transition-colors"
+                            className="w-7 h-7 rounded-xl flex items-center justify-center text-[#8A9690] hover:text-amber-400 hover:bg-amber-500/10 hover:scale-[1.05] active:scale-[0.95] transition-all duration-200"
                             title="Edit"
                           >
                             <Edit3 className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => handleDelete(charity)}
-                            className="w-7 h-7 rounded-sm flex items-center justify-center text-[#8A9690] hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                            className="w-7 h-7 rounded-xl flex items-center justify-center text-[#8A9690] hover:text-red-400 hover:bg-red-500/10 hover:scale-[1.05] active:scale-[0.95] transition-all duration-200"
                             title="Delete"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -379,7 +379,7 @@ export default function AdminCharitiesPage() {
         <motion.div variants={itemVariants}>
           <Card className="bg-[#0A1C16] border-[#162520] p-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-sm bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
                 <Shield className="w-5 h-5 text-emerald-400" />
               </div>
               <div className="flex-1">
@@ -417,7 +417,7 @@ export default function AdminCharitiesPage() {
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
-                className="w-full h-11 px-3 bg-[#0A1C16] border border-[#162520] text-white text-sm rounded-sm focus:outline-none focus:border-red-500 transition-colors"
+                className="w-full h-11 px-3 bg-[#0A1C16] border border-[#162520] text-white text-sm rounded-xl focus:outline-none focus:border-red-500 transition-colors"
               >
                 {CATEGORIES.filter(cat => cat !== "All").map(cat => (
                   <option key={cat} value={cat} className="bg-[#070D0B]">{cat}</option>
@@ -437,7 +437,7 @@ export default function AdminCharitiesPage() {
               placeholder="Detailed explanation of the charity's mission and operations..."
               required
               rows={4}
-              className="w-full p-3 bg-[#0A1C16] border border-[#162520] text-white text-sm rounded-sm focus:outline-none focus:border-red-500 transition-colors placeholder:text-muted-foreground/45"
+              className="w-full p-3 bg-[#0A1C16] border border-[#162520] text-white text-sm rounded-xl focus:outline-none focus:border-red-500 transition-colors placeholder:text-muted-foreground/45"
             />
           </div>
 
@@ -486,7 +486,7 @@ export default function AdminCharitiesPage() {
                 type="checkbox"
                 checked={formData.featured}
                 onChange={handleInputChange}
-                className="w-4 h-4 bg-[#0A1C16] border-[#162520] rounded-sm accent-red-600 focus:ring-0"
+                className="w-4 h-4 bg-[#0A1C16] border-[#162520] rounded-md accent-red-600 focus:ring-0"
               />
               <label htmlFor="featured" className="text-xs text-white font-semibold cursor-pointer">
                 Feature on main dashboard
@@ -501,7 +501,7 @@ export default function AdminCharitiesPage() {
                 name="status"
                 value={formData.status}
                 onChange={handleInputChange}
-                className="w-full h-10 px-3 bg-[#0A1C16] border border-[#162520] text-white text-xs rounded-sm focus:outline-none focus:border-red-500 transition-colors"
+                className="w-full h-10 px-3 bg-[#0A1C16] border border-[#162520] text-white text-xs rounded-xl focus:outline-none focus:border-red-500 transition-colors"
               >
                 <option value="Active" className="bg-[#070D0B]">Active</option>
                 <option value="Pending Vetting" className="bg-[#070D0B]">Pending Vetting</option>
@@ -510,7 +510,7 @@ export default function AdminCharitiesPage() {
           </div>
 
           {formError && (
-            <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-sm">
+            <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl">
               {formError}
             </div>
           )}
@@ -544,7 +544,7 @@ export default function AdminCharitiesPage() {
       >
         {detailsCharity && (
           <div className="space-y-5 text-sm">
-            <div className="aspect-video w-full rounded-sm bg-rose-500/5 border border-rose-500/10 flex items-center justify-center overflow-hidden">
+            <div className="aspect-video w-full rounded-2xl bg-rose-500/5 border border-rose-500/10 flex items-center justify-center overflow-hidden">
               {detailsCharity.image_url ? (
                 <img
                   src={detailsCharity.image_url}

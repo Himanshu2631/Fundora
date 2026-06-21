@@ -10,7 +10,7 @@ export default function Footer() {
         {/* Brand Info */}
         <div className="flex flex-col gap-4">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-sm bg-accent flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-lg select-none">
+            <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-lg select-none">
               F
             </div>
             <span className="font-heading font-extrabold tracking-wider text-xl text-foreground group-hover:text-accent transition-colors duration-300">
@@ -92,7 +92,7 @@ export default function Footer() {
             <input
               type="email"
               placeholder="Your email address"
-              className="w-full h-10 px-3 bg-secondary/20 border border-border text-foreground text-xs rounded-sm focus:outline-none focus:border-accent placeholder:text-muted-foreground/55"
+              className="w-full h-10 px-3 bg-secondary/20 border border-border text-foreground text-xs rounded-xl focus:outline-none focus:border-accent placeholder:text-muted-foreground/55"
             />
             <Button variant="accent" size="sm" className="h-10 text-[10px] px-4 font-bold">
               Join

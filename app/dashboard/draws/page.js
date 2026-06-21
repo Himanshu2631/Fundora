@@ -300,7 +300,7 @@ export default function DrawsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               
               {/* Requirement 1: Active Subscription */}
-              <div className={`p-4 rounded-sm border flex flex-col justify-between gap-3 ${
+              <div className={`p-4 rounded-xl border flex flex-col justify-between gap-3 ${
                 hasActivePlan ? "border-emerald-500/20 bg-emerald-500/5" : "border-border bg-secondary/5"
               }`}>
                 <div>
@@ -327,7 +327,7 @@ export default function DrawsPage() {
               </div>
 
               {/* Requirement 2: Logged Scores */}
-              <div className={`p-4 rounded-sm border flex flex-col justify-between gap-3 ${
+              <div className={`p-4 rounded-xl border flex flex-col justify-between gap-3 ${
                 scores.length > 0 ? "border-emerald-500/20 bg-emerald-500/5" : "border-border bg-secondary/5"
               }`}>
                 <div>
@@ -354,7 +354,7 @@ export default function DrawsPage() {
               </div>
 
               {/* Requirement 3: Selected Charity */}
-              <div className={`p-4 rounded-sm border flex flex-col justify-between gap-3 ${
+              <div className={`p-4 rounded-xl border flex flex-col justify-between gap-3 ${
                 allocations.length > 0 ? "border-emerald-500/20 bg-emerald-500/5" : "border-border bg-secondary/5"
               }`}>
                 <div>
@@ -417,17 +417,17 @@ export default function DrawsPage() {
                   <>
                     {/* Draw Information Grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                      <div className="p-3 bg-secondary/10 border border-border/30 rounded-sm">
+                      <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl">
                         <span className="text-[9px] font-bold uppercase text-muted-foreground block">Month</span>
                         <span className="text-xs font-bold text-foreground">
                           {new Date(activeDraw.draw_date).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
                         </span>
                       </div>
-                      <div className="p-3 bg-secondary/10 border border-border/30 rounded-sm">
+                      <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl">
                         <span className="text-[9px] font-bold uppercase text-muted-foreground block">Min Score Required</span>
                         <span className="text-xs font-bold text-foreground">{activeDraw.min_score} pts</span>
                       </div>
-                      <div className="p-3 bg-secondary/10 border border-border/30 rounded-sm">
+                      <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl">
                         <span className="text-[9px] font-bold uppercase text-muted-foreground block">Sponsor</span>
                         <span className="text-xs font-bold text-foreground line-clamp-1">{activeDraw.sponsor}</span>
                       </div>
@@ -441,14 +441,14 @@ export default function DrawsPage() {
                       </h4>
 
                       {!isEligible ? (
-                        <div className="bg-destructive/5 p-3 rounded-sm border border-destructive/10 flex gap-2 text-[11px] text-muted-foreground leading-relaxed">
+                        <div className="bg-destructive/5 p-3 rounded-xl border border-destructive/10 flex gap-2 text-[11px] text-muted-foreground leading-relaxed">
                           <Lock className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
                           <div>
                             <strong>Entries Locked:</strong> Complete the checklist prerequisites above to automatically allocate entries.
                           </div>
                         </div>
                       ) : dynamicGivingScore < activeDraw.min_score ? (
-                        <div className="bg-amber-500/5 p-3 rounded-sm border border-amber-500/10 flex gap-2 text-[11px] text-muted-foreground leading-relaxed">
+                        <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 flex gap-2 text-[11px] text-muted-foreground leading-relaxed">
                           <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                           <div>
                             <strong>Threshold Pending:</strong> This draw requires a Giving Score of {activeDraw.min_score} pts. Increase your score to unlock.
@@ -464,14 +464,14 @@ export default function DrawsPage() {
                           {/* Ticket details with individual lottery numbers */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {userEntries.filter(e => e.draw_id === activeDraw.id).map((entry, idx) => (
-                              <div key={entry.id} className="p-3 bg-secondary/15 rounded-sm border border-border/30 space-y-2 hover:border-accent/15 transition-all">
+                              <div key={entry.id} className="p-3 bg-secondary/15 rounded-xl border border-border/30 space-y-2 hover:border-accent/15 transition-all">
                                 <div className="flex justify-between items-center">
                                   <span className="font-mono text-xs font-bold text-accent">{entry.ticket_number}</span>
                                   <span className="text-[9px] text-muted-foreground font-semibold">Ticket #{idx+1}</span>
                                 </div>
                                 <div className="flex gap-1.5 flex-wrap">
                                   {(entry.numbers || []).map((num, i) => (
-                                    <span key={i} className="text-[10px] bg-card border border-border/60 text-foreground px-2 py-0.5 rounded-sm font-semibold font-mono">
+                                    <span key={i} className="text-[10px] bg-card border border-border/60 text-foreground px-2 py-0.5 rounded-xl font-semibold font-mono">
                                       {num}
                                     </span>
                                   ))}
@@ -506,7 +506,7 @@ export default function DrawsPage() {
               </CardHeader>
               <CardContent className="pt-6">
                 {userWins.length === 0 ? (
-                  <div className="text-center py-8 border border-dashed border-border/40 rounded-sm bg-secondary/5">
+                  <div className="text-center py-8 border border-dashed border-border/40 rounded-xl bg-secondary/5">
                     <Trophy className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
                     <p className="text-xs font-semibold text-foreground/80">No Winning Entries Identified</p>
                     <p className="text-[10.5px] text-muted-foreground mt-1 leading-relaxed max-w-md mx-auto">
@@ -525,7 +525,7 @@ export default function DrawsPage() {
 
                     <div className="space-y-4">
                       {userWins.map(({ draw, entry, matchCount, category, claim }) => (
-                        <div key={entry.id} className="p-5 border border-accent/20 bg-secondary/5 rounded-sm space-y-4 hover:border-accent/35 transition-all">
+                        <div key={entry.id} className="p-5 border border-accent/20 bg-secondary/5 rounded-xl space-y-4 hover:border-accent/35 transition-all">
                           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 pb-3 border-b border-border/30">
                             <div>
                               <Badge variant="accent" className="mb-1">{category}</Badge>
@@ -537,14 +537,14 @@ export default function DrawsPage() {
                           </div>
 
                           {/* Math Comparison Visual */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-card p-3 rounded-sm border border-border/40">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-card p-3 rounded-xl border border-border/40">
                             <div>
                               <span className="text-[9px] font-bold text-muted-foreground uppercase block mb-1">Your Numbers</span>
                               <div className="flex gap-1 flex-wrap">
                                 {(entry.numbers || []).map((num, i) => {
                                   const isMatch = (draw.generated_numbers || []).includes(num);
                                   return (
-                                    <span key={i} className={`text-[10px] px-1.5 py-0.5 rounded-sm font-bold font-mono border ${
+                                    <span key={i} className={`text-[10px] px-1.5 py-0.5 rounded-xl font-bold font-mono border ${
                                       isMatch 
                                         ? "bg-accent/15 border-accent/40 text-accent" 
                                         : "bg-secondary border-border/60 text-muted-foreground"
@@ -559,7 +559,7 @@ export default function DrawsPage() {
                               <span className="text-[9px] font-bold text-muted-foreground uppercase block mb-1">Winning Numbers</span>
                               <div className="flex gap-1 flex-wrap">
                                 {(draw.generated_numbers || []).map((num, i) => (
-                                  <span key={i} className="text-[10px] bg-secondary border border-border/60 text-foreground px-1.5 py-0.5 rounded-sm font-bold font-mono">
+                                  <span key={i} className="text-[10px] bg-secondary border border-border/60 text-foreground px-1.5 py-0.5 rounded-xl font-bold font-mono">
                                     {num}
                                   </span>
                                 ))}
@@ -605,7 +605,7 @@ export default function DrawsPage() {
                                 )}
                               </div>
                             ) : (
-                              <div className="p-3 bg-secondary/15 rounded-sm border border-border/30 flex flex-col sm:flex-row justify-between sm:items-center gap-3 text-xs">
+                              <div className="p-3 bg-secondary/15 rounded-xl border border-border/30 flex flex-col sm:flex-row justify-between sm:items-center gap-3 text-xs">
                                 <div className="space-y-1">
                                   <div className="flex items-center gap-2">
                                     <span className="font-semibold text-muted-foreground">Claim ID:</span>
@@ -683,7 +683,7 @@ export default function DrawsPage() {
                       }
 
                       return (
-                        <div key={draw.id} className="p-3 bg-secondary/10 border border-border/30 rounded-sm space-y-3 hover:border-accent/15 transition-all">
+                        <div key={draw.id} className="p-3 bg-secondary/10 border border-border/30 rounded-xl space-y-3 hover:border-accent/15 transition-all">
                           <div className="flex justify-between items-start">
                             <div>
                               <h5 className="text-xs font-bold text-foreground line-clamp-1">{draw.title}</h5>
@@ -792,7 +792,7 @@ export default function DrawsPage() {
                     </h4>
                     <div className="space-y-2.5">
                       {draws.filter(d => d.status !== "completed").map((draw) => (
-                        <div key={draw.id} className="p-3 bg-card border border-border/80 rounded-sm flex items-center justify-between gap-4 text-xs">
+                        <div key={draw.id} className="p-3 bg-card border border-border/80 rounded-xl flex items-center justify-between gap-4 text-xs">
                           <div>
                             <span className="font-semibold text-foreground block">{draw.title}</span>
                             <span className="text-[10px] text-muted-foreground font-medium">Status: {draw.status} · Month: {draw.month}/{draw.year}</span>
@@ -829,7 +829,7 @@ export default function DrawsPage() {
                       {claims.map((claim) => {
                         const matchingDraw = draws.find(d => d.id === claim.draw_id);
                         return (
-                          <div key={claim.id} className="p-4 bg-card border border-border/80 rounded-sm space-y-3 text-xs">
+                          <div key={claim.id} className="p-4 bg-card border border-border/80 rounded-xl space-y-3 text-xs">
                             <div className="flex justify-between items-start">
                               <div>
                                 <span className="font-bold text-foreground block">{matchingDraw ? matchingDraw.title : "Draw Claim"}</span>

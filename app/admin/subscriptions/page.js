@@ -182,7 +182,7 @@ export default function AdminSubscriptionsPage() {
           ].map((stat, i) => (
             <Card key={i} className="p-4 bg-[#0A1C16] border-[#162520]">
               <div className="flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-sm ${stat.bg} flex items-center justify-center`}>
+                <div className={`w-9 h-9 rounded-xl ${stat.bg} flex items-center justify-center`}>
                   <stat.icon className={`w-4 h-4 ${stat.color}`} />
                 </div>
                 <div>
@@ -204,16 +204,16 @@ export default function AdminSubscriptionsPage() {
                 <CardContent className="p-5">
                   <div className="flex justify-between items-center mb-3">
                     <h3 className={`font-heading text-sm font-extrabold ${c.text}`}>{PLAN_LABELS[tier.plan]}</h3>
-                    <span className="text-[10px] font-bold text-white bg-[#0D2B20] px-2 py-0.5 rounded-sm border border-[#162520]">
+                    <span className="text-[10px] font-bold text-white bg-[#0D2B20] px-2 py-0.5 rounded-md border border-[#162520]">
                       {PLAN_PRICES[tier.plan]}
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div className={`p-2.5 rounded-sm ${c.bg} border ${c.border} text-center`}>
+                    <div className={`p-2.5 rounded-xl ${c.bg} border ${c.border} text-center`}>
                       <p className="text-[9px] font-bold uppercase text-[#8A9690]">Users</p>
                       <p className="font-heading text-lg font-extrabold text-white">{tier.count}</p>
                     </div>
-                    <div className={`p-2.5 rounded-sm ${c.bg} border ${c.border} text-center`}>
+                    <div className={`p-2.5 rounded-xl ${c.bg} border ${c.border} text-center`}>
                       <p className="text-[9px] font-bold uppercase text-[#8A9690]">Revenue</p>
                       <p className="font-heading text-lg font-extrabold text-white">${tier.revenue.toFixed(0)}</p>
                     </div>
@@ -264,7 +264,7 @@ export default function AdminSubscriptionsPage() {
               >
                 {status === "all" ? "All Status" : status}
                 {status === "expiring" && expiringCount > 0 && (
-                  <span className="ml-1 bg-amber-500/20 text-amber-400 text-[8px] px-1 rounded-sm font-bold">{expiringCount}</span>
+                  <span className="ml-1 bg-amber-500/20 text-amber-400 text-[8px] px-1 rounded-md font-bold">{expiringCount}</span>
                 )}
               </Button>
             ))}
@@ -455,7 +455,7 @@ export default function AdminSubscriptionsPage() {
         <motion.div variants={itemVariants}>
           <Card className="bg-[#0A1C16] border-[#162520] p-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-sm bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
                 <CreditCard className="w-5 h-5 text-purple-400" />
               </div>
               <div className="flex-1">

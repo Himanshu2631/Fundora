@@ -229,10 +229,10 @@ export default function AdminAnalyticsPage() {
           ].map((stat, i) => (
             <Card key={i} className="p-4 bg-[#0A1C16] border-[#162520] hover:border-[#1E3A2E] transition-all">
               <div className="flex items-center justify-between mb-2">
-                <div className={`w-9 h-9 rounded-sm ${stat.bg} flex items-center justify-center`}>
+                <div className={`w-9 h-9 rounded-xl ${stat.bg} flex items-center justify-center`}>
                   <stat.icon className={`w-4 h-4 ${stat.color}`} />
                 </div>
-                <div className="flex items-center gap-0.5 text-[9px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-sm">
+                <div className="flex items-center gap-0.5 text-[9px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded-md">
                   <ArrowUpRight className="w-2.5 h-2.5" />
                   {stat.change}
                 </div>
@@ -270,10 +270,10 @@ export default function AdminAnalyticsPage() {
                             initial={{ height: 0 }}
                             animate={{ height: `${heightPct}%` }}
                             transition={{ delay: 0.2, duration: 0.6, ease: "easeOut" }}
-                            className="w-full max-w-[40px] bg-emerald-500/20 border border-emerald-500/35 rounded-t-sm relative group hover:bg-emerald-500/35 transition-colors cursor-pointer"
+                            className="w-full max-w-[40px] bg-emerald-500/20 border border-emerald-500/35 rounded-t-md relative group hover:bg-emerald-500/35 transition-colors cursor-pointer"
                             style={{ minHeight: 8 }}
                           >
-                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-emerald-500/30 to-transparent rounded-t-sm" />
+                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-emerald-500/30 to-transparent rounded-t-md" />
                           </motion.div>
                         </div>
                         <span className="text-[10px] font-semibold text-[#8A9690]">{d.month}</span>
@@ -386,7 +386,7 @@ export default function AdminAnalyticsPage() {
                             initial={{ height: 0 }}
                             animate={{ height: `${heightPct}%` }}
                             transition={{ delay: 0.1 * idx, duration: 0.6, ease: "easeOut" }}
-                            className={`w-full max-w-[36px] rounded-t-sm border relative group cursor-pointer ${
+                            className={`w-full max-w-[36px] rounded-t-md border relative group cursor-pointer ${
                               stat.status === "completed"
                                 ? "bg-blue-500/20 border-blue-500/35 hover:bg-blue-500/30"
                                 : stat.status === "active"
@@ -395,7 +395,7 @@ export default function AdminAnalyticsPage() {
                             }`}
                             style={{ minHeight: 8 }}
                           >
-                            <div className={`absolute inset-x-0 bottom-0 h-1/2 rounded-t-sm ${
+                            <div className={`absolute inset-x-0 bottom-0 h-1/2 rounded-t-md ${
                               stat.status === "completed" ? "bg-gradient-to-t from-blue-500/30 to-transparent" :
                               stat.status === "active" ? "bg-gradient-to-t from-emerald-500/30 to-transparent" :
                               "bg-gradient-to-t from-amber-500/30 to-transparent"
@@ -419,7 +419,7 @@ export default function AdminAnalyticsPage() {
         <motion.div variants={itemVariants}>
           <Card className="bg-[#0A1C16] border-[#162520] p-5">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-sm bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
                 <Zap className="w-5 h-5 text-amber-400" />
               </div>
               <div className="flex-1">

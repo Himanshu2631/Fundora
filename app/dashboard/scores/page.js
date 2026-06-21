@@ -170,17 +170,17 @@ export default function ScoresPage() {
     return (
       <div className="p-6 md:p-8 space-y-8 animate-pulse">
         <div className="space-y-2">
-          <div className="h-4 w-24 bg-secondary/30 rounded-sm" />
-          <div className="h-7 w-64 bg-secondary/20 rounded-sm" />
+          <div className="h-4 w-24 bg-secondary/30 rounded-xl" />
+          <div className="h-7 w-64 bg-secondary/20 rounded-xl" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="h-24 bg-secondary/15 rounded-sm" />
-          <div className="h-24 bg-secondary/15 rounded-sm" />
-          <div className="h-24 bg-secondary/15 rounded-sm" />
+          <div className="h-24 bg-secondary/15 rounded-xl" />
+          <div className="h-24 bg-secondary/15 rounded-xl" />
+          <div className="h-24 bg-secondary/15 rounded-xl" />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-5 h-[340px] bg-secondary/15 rounded-sm" />
-          <div className="lg:col-span-7 h-[340px] bg-secondary/15 rounded-sm" />
+          <div className="lg:col-span-5 h-[340px] bg-secondary/15 rounded-xl" />
+          <div className="lg:col-span-7 h-[340px] bg-secondary/15 rounded-xl" />
         </div>
       </div>
     );
@@ -277,7 +277,7 @@ export default function ScoresPage() {
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     Stableford Score (1 - 45)
                   </label>
-                  <span className="text-xs font-bold text-accent px-2 py-0.5 bg-accent/10 border border-accent/20 rounded-sm">
+                  <span className="text-xs font-bold text-accent px-2 py-0.5 bg-accent/10 border border-accent/20 rounded-xl">
                     {scoreInput} pts
                   </span>
                 </div>
@@ -301,7 +301,7 @@ export default function ScoresPage() {
                       const val = parseInt(e.target.value, 10);
                       if (!isNaN(val)) setScoreInput(val);
                     }}
-                    className="w-16 h-8 px-2 bg-secondary/15 border border-border rounded-sm text-center text-xs font-bold text-foreground focus:outline-none focus:border-accent"
+                    className="w-16 h-8 px-2 bg-secondary/15 border border-border rounded-xl text-center text-xs font-bold text-foreground focus:outline-none focus:border-accent"
                   />
                 </div>
                 {isAddScoreInvalid && (
@@ -322,7 +322,7 @@ export default function ScoresPage() {
                     value={dateInput}
                     disabled={addLoading}
                     onChange={(e) => setDateInput(e.target.value)}
-                    className="w-full h-10 px-3 bg-secondary/15 border border-border rounded-sm text-xs text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer"
+                    className="w-full h-10 px-3 bg-secondary/15 border border-border rounded-xl text-xs text-foreground focus:outline-none focus:border-accent transition-colors cursor-pointer"
                   />
                 </div>
                 {isAddDuplicateDate && (
@@ -334,7 +334,7 @@ export default function ScoresPage() {
 
               {/* Capacity warning */}
               {scores.length >= 5 && (
-                <div className="p-3 bg-secondary/10 border border-border/30 rounded-sm text-[10px] text-muted-foreground flex gap-2">
+                <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl text-[10px] text-muted-foreground flex gap-2">
                   <Info className="w-3.5 h-3.5 text-accent shrink-0 mt-0.5" />
                   <p className="leading-relaxed">
                     You have 5 score records. Submitting this score will delete your oldest score record from{" "}
@@ -486,7 +486,7 @@ export default function ScoresPage() {
               <label className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                 Stableford Score (1 - 45)
               </label>
-              <span className="text-xs font-bold text-accent px-2 py-0.5 bg-accent/10 border border-accent/20 rounded-sm">
+              <span className="text-xs font-bold text-accent px-2 py-0.5 bg-accent/10 border border-accent/20 rounded-xl">
                 {editScoreValue} pts
               </span>
             </div>
@@ -510,7 +510,7 @@ export default function ScoresPage() {
                   const val = parseInt(e.target.value, 10);
                   if (!isNaN(val)) setEditScoreValue(val);
                 }}
-                className="w-16 h-8 px-2 bg-secondary/15 border border-border rounded-sm text-center text-xs font-bold text-foreground focus:outline-none focus:border-accent"
+                className="w-16 h-8 px-2 bg-secondary/15 border border-border rounded-xl text-center text-xs font-bold text-foreground focus:outline-none focus:border-accent"
               />
             </div>
             {isEditScoreInvalid && (
@@ -530,7 +530,7 @@ export default function ScoresPage() {
               value={editScoreDate}
               disabled={editLoading}
               onChange={(e) => setEditScoreDate(e.target.value)}
-              className="w-full h-10 px-3 bg-secondary/15 border border-border rounded-sm text-xs text-foreground focus:outline-none focus:border-accent cursor-pointer"
+              className="w-full h-10 px-3 bg-secondary/15 border border-border rounded-xl text-xs text-foreground focus:outline-none focus:border-accent cursor-pointer"
             />
             {isEditDuplicateDate && (
               <p className="text-[10px] text-destructive font-semibold flex items-center gap-1">
@@ -574,7 +574,7 @@ export default function ScoresPage() {
         title="Delete Score Entry?"
       >
         <div className="space-y-4">
-          <div className="flex gap-3 bg-destructive/10 border border-destructive/20 p-4 rounded-sm text-destructive">
+          <div className="flex gap-3 bg-destructive/10 border border-destructive/20 p-4 rounded-xl text-destructive">
             <AlertCircle className="w-5 h-5 shrink-0" />
             <div>
               <h4 className="font-heading font-bold text-sm leading-none mb-1">Confirm Deletion</h4>
@@ -584,7 +584,7 @@ export default function ScoresPage() {
             </div>
           </div>
 
-          <div className="p-3 bg-secondary/10 border border-border/40 rounded-sm text-xs space-y-1">
+          <div className="p-3 bg-secondary/10 border border-border/40 rounded-xl text-xs space-y-1">
             <div className="flex justify-between">
               <span className="text-muted-foreground font-semibold">Score:</span>
               <span className="font-bold text-foreground">{deletingScore?.score} pts</span>

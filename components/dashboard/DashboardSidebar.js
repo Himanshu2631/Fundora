@@ -86,7 +86,7 @@ export default function DashboardSidebar({ collapsed, onToggle }) {
         )}
       >
         <Link href="/" className="flex items-center gap-2.5 group min-w-0">
-          <div className="w-7 h-7 rounded-sm bg-accent flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-sm shrink-0">
+          <div className="w-7 h-7 rounded-xl bg-accent flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-sm shrink-0">
             F
           </div>
           <AnimatePresence>
@@ -108,7 +108,7 @@ export default function DashboardSidebar({ collapsed, onToggle }) {
         <button
           onClick={onToggle}
           className={cn(
-            "w-7 h-7 rounded-sm border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-accent/40 transition-colors shrink-0",
+            "w-7 h-7 rounded-xl border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-accent/40 hover:scale-[1.05] active:scale-[0.95] transition-all duration-200 shrink-0",
             collapsed && "absolute -right-3.5 top-4 bg-card z-10 shadow-sm"
           )}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -184,7 +184,7 @@ export default function DashboardSidebar({ collapsed, onToggle }) {
                     <Link
                       href={item.href}
                       className={cn(
-                        "flex items-center gap-3 px-2.5 py-2.5 rounded-sm text-xs font-semibold transition-all duration-200 group relative",
+                        "flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 group relative hover:scale-[1.02] active:scale-[0.98]",
                         active
                           ? "bg-accent/12 text-accent"
                           : "text-muted-foreground hover:text-foreground hover:bg-secondary/40",
@@ -235,7 +235,7 @@ export default function DashboardSidebar({ collapsed, onToggle }) {
         <button
           onClick={signOut}
           className={cn(
-            "flex items-center gap-3 w-full px-2.5 py-2.5 rounded-sm text-xs font-semibold text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200",
+            "flex items-center gap-3 w-full px-2.5 py-2.5 rounded-xl text-xs font-semibold text-muted-foreground hover:text-destructive hover:bg-destructive/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200",
             collapsed ? "justify-center" : ""
           )}
           title={collapsed ? "Sign Out" : undefined}

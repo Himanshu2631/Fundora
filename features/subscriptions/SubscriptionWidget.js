@@ -245,7 +245,7 @@ export default function SubscriptionWidget() {
             <p className="text-muted-foreground leading-relaxed">
               Your giving subscription is scheduled to terminate at the end of the current cycle. You will retain draw eligibility and impact points until:
             </p>
-            <div className="bg-background/40 p-2.5 border border-border/30 rounded-sm font-bold text-foreground flex items-center gap-1.5">
+            <div className="bg-background/40 p-2.5 border border-border/30 rounded-xl font-bold text-foreground flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-accent" />
               {new Date(subscription.renewal_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
             </div>
@@ -364,7 +364,7 @@ export default function SubscriptionWidget() {
             {Object.entries(plans).map(([key, p]) => (
               <div 
                 key={key} 
-                className="p-3 bg-secondary/15 border border-border/45 rounded-sm flex items-center justify-between gap-4 transition-all hover:bg-secondary/20"
+                className="p-3 bg-secondary/15 border border-border/45 rounded-xl flex items-center justify-between gap-4 transition-all hover:bg-secondary/20"
               >
                 <div className="flex-1">
                   <span className="block text-xs font-bold text-foreground">{p.name}</span>
@@ -404,7 +404,7 @@ export default function SubscriptionWidget() {
               return (
                 <div 
                   key={key} 
-                  className={`p-4 border rounded-sm flex flex-col gap-3 transition-all ${
+                  className={`p-4 border rounded-xl flex flex-col gap-3 transition-all ${
                     isCurrent 
                       ? "border-accent bg-accent/5" 
                       : "border-border hover:border-accent/40 bg-secondary/5"
@@ -479,7 +479,7 @@ export default function SubscriptionWidget() {
         title="Cancel Giving Subscription?"
       >
         <div className="space-y-4">
-          <div className="flex gap-3 bg-destructive/10 border border-destructive/20 p-4 rounded-sm text-destructive">
+          <div className="flex gap-3 bg-destructive/10 border border-destructive/20 p-4 rounded-xl text-destructive">
             <AlertTriangle className="w-5 h-5 shrink-0" />
             <div>
               <h4 className="font-heading font-bold text-sm leading-none mb-1">Termination Warning</h4>

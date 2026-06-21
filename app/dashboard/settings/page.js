@@ -207,7 +207,7 @@ export default function SettingsPage() {
               <button
                 key={s.id}
                 onClick={() => setActiveSection(s.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-sm text-xs font-semibold transition-all ${
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                   activeSection === s.id
                     ? "bg-accent/12 text-accent border-l-2 border-accent"
                     : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
@@ -275,7 +275,7 @@ export default function SettingsPage() {
                   )}
 
                   {/* Profile Header Card */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-secondary/10 border border-border/40 rounded-sm">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-secondary/10 border border-border/40 rounded-xl">
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 rounded-full bg-accent/15 border border-accent/30 flex items-center justify-center text-accent font-heading font-extrabold text-xl uppercase">
                         {(name || user?.email || "U").charAt(0)}
@@ -311,7 +311,7 @@ export default function SettingsPage() {
                         disabled={profileLoading}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Enter your display name"
-                        className="w-full h-10 px-3 bg-secondary/10 border border-border rounded-sm text-xs text-foreground focus:outline-none focus:border-accent placeholder:text-muted-foreground/50 transition-colors disabled:opacity-50"
+                        className="w-full h-10 px-3 bg-secondary/10 border border-border rounded-xl text-xs text-foreground focus:outline-none focus:border-accent placeholder:text-muted-foreground/50 transition-colors disabled:opacity-50"
                       />
                     </div>
                     
@@ -324,7 +324,7 @@ export default function SettingsPage() {
                           type="email"
                           value={user?.email || ""}
                           disabled
-                          className="w-full h-10 px-3 pr-10 bg-secondary/5 border border-border/40 rounded-sm text-xs text-muted-foreground cursor-not-allowed opacity-75"
+                          className="w-full h-10 px-3 pr-10 bg-secondary/5 border border-border/40 rounded-xl text-xs text-muted-foreground cursor-not-allowed opacity-75"
                         />
                         <Mail className="w-3.5 h-3.5 text-muted-foreground/35 absolute right-3 top-1/2 -translate-y-1/2" />
                       </div>
@@ -478,7 +478,7 @@ export default function SettingsPage() {
                           disabled={securityLoading}
                           onChange={(e) => setCurrentPassword(e.target.value)}
                           placeholder="••••••••"
-                          className="w-full h-10 px-3 pr-10 bg-secondary/10 border border-border rounded-sm text-xs text-foreground focus:outline-none focus:border-accent transition-colors disabled:opacity-50 font-mono"
+                          className="w-full h-10 px-3 pr-10 bg-secondary/10 border border-border rounded-xl text-xs text-foreground focus:outline-none focus:border-accent transition-colors disabled:opacity-50 font-mono"
                         />
                         <button
                           type="button"
@@ -501,7 +501,7 @@ export default function SettingsPage() {
                           disabled={securityLoading}
                           onChange={(e) => setNewPassword(e.target.value)}
                           placeholder="••••••••"
-                          className="w-full h-10 px-3 pr-10 bg-secondary/10 border border-border rounded-sm text-xs text-foreground focus:outline-none focus:border-accent transition-colors disabled:opacity-50 font-mono"
+                          className="w-full h-10 px-3 pr-10 bg-secondary/10 border border-border rounded-xl text-xs text-foreground focus:outline-none focus:border-accent transition-colors disabled:opacity-50 font-mono"
                         />
                         <button
                           type="button"
@@ -527,7 +527,7 @@ export default function SettingsPage() {
                           disabled={securityLoading}
                           onChange={(e) => setConfirmPassword(e.target.value)}
                           placeholder="••••••••"
-                          className="w-full h-10 px-3 pr-10 bg-secondary/10 border border-border rounded-sm text-xs text-foreground focus:outline-none focus:border-accent transition-colors disabled:opacity-50 font-mono"
+                          className="w-full h-10 px-3 pr-10 bg-secondary/10 border border-border rounded-xl text-xs text-foreground focus:outline-none focus:border-accent transition-colors disabled:opacity-50 font-mono"
                         />
                         <button
                           type="button"

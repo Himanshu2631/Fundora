@@ -177,7 +177,7 @@ export default function AdminWinnersPage() {
           ].map((stat, i) => (
             <Card key={i} className="p-4 bg-[#0A1C16] border-[#162520]">
               <div className="flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-sm ${stat.bg} flex items-center justify-center`}>
+                <div className={`w-9 h-9 rounded-xl ${stat.bg} flex items-center justify-center`}>
                   <stat.icon className={`w-4 h-4 ${stat.color}`} />
                 </div>
                 <div>
@@ -192,7 +192,7 @@ export default function AdminWinnersPage() {
         {/* Global errors */}
         {claimsError && (
           <motion.div variants={itemVariants}>
-            <div className="p-4 bg-red-500/10 border border-red-500/25 rounded-sm flex items-center gap-3 text-red-400 text-xs">
+            <div className="p-4 bg-red-500/10 border border-red-500/25 rounded-xl flex items-center gap-3 text-red-400 text-xs">
               <AlertTriangle className="w-4 h-4" />
               <span>{claimsError}</span>
             </div>
@@ -215,7 +215,7 @@ export default function AdminWinnersPage() {
             >
               {status === "all" ? "All Claims" : status}
               {status === "pending" && pendingCount > 0 && (
-                <span className="ml-1 bg-amber-500/20 text-amber-400 text-[8px] px-1 py-0.5 rounded-sm font-bold">{pendingCount}</span>
+                <span className="ml-1 bg-amber-500/20 text-amber-400 text-[8px] px-1 py-0.5 rounded-md font-bold">{pendingCount}</span>
               )}
             </Button>
           ))}
@@ -345,7 +345,7 @@ export default function AdminWinnersPage() {
               </div>
 
               {/* Match Numbers Visual comparison */}
-              <div className="space-y-3 p-4 bg-[#0A1C16] border border-[#162520] rounded-sm">
+              <div className="space-y-3 p-4 bg-[#0A1C16] border border-[#162520] rounded-2xl">
                 <h4 className="text-xs font-bold text-[#8A9690] uppercase tracking-wider">
                   Ticket Numbers Audit
                 </h4>
@@ -357,7 +357,7 @@ export default function AdminWinnersPage() {
                       return (
                         <span
                           key={i}
-                          className={`w-7 h-7 rounded-sm font-mono font-bold text-xs flex items-center justify-center border ${
+                        className={`w-7 h-7 rounded-xl font-mono font-bold text-xs flex items-center justify-center border ${
                             isMatch
                               ? "bg-red-600/10 border-red-500/30 text-red-400"
                               : "bg-[#070D0B] border-[#162520] text-[#8A9690]"
@@ -376,7 +376,7 @@ export default function AdminWinnersPage() {
                     {selectedClaim.drawWinningNumbers.map((num, i) => (
                       <span
                         key={i}
-                        className="w-7 h-7 rounded-sm bg-[#070D0B] border border-[#162520] font-mono font-bold text-xs flex items-center justify-center text-white"
+                        className="w-7 h-7 rounded-xl bg-[#070D0B] border border-[#162520] font-mono font-bold text-xs flex items-center justify-center text-white"
                       >
                         {num}
                       </span>
@@ -399,7 +399,7 @@ export default function AdminWinnersPage() {
               {/* Evidence Screenshot */}
               <div className="space-y-2">
                 <span className="text-[10px] text-[#8A9690] uppercase font-bold tracking-wider block">Uploaded Proof</span>
-                <div className="w-full aspect-video border border-[#162520] bg-secondary/5 rounded-sm overflow-hidden flex items-center justify-center relative group">
+                <div className="w-full aspect-video border border-[#162520] bg-secondary/5 rounded-2xl overflow-hidden flex items-center justify-center relative group">
                   {selectedClaim.screenshot_url ? (
                     <>
                       <img
@@ -411,7 +411,7 @@ export default function AdminWinnersPage() {
                         href={selectedClaim.screenshot_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="absolute bottom-2 right-2 bg-[#070D0B]/85 hover:bg-[#070D0B] text-white p-1 rounded-sm border border-[#162520] text-[10px] flex items-center gap-1 font-bold"
+                        className="absolute bottom-2 right-2 bg-[#070D0B]/85 hover:bg-[#070D0B] text-white p-1 rounded-xl border border-[#162520] text-[10px] flex items-center gap-1 font-bold hover:scale-[1.05] active:scale-[0.95] transition-all duration-200"
                       >
                         Open Full Image <ExternalLink className="w-3 h-3" />
                       </a>
@@ -465,7 +465,7 @@ export default function AdminWinnersPage() {
                 }
                 rows={3}
                 disabled={selectedClaim.status === "paid" || selectedClaim.status === "rejected" || submitting}
-                className="w-full p-3 bg-[#0A1C16] border border-[#162520] text-white text-xs rounded-sm focus:outline-none focus:border-red-500 transition-colors placeholder:text-muted-foreground/35"
+                className="w-full p-3 bg-[#0A1C16] border border-[#162520] text-white text-xs rounded-xl focus:outline-none focus:border-red-500 transition-colors placeholder:text-muted-foreground/35"
               />
             </div>
 

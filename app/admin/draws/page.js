@@ -249,7 +249,7 @@ export default function AdminDrawsPage() {
           ].map((stat, i) => (
             <Card key={i} className="p-4 bg-[#0A1C16] border-[#162520]">
               <div className="flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-sm ${stat.bg} flex items-center justify-center`}>
+                <div className={`w-9 h-9 rounded-xl ${stat.bg} flex items-center justify-center`}>
                   <stat.icon className={`w-4 h-4 ${stat.color}`} />
                 </div>
                 <div>
@@ -485,7 +485,7 @@ export default function AdminDrawsPage() {
                 name="month"
                 value={formData.month}
                 onChange={handleInputChange}
-                className="w-full h-11 px-3 bg-[#0A1C16] border border-[#162520] text-white text-sm rounded-sm focus:outline-none focus:border-red-500 transition-colors"
+                className="w-full h-11 px-3 bg-[#0A1C16] border border-[#162520] text-white text-sm rounded-xl focus:outline-none focus:border-red-500 transition-colors"
               >
                 {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
                   <option key={m} value={m} className="bg-[#070D0B]">
@@ -502,7 +502,7 @@ export default function AdminDrawsPage() {
                 name="year"
                 value={formData.year}
                 onChange={handleInputChange}
-                className="w-full h-11 px-3 bg-[#0A1C16] border border-[#162520] text-white text-sm rounded-sm focus:outline-none focus:border-red-500 transition-colors"
+                className="w-full h-11 px-3 bg-[#0A1C16] border border-[#162520] text-white text-sm rounded-xl focus:outline-none focus:border-red-500 transition-colors"
               >
                 <option value="2026" className="bg-[#070D0B]">2026</option>
                 <option value="2027" className="bg-[#070D0B]">2027</option>
@@ -535,7 +535,7 @@ export default function AdminDrawsPage() {
           </div>
 
           {errorMsg && (
-            <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-sm">
+            <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl">
               {errorMsg}
             </div>
           )}
@@ -604,7 +604,7 @@ export default function AdminDrawsPage() {
             {/* Winners breakdown list */}
             <div className="space-y-2.5">
               <span className="text-[10px] text-[#8A9690] uppercase font-bold tracking-wider block">Identified Winners Pool</span>
-              <div className="border border-[#162520] rounded-sm overflow-hidden bg-[#0A1C16]">
+              <div className="border border-[#162520] rounded-2xl overflow-hidden bg-[#0A1C16]">
                 <Table>
                   <TableHeader>
                     <TableRow className="border-[#162520] hover:bg-transparent">

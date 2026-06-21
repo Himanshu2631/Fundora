@@ -22,7 +22,7 @@ export default function Navbar() {
       <div className="mx-auto max-w-7xl px-6 h-20 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-sm bg-accent flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-lg select-none">
+          <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-lg select-none">
             F
           </div>
           <span className="font-heading font-extrabold tracking-wider text-xl text-foreground group-hover:text-accent transition-colors duration-300">

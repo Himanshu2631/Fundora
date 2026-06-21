@@ -29,7 +29,7 @@ export default function DashboardTopbar({ onMobileMenuToggle, pageTitle, pageSub
         {/* Mobile hamburger */}
         <button
           onClick={onMobileMenuToggle}
-          className="md:hidden w-8 h-8 flex items-center justify-center rounded-sm border border-border text-muted-foreground hover:text-foreground hover:border-accent/40 transition-colors"
+          className="md:hidden w-8 h-8 flex items-center justify-center rounded-xl border border-border text-muted-foreground hover:text-foreground hover:border-accent/40 hover:scale-[1.05] active:scale-[0.95] transition-all duration-200"
           aria-label="Toggle menu"
         >
           <Menu className="w-4 h-4" />
@@ -64,7 +64,7 @@ export default function DashboardTopbar({ onMobileMenuToggle, pageTitle, pageSub
         )}
 
         {/* Notification bell placeholder */}
-        <button className="relative w-8 h-8 flex items-center justify-center rounded-sm border border-border text-muted-foreground hover:text-foreground hover:border-accent/40 transition-colors">
+        <button className="relative w-8 h-8 flex items-center justify-center rounded-xl border border-border text-muted-foreground hover:text-foreground hover:border-accent/40 hover:scale-[1.05] active:scale-[0.95] transition-all duration-200">
           <Bell className="w-4 h-4" />
           {/* Unread dot */}
           <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-accent" />

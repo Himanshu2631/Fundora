@@ -226,7 +226,7 @@ export default function DashboardOverview() {
         animate="visible"
       >
         <motion.div variants={itemVariants} className="w-full mb-8">
-          <Card className="bg-gradient-to-br from-[#061511] via-[#0A1C16] to-[#040D09] border-[#162520] relative overflow-hidden shadow-2xl rounded-lg p-6 md:p-8">
+          <Card className="bg-gradient-to-br from-[#061511] via-[#0A1C16] to-[#040D09] border-[#162520] relative overflow-hidden shadow-2xl rounded-3xl p-6 md:p-8">
             {/* Ambient Background Blur / Glow */}
             <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-accent/5 blur-3xl rounded-full -z-10 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-emerald-800/5 blur-3xl rounded-full -z-10 pointer-events-none" />
@@ -253,7 +253,7 @@ export default function DashboardOverview() {
 
                 <div className="flex flex-col md:flex-row items-stretch md:items-center gap-5 mb-6">
                   {/* Jackpot Pool Card */}
-                  <div className="bg-[#05110D]/90 border border-border/20 p-5 rounded-md flex-1 relative overflow-hidden shadow-inner">
+                  <div className="bg-[#05110D]/90 border border-border/20 p-5 rounded-xl flex-1 relative overflow-hidden shadow-inner">
                     <div className="absolute top-0 left-0 w-[3px] h-full bg-accent" />
                     <span className="text-[9px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-1">
                       Current Jackpot Pool
@@ -267,35 +267,35 @@ export default function DashboardOverview() {
                   </div>
 
                   {/* Countdown Timer Card */}
-                  <div className="bg-[#05110D]/90 border border-border/20 p-5 rounded-md flex-1 relative overflow-hidden shadow-inner">
+                  <div className="bg-[#05110D]/90 border border-border/20 p-5 rounded-xl flex-1 relative overflow-hidden shadow-inner">
                     <div className="absolute top-0 left-0 w-[3px] h-full bg-emerald-600" />
                     <span className="text-[9px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-2.5">
                       Time Remaining Until Draw
                     </span>
                     <div className="flex items-center gap-2 text-foreground font-heading">
                       <div className="flex flex-col items-center">
-                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-sm border border-border/30 text-foreground w-[44px] text-center">
+                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-xl border border-border/30 text-foreground w-[44px] text-center">
                           {String(timeLeft.days).padStart(2, "0")}
                         </span>
                         <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground mt-1">Days</span>
                       </div>
                       <span className="text-lg font-black text-muted-foreground/60 -mt-3">:</span>
                       <div className="flex flex-col items-center">
-                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-sm border border-border/30 text-foreground w-[44px] text-center">
+                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-xl border border-border/30 text-foreground w-[44px] text-center">
                           {String(timeLeft.hours).padStart(2, "0")}
                         </span>
                         <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground mt-1">Hrs</span>
                       </div>
                       <span className="text-lg font-black text-muted-foreground/60 -mt-3">:</span>
                       <div className="flex flex-col items-center">
-                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-sm border border-border/30 text-foreground w-[44px] text-center">
+                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-xl border border-border/30 text-foreground w-[44px] text-center">
                           {String(timeLeft.minutes).padStart(2, "0")}
                         </span>
                         <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground mt-1">Min</span>
                       </div>
                       <span className="text-lg font-black text-muted-foreground/60 -mt-3">:</span>
                       <div className="flex flex-col items-center">
-                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-sm border border-accent/40 text-accent w-[44px] text-center animate-pulse">
+                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-xl border border-accent/40 text-accent w-[44px] text-center animate-pulse">
                           {String(timeLeft.seconds).padStart(2, "0")}
                         </span>
                         <span className="text-[8px] uppercase font-bold tracking-wider text-accent mt-1">Sec</span>
@@ -305,7 +305,7 @@ export default function DashboardOverview() {
                 </div>
 
                 {/* Score Progress bar */}
-                <div className="space-y-2.5 bg-[#05110D]/40 border border-border/10 p-4 rounded-md">
+                <div className="space-y-2.5 bg-[#05110D]/40 border border-border/10 p-4 rounded-xl">
                   <div className="flex justify-between items-center text-xs">
                     <span className="font-bold text-foreground">Weekly Score Logging Progress</span>
                     <span className="font-extrabold text-accent">{scores?.length || 0} / 5 Logged</span>
@@ -329,7 +329,7 @@ export default function DashboardOverview() {
               {/* Right Column - User standings grid */}
               <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4">
                 {/* Score Widget */}
-                <div className="bg-[#05110D]/50 border border-border/20 p-4 rounded-md relative flex items-center justify-between group hover:border-accent/40 transition-colors">
+                <div className="bg-[#05110D]/50 border border-border/20 p-4 rounded-xl relative flex items-center justify-between group hover:border-accent/40 transition-colors">
                   <div>
                     <span className="text-[8px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-1">
                       Your Current Score
@@ -341,13 +341,13 @@ export default function DashboardOverview() {
                       +{displayUser.streak * 5}wk streak bonus active
                     </span>
                   </div>
-                  <div className="w-10 h-10 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-sm text-accent group-hover:scale-105 transition-transform">
+                  <div className="w-10 h-10 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-xl text-accent group-hover:scale-105 transition-transform">
                     <Trophy className="w-5 h-5" />
                   </div>
                 </div>
 
                 {/* Draw Entries Widget */}
-                <div className="bg-[#05110D]/50 border border-border/20 p-4 rounded-md relative flex items-center justify-between group hover:border-accent/40 transition-colors">
+                <div className="bg-[#05110D]/50 border border-border/20 p-4 rounded-xl relative flex items-center justify-between group hover:border-accent/40 transition-colors">
                   <div>
                     <span className="text-[8px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-1">
                       Your Draw Entries
@@ -359,13 +359,13 @@ export default function DashboardOverview() {
                       {subscription?.plan_type ? `${PLAN_LABELS[subscription?.plan_type]} Tier Active` : "No multiplier active"}
                     </span>
                   </div>
-                  <div className="w-10 h-10 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-sm text-emerald-500 group-hover:scale-105 transition-transform">
+                  <div className="w-10 h-10 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-xl text-emerald-500 group-hover:scale-105 transition-transform">
                     <Ticket className="w-5 h-5" />
                   </div>
                 </div>
 
                 {/* Global Rank Widget */}
-                <div className="bg-[#05110D]/50 border border-border/20 p-4 rounded-md relative flex items-center justify-between group hover:border-accent/40 transition-colors">
+                <div className="bg-[#05110D]/50 border border-border/20 p-4 rounded-xl relative flex items-center justify-between group hover:border-accent/40 transition-colors">
                   <div>
                     <span className="text-[8px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-1">
                       Your Standings Rank
@@ -377,7 +377,7 @@ export default function DashboardOverview() {
                       Top 25% of global golfers
                     </span>
                   </div>
-                  <div className="w-10 h-10 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-sm text-accent group-hover:scale-105 transition-transform">
+                  <div className="w-10 h-10 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-xl text-accent group-hover:scale-105 transition-transform">
                     <TrendingUp className="w-5 h-5" />
                   </div>
                 </div>
@@ -465,7 +465,7 @@ export default function DashboardOverview() {
                           <AlertDescription className="text-xs">{scoresError}</AlertDescription>
                         </Alert>
                       ) : scores.length === 0 ? (
-                        <div className="text-center py-6 border border-dashed border-border/60 rounded-sm bg-secondary/5">
+                        <div className="text-center py-6 border border-dashed border-border/60 rounded-xl bg-secondary/5">
                           <Trophy className="w-7 h-7 text-muted-foreground/35 mx-auto mb-2" />
                           <p className="text-xs font-semibold text-foreground/80">No Scores Registered</p>
                           <p className="text-[10.5px] text-muted-foreground mt-1 mb-4">
@@ -480,14 +480,14 @@ export default function DashboardOverview() {
                           {/* Latest Scores Timeline */}
                           <div className="space-y-2 max-h-[170px] overflow-y-auto pr-1">
                             {scores.slice(0, 3).map((item) => (
-                              <div key={item.id} className="flex justify-between items-center p-2.5 bg-secondary/15 rounded-sm border border-border/30 hover:border-accent/15 transition-all">
+                              <div key={item.id} className="flex justify-between items-center p-2.5 bg-secondary/15 rounded-xl border border-border/30 hover:border-accent/15 transition-all">
                                 <div className="flex items-center gap-2">
                                   <Calendar className="w-3.5 h-3.5 text-accent" />
                                   <span className="text-xs font-medium text-foreground">
                                     {new Date(item.score_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                   </span>
                                 </div>
-                                <span className="text-xs font-bold text-foreground bg-accent/10 px-2 py-0.5 rounded-sm border border-accent/25">
+                                <span className="text-xs font-bold text-foreground bg-accent/10 px-2 py-0.5 rounded-xl border border-accent/25">
                                   {item.score} pts
                                 </span>
                               </div>
@@ -496,13 +496,13 @@ export default function DashboardOverview() {
 
                           {/* Performance metrics grid */}
                           <div className="grid grid-cols-2 gap-2 text-center text-xs pt-1">
-                            <div className="p-2 bg-secondary/10 border border-border/30 rounded-sm">
+                            <div className="p-2 bg-secondary/10 border border-border/30 rounded-xl">
                               <span className="text-[9px] uppercase font-bold text-muted-foreground block">Average Score</span>
                               <span className="text-sm font-bold text-foreground">
                                 {averageScoreVal}
                               </span>
                             </div>
-                            <div className="p-2 bg-secondary/10 border border-border/30 rounded-sm">
+                            <div className="p-2 bg-secondary/10 border border-border/30 rounded-xl">
                               <span className="text-[9px] uppercase font-bold text-muted-foreground block">Active Scores</span>
                               <span className="text-sm font-bold text-foreground">
                                 {scores.length} / 5
@@ -533,7 +533,7 @@ export default function DashboardOverview() {
                           { name: "Global Advocate", desc: "Active Advocate tier selected", unlocked: true, icon: ShieldCheck },
                           { name: "5 Draw Streak", desc: "Log rounds consistently (3/5)", unlocked: false, progress: 60, icon: Flame }
                         ].map((ach, idx) => (
-                          <div key={idx} className="flex items-start gap-2.5 p-2 rounded-sm bg-secondary/5 border border-border/20">
+                          <div key={idx} className="flex items-start gap-2.5 p-2 rounded-xl bg-secondary/5 border border-border/20">
                             <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${ach.unlocked ? "bg-emerald-950/45 text-emerald-500 border border-emerald-800/40" : "bg-secondary/15 text-muted-foreground border border-border/30"}`}>
                               <ach.icon className="w-3.5 h-3.5" />
                             </div>
@@ -577,7 +577,7 @@ export default function DashboardOverview() {
                         ].map((entry, i) => (
                           <div
                             key={i}
-                            className={`flex items-center justify-between text-xs py-2 px-3 rounded-sm ${
+                            className={`flex items-center justify-between text-xs py-2 px-3 rounded-xl ${
                               entry.isYou
                                 ? "bg-accent/10 border border-accent/30 text-foreground"
                                 : "border border-transparent text-muted-foreground"
@@ -655,7 +655,7 @@ export default function DashboardOverview() {
                           <AlertDescription className="text-xs">{charitiesError}</AlertDescription>
                         </Alert>
                       ) : allocations.length === 0 ? (
-                        <div className="text-center py-6 border border-dashed border-border/60 rounded-sm bg-secondary/5">
+                        <div className="text-center py-6 border border-dashed border-border/60 rounded-xl bg-secondary/5">
                           <Heart className="w-7 h-7 text-muted-foreground/35 mx-auto mb-2" />
                           <p className="text-xs font-semibold text-foreground/80">No Vetted Causes Selected</p>
                           <p className="text-[10.5px] text-muted-foreground mt-1 mb-4">
@@ -670,7 +670,7 @@ export default function DashboardOverview() {
                           {/* Dynamic List */}
                           <div className="space-y-2.5 max-h-[170px] overflow-y-auto pr-1">
                             {allocations.map((item) => (
-                              <div key={item.id} className="p-3 bg-secondary/15 rounded-sm border border-border/40 space-y-1 hover:border-accent/15 transition-all">
+                              <div key={item.id} className="p-3 bg-secondary/15 rounded-xl border border-border/40 space-y-1 hover:border-accent/15 transition-all">
                                 <div className="flex justify-between items-start">
                                   <span className="text-xs font-bold text-foreground line-clamp-1">{item.charity_name}</span>
                                   <Badge variant="accent" className="text-[8px] py-0 px-1">{item.contribution_percentage}%</Badge>
@@ -859,7 +859,7 @@ export default function DashboardOverview() {
                         <Flame className="w-4 h-4 text-accent animate-pulse" />
                         Current Prize Draw
                       </h3>
-                      <div className="p-4 bg-secondary/10 border border-border/30 rounded-sm space-y-3">
+                      <div className="p-4 bg-secondary/10 border border-border/30 rounded-xl space-y-3">
                         <span className="text-[9px] uppercase font-bold text-muted-foreground block">Active Jackpot Pool</span>
                         <span className="text-3xl font-black text-accent font-heading block leading-none">
                           <AnimatedCounter value={activePrize} />
@@ -936,7 +936,7 @@ export default function DashboardOverview() {
                           {hasActivePlan && currentDrawEntries.length > 0 ? (
                             <div className="space-y-2 max-h-[170px] overflow-y-auto pr-1">
                               {currentDrawEntries.slice(0, 3).map((ticket, i) => (
-                                <div key={i} className="flex justify-between items-center p-2.5 bg-secondary/15 rounded-sm border border-border/30">
+                                <div key={i} className="flex justify-between items-center p-2.5 bg-secondary/15 rounded-xl border border-border/30">
                                   <div>
                                     <span className="font-mono font-bold text-accent text-xs block">{ticket.ticketNumber}</span>
                                     <span className="text-muted-foreground text-[9px] font-semibold truncate max-w-[150px] block">
@@ -948,7 +948,7 @@ export default function DashboardOverview() {
                               ))}
                             </div>
                           ) : (
-                            <div className="text-center py-6 border border-dashed border-border/60 rounded-sm bg-secondary/5">
+                            <div className="text-center py-6 border border-dashed border-border/60 rounded-xl bg-secondary/5">
                               <Ticket className="w-6 h-6 text-muted-foreground/35 mx-auto mb-2" />
                               <p className="text-[11px] font-semibold text-foreground/80">No Active Tickets</p>
                               <p className="text-[9.5px] text-muted-foreground mt-1 mb-3">
@@ -962,7 +962,7 @@ export default function DashboardOverview() {
                           {claims && claims.length > 0 ? (
                             <div className="space-y-2.5 max-h-[170px] overflow-y-auto pr-1">
                               {claims.slice(0, 3).map((claim) => (
-                                <div key={claim.id} className="p-2.5 bg-secondary/15 rounded-sm border border-border/40 space-y-1 hover:border-accent/15 transition-all">
+                                <div key={claim.id} className="p-2.5 bg-secondary/15 rounded-xl border border-border/40 space-y-1 hover:border-accent/15 transition-all">
                                   <div className="flex justify-between items-start">
                                     <span className="text-xs font-bold text-foreground truncate max-w-[110px]">{claim.draw_title || "Prize Claim"}</span>
                                     <Badge variant={
@@ -981,7 +981,7 @@ export default function DashboardOverview() {
                               ))}
                             </div>
                           ) : (
-                            <div className="text-center py-6 border border-dashed border-border/60 rounded-sm bg-secondary/5">
+                            <div className="text-center py-6 border border-dashed border-border/60 rounded-xl bg-secondary/5">
                               <Inbox className="w-6 h-6 text-muted-foreground/35 mx-auto mb-2" />
                               <p className="text-[11px] font-semibold text-foreground/80">No Winning Claims Yet</p>
                               <p className="text-[9.5px] text-muted-foreground mt-1 mb-3">
@@ -1067,7 +1067,7 @@ export default function DashboardOverview() {
                         </div>
                       </div>
 
-                      <div className="space-y-2 bg-secondary/15 p-3 rounded-sm border border-border/40 text-xs">
+                      <div className="space-y-2 bg-secondary/15 p-3 rounded-xl border border-border/40 text-xs">
                         <div className="flex justify-between">
                           <span className="text-muted-foreground font-semibold">Draw:</span>
                           <span className="font-bold text-foreground text-right truncate max-w-[120px]">{winner.draw}</span>

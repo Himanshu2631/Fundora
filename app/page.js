@@ -229,7 +229,7 @@ export default function Home() {
             {/* 5-Step How It Works Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-6 relative">
               {/* Step 1 */}
-              <div className="relative flex flex-col justify-between p-6 bg-card border border-border rounded-lg shadow-sm hover:border-accent/40 transition-all duration-300">
+              <div className="relative flex flex-col justify-between p-6 bg-card border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
                 <div>
                   <div className="flex justify-between items-center mb-6">
                     <div className="w-10 h-10 flex items-center justify-center bg-background border border-border text-accent font-heading font-extrabold text-sm rounded-full">
@@ -257,7 +257,7 @@ export default function Home() {
               </div>
 
               {/* Step 2 */}
-              <div className="relative flex flex-col justify-between p-6 bg-card border border-border rounded-lg shadow-sm hover:border-accent/40 transition-all duration-300">
+              <div className="relative flex flex-col justify-between p-6 bg-card border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
                 <div>
                   <div className="flex justify-between items-center mb-6">
                     <div className="w-10 h-10 flex items-center justify-center bg-background border border-border text-accent font-heading font-extrabold text-sm rounded-full">
@@ -285,7 +285,7 @@ export default function Home() {
               </div>
 
               {/* Step 3 */}
-              <div className="relative flex flex-col justify-between p-6 bg-card border border-border rounded-lg shadow-sm hover:border-accent/40 transition-all duration-300">
+              <div className="relative flex flex-col justify-between p-6 bg-card border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
                 <div>
                   <div className="flex justify-between items-center mb-6">
                     <div className="w-10 h-10 flex items-center justify-center bg-background border border-border text-accent font-heading font-extrabold text-sm rounded-full">
@@ -313,7 +313,7 @@ export default function Home() {
               </div>
 
               {/* Step 4 */}
-              <div className="relative flex flex-col justify-between p-6 bg-card border border-border rounded-lg shadow-sm hover:border-accent/40 transition-all duration-300">
+              <div className="relative flex flex-col justify-between p-6 bg-card border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
                 <div>
                   <div className="flex justify-between items-center mb-6">
                     <div className="w-10 h-10 flex items-center justify-center bg-background border border-border text-accent font-heading font-extrabold text-sm rounded-full">
@@ -341,7 +341,7 @@ export default function Home() {
               </div>
 
               {/* Step 5 */}
-              <div className="relative flex flex-col justify-between p-6 bg-card border border-border rounded-lg shadow-sm hover:border-accent/40 transition-all duration-300">
+              <div className="relative flex flex-col justify-between p-6 bg-card border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
                 <div>
                   <div className="flex justify-between items-center mb-6">
                     <div className="w-10 h-10 flex items-center justify-center bg-background border border-border text-accent font-heading font-extrabold text-sm rounded-full">
@@ -377,8 +377,8 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Pillar 1: Reward Opportunities */}
-              <div className="flex flex-col p-8 bg-background border border-border rounded-lg shadow-sm hover:border-accent/40 transition-all duration-300">
-                <div className="w-12 h-12 flex items-center justify-center bg-card border border-border text-accent rounded-lg mb-6">
+              <div className="flex flex-col p-8 bg-background border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
+                <div className="w-12 h-12 flex items-center justify-center bg-card border border-border text-accent rounded-2xl mb-6">
                   <Gift className="w-6 h-6" />
                 </div>
                 <h3 className="font-heading text-xl font-bold text-foreground mb-4">Reward Opportunities</h3>
@@ -388,8 +388,8 @@ export default function Home() {
               </div>
 
               {/* Pillar 2: Charity Impact */}
-              <div className="flex flex-col p-8 bg-background border border-border rounded-lg shadow-sm hover:border-accent/40 transition-all duration-300">
-                <div className="w-12 h-12 flex items-center justify-center bg-card border border-border text-accent rounded-lg mb-6">
+              <div className="flex flex-col p-8 bg-background border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
+                <div className="w-12 h-12 flex items-center justify-center bg-card border border-border text-accent rounded-2xl mb-6">
                   <ShieldCheck className="w-6 h-6" />
                 </div>
                 <h3 className="font-heading text-xl font-bold text-foreground mb-4">Charity Impact</h3>
@@ -399,8 +399,8 @@ export default function Home() {
               </div>
 
               {/* Pillar 3: Community Participation */}
-              <div className="flex flex-col p-8 bg-background border border-border rounded-lg shadow-sm hover:border-accent/40 transition-all duration-300">
-                <div className="w-12 h-12 flex items-center justify-center bg-card border border-border text-accent rounded-lg mb-6">
+              <div className="flex flex-col p-8 bg-background border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
+                <div className="w-12 h-12 flex items-center justify-center bg-card border border-border text-accent rounded-2xl mb-6">
                   <Users className="w-6 h-6" />
                 </div>
                 <h3 className="font-heading text-xl font-bold text-foreground mb-4">Community Participation</h3>

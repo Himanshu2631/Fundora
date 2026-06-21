@@ -48,7 +48,7 @@ export default function Login() {
           <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c1d18_1px,transparent_1px),linear-gradient(to_bottom,#0c1d18_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-35 -z-10" />
 
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-sm bg-accent flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-lg select-none">
+            <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-lg select-none">
               F
             </div>
             <span className="font-heading font-extrabold tracking-wider text-xl text-foreground">

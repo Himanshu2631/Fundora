@@ -72,7 +72,7 @@ export default function AdminSidebar({ collapsed, onToggle }) {
         )}
       >
         <Link href="/admin" className="flex items-center gap-2.5 group min-w-0">
-          <div className="w-7 h-7 rounded-sm bg-red-600 flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-xl bg-red-600 flex items-center justify-center shrink-0">
             <ShieldAlert className="w-3.5 h-3.5 text-white" />
           </div>
           <AnimatePresence>
@@ -94,7 +94,7 @@ export default function AdminSidebar({ collapsed, onToggle }) {
         <button
           onClick={onToggle}
           className={cn(
-            "w-7 h-7 rounded-sm border border-[#162520] flex items-center justify-center text-[#8A9690] hover:text-white hover:border-red-500/40 transition-colors shrink-0",
+            "w-7 h-7 rounded-xl border border-[#162520] flex items-center justify-center text-[#8A9690] hover:text-white hover:border-red-500/40 hover:scale-[1.05] active:scale-[0.95] transition-all duration-200 shrink-0",
             collapsed && "absolute -right-3.5 top-4 bg-[#070D0B] z-10 shadow-sm"
           )}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
@@ -169,7 +169,7 @@ export default function AdminSidebar({ collapsed, onToggle }) {
                     <Link
                       href={item.href}
                       className={cn(
-                        "flex items-center gap-3 px-2.5 py-2.5 rounded-sm text-xs font-semibold transition-all duration-200 group relative",
+                        "flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-xs font-semibold transition-all duration-200 group relative hover:scale-[1.02] active:scale-[0.98]",
                         active
                           ? "bg-red-600/12 text-red-400"
                           : "text-[#8A9690] hover:text-white hover:bg-[#0D2B20]/60",
@@ -220,7 +220,7 @@ export default function AdminSidebar({ collapsed, onToggle }) {
         <Link
           href="/dashboard"
           className={cn(
-            "flex items-center gap-3 w-full px-2.5 py-2.5 rounded-sm text-xs font-semibold text-[#8A9690] hover:text-accent hover:bg-accent/10 transition-all duration-200",
+            "flex items-center gap-3 w-full px-2.5 py-2.5 rounded-xl text-xs font-semibold text-[#8A9690] hover:text-accent hover:bg-accent/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200",
             collapsed ? "justify-center" : ""
           )}
           title={collapsed ? "Back to Dashboard" : undefined}

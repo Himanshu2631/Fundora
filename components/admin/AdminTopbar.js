@@ -18,7 +18,7 @@ export default function AdminTopbar({ onMobileMenuToggle, pageTitle, pageSub }) 
         {/* Mobile hamburger */}
         <button
           onClick={onMobileMenuToggle}
-          className="md:hidden w-8 h-8 flex items-center justify-center rounded-sm border border-[#162520] text-[#8A9690] hover:text-white hover:border-red-500/40 transition-colors"
+          className="md:hidden w-8 h-8 flex items-center justify-center rounded-xl border border-[#162520] text-[#8A9690] hover:text-white hover:border-red-500/40 hover:scale-[1.05] active:scale-[0.95] transition-all duration-200"
           aria-label="Toggle menu"
         >
           <Menu className="w-4 h-4" />
@@ -48,7 +48,7 @@ export default function AdminTopbar({ onMobileMenuToggle, pageTitle, pageSub }) 
         </Badge>
 
         {/* Notification bell */}
-        <button className="relative w-8 h-8 flex items-center justify-center rounded-sm border border-[#162520] text-[#8A9690] hover:text-white hover:border-red-500/40 transition-colors">
+        <button className="relative w-8 h-8 flex items-center justify-center rounded-xl border border-[#162520] text-[#8A9690] hover:text-white hover:border-red-500/40 hover:scale-[1.05] active:scale-[0.95] transition-all duration-200">
           <Bell className="w-4 h-4" />
           <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-red-500" />
         </button>

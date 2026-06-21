@@ -96,12 +96,12 @@ export default function SubscriptionPage() {
     return (
       <div className="p-6 md:p-8 space-y-8 animate-pulse">
         <div className="space-y-2">
-          <div className="h-4 w-24 bg-secondary/30 rounded-sm" />
-          <div className="h-7 w-64 bg-secondary/20 rounded-sm" />
+          <div className="h-4 w-24 bg-secondary/30 rounded-xl" />
+          <div className="h-7 w-64 bg-secondary/20 rounded-xl" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="h-[280px] bg-secondary/15 border border-border/30 rounded-sm" />
-          <div className="h-[280px] bg-secondary/15 border border-border/30 rounded-sm" />
+          <div className="h-[280px] bg-secondary/15 border border-border/30 rounded-xl" />
+          <div className="h-[280px] bg-secondary/15 border border-border/30 rounded-xl" />
         </div>
       </div>
     );
@@ -334,7 +334,7 @@ export default function SubscriptionPage() {
 
         {/* FAQ Notice and Support */}
         <motion.div variants={itemVariants}>
-          <div className="flex items-start gap-3 p-4 bg-secondary/15 border border-border/40 rounded-sm text-xs text-muted-foreground">
+          <div className="flex items-start gap-3 p-4 bg-secondary/15 border border-border/40 rounded-xl text-xs text-muted-foreground">
             <Info className="w-4 h-4 text-accent shrink-0 mt-0.5" />
             <div>
               <p className="font-bold text-foreground mb-0.5 flex items-center gap-1.5">
