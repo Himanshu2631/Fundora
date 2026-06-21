@@ -195,9 +195,9 @@ export default function Home() {
                     <p className="text-[10px] font-bold uppercase tracking-widest text-foreground mb-3">Live Feed</p>
                     <div className="space-y-3">
                       {[
-                        { user: "alicia_golf", score: "39 Stableford", action: "logged score & earned 3x entries", time: "2m ago" },
-                        { user: "sam_drive", score: "+150 Giving Score", action: "subscribed to Legacy Builder", time: "12m ago" },
-                        { user: "hiro_putt", score: "42 Stableford", action: "logged score & boosted entries", time: "44m ago" }
+                        { user: "Alicia Torres", score: "39 Stableford", action: "logged score & earned 3x entries", time: "2m ago" },
+                        { user: "Sam Whitfield", score: "+150 Giving Score", action: "subscribed to Legacy Builder", time: "12m ago" },
+                        { user: "Hiro Nakamura", score: "42 Stableford", action: "logged score & boosted entries", time: "44m ago" }
                       ].map((feed, i) => (
                         <div key={i} className="flex items-center justify-between text-xs py-1 border-b border-border/20 last:border-0">
                           <span className="text-muted-foreground">

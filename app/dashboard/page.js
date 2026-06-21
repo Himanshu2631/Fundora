@@ -754,10 +754,10 @@ export default function DashboardOverview() {
                       </h3>
                       <div className="space-y-2">
                         {[
-                          { rank: "1", name: "marcus.k", points: "490 pts", isYou: false },
-                          { rank: "2", name: "elena_r", points: "420 pts", isYou: false },
-                          { rank: "3", name: "yuki.s", points: "380 pts", isYou: false },
-                          { rank: "284", name: `${displayUser.name.split(" ")[0]} (You)`, points: `${displayUser.score} pts`, isYou: true },
+                          { rank: "1", name: "Marcus Klein", points: "490 pts", isYou: false },
+                          { rank: "2", name: "Elena Rodriguez", points: "420 pts", isYou: false },
+                          { rank: "3", name: "Yuki Shimizu", points: "380 pts", isYou: false },
+                          { rank: "284", name: `${displayUser.name} (You)`, points: `${displayUser.score} pts`, isYou: true },
                         ].map((entry, i) => (
                           <div
                             key={i}
@@ -767,15 +767,15 @@ export default function DashboardOverview() {
                                 : "border border-transparent text-muted-foreground"
                             }`}
                           >
-                            <div className="flex items-center gap-3">
-                              <span className={`w-6 font-bold ${entry.isYou ? "text-accent" : "text-muted-foreground/60"}`}>
+                            <div className="flex items-center gap-3 min-w-0 flex-1">
+                              <span className={`w-6 font-bold shrink-0 ${entry.isYou ? "text-accent" : "text-muted-foreground/60"}`}>
                                 #{entry.rank}
                               </span>
-                              <span className={`font-semibold ${entry.isYou ? "text-foreground" : "text-muted-foreground"}`}>
+                              <span className={`font-semibold truncate ${entry.isYou ? "text-foreground" : "text-muted-foreground"}`}>
                                 {entry.name}
                               </span>
                             </div>
-                            <span className="font-bold text-foreground">{entry.points}</span>
+                            <span className="font-bold text-foreground shrink-0 ml-2">{entry.points}</span>
                           </div>
                         ))}
                       </div>
@@ -1129,10 +1129,10 @@ export default function DashboardOverview() {
                       </h3>
                       <div className="space-y-4">
                         {[
-                          { text: "sam_drive joined June's Eco Retreat draw", time: "2m ago", type: "draw" },
+                          { text: "Sam Whitfield joined June's Eco Retreat draw", time: "2m ago", type: "draw" },
                           { text: "Apex Water Initiative reached milestone", time: "1h ago", type: "charity" },
-                          { text: "alicia_golf claimed Eco Retreat prize", time: "1d ago", type: "winner" },
-                          { text: "hiro_putt logged a 42 Stableford score", time: "3h ago", type: "score" }
+                          { text: "Alicia Torres claimed Eco Retreat prize", time: "1d ago", type: "winner" },
+                          { text: "Hiro Nakamura logged a 42 Stableford score", time: "3h ago", type: "score" }
                         ].map((act, idx) => (
                           <div key={idx} className="flex items-start justify-between text-xs border-b border-border/20 pb-3 last:border-0 last:pb-0">
                             <div className="flex items-start gap-2.5">
