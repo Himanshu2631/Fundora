@@ -88,7 +88,8 @@ export default function SubscriptionWidget() {
     setActionLoading(true);
     setActionError(null);
     try {
-      await subscribe(tier);
+      const priceId = `price_${tier}_monthly`;
+      await subscribe(priceId);
     } catch (err) {
       console.error(err);
       setActionError(err.message || "Failed to activate subscription.");
@@ -130,7 +131,8 @@ export default function SubscriptionWidget() {
     setActionLoading(true);
     setActionError(null);
     try {
-      await subscribe(subscription.plan_type);
+      const priceId = subscription.stripe_price_id || `price_${subscription.plan_type}_monthly`;
+      await subscribe(priceId);
     } catch (err) {
       console.error(err);
       setActionError(err.message || "Failed to renew subscription.");

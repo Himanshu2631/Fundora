@@ -133,17 +133,121 @@ export function checkSubscriptionStatus(subscription) {
   const now = new Date();
   const renewal = new Date(subscription.renewal_date);
   
-  if (subscription.status === "canceled") {
+  if (subscription.status === "canceled" || subscription.status === "cancelled") {
     return "cancelled";
   }
   
-  if (subscription.status === "past_due" || renewal < now) {
+  if (subscription.status === "past_due" || subscription.status === "unpaid" || renewal < now) {
     return "expired";
   }
   
-  if (subscription.status === "active") {
+  if (subscription.status === "active" || subscription.status === "trialing") {
     return "active";
   }
   
   return "inactive";
 }
+
+/**
+ * Fetch subscription plans from database.
+ * @param {object} [supabaseClient] - Optional server-side Supabase client.
+ */
+export async function getSubscriptionPlans(supabaseClient) {
+  const supabase = supabaseClient || createClient();
+  const { data, error } = await supabase
+    .from("subscription_plans")
+    .select("*")
+    .order("amount", { ascending: true });
+
+  if (error) {
+    console.error("Error in getSubscriptionPlans:", error);
+    throw error;
+  }
+  return data;
+}
+
+/**
+ * Reconcile a Stripe subscription state with the database.
+ * @param {string} userId - User ID.
+ * @param {string} stripeSubId - Stripe Subscription ID.
+ * @param {string} priceId - Stripe Price ID.
+ * @param {string} status - Stripe subscription status.
+ * @param {string} renewalDate - Renewal date ISO string.
+ * @param {object} [supabaseClient] - Optional server-side Supabase client.
+ */
+export async function syncStripeSubscriptionToDatabase(userId, stripeSubId, priceId, status, renewalDate, supabaseClient) {
+  const supabase = supabaseClient || createClient();
+
+  // 1. Fetch the plan details to get plan_name (scout, advocate, builder)
+  const { data: plan, error: planError } = await supabase
+    .from("subscription_plans")
+    .select("plan_name")
+    .eq("stripe_price_id", priceId)
+    .maybeSingle();
+
+  if (planError) {
+    console.error("Error fetching plan in sync:", planError);
+  }
+
+  // Fallback mapping in case DB doesn't have it or contains a mismatch
+  let planType = plan?.plan_name;
+  if (!planType) {
+    if (priceId.includes("scout")) planType = "scout";
+    else if (priceId.includes("advocate")) planType = "advocate";
+    else if (priceId.includes("builder")) planType = "builder";
+    else planType = "scout";
+  }
+
+  let dbStatus = "active";
+  if (status === "canceled" || status === "cancelled") {
+    dbStatus = "canceled";
+  } else if (status === "past_due") {
+    dbStatus = "past_due";
+  } else if (["active", "incomplete", "incomplete_expired", "trialing", "unpaid"].includes(status)) {
+    dbStatus = status;
+  }
+
+  // Check for existing subscription row
+  const { data: existing } = await supabase
+    .from("subscriptions")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  const subPayload = {
+    user_id: userId,
+    plan_type: planType,
+    status: dbStatus,
+    renewal_date: renewalDate,
+    stripe_subscription_id: stripeSubId,
+    stripe_price_id: priceId,
+  };
+
+  if (existing) {
+    const { data, error } = await supabase
+      .from("subscriptions")
+      .update(subPayload)
+      .eq("user_id", userId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error in syncStripeSubscriptionToDatabase (update):", error);
+      throw error;
+    }
+    return data;
+  } else {
+    const { data, error } = await supabase
+      .from("subscriptions")
+      .insert(subPayload)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error in syncStripeSubscriptionToDatabase (insert):", error);
+      throw error;
+    }
+    return data;
+  }
+}
+

@@ -416,9 +416,9 @@ export default function PricingPage() {
       router.push("/signup");
       return;
     }
-    await subscribe(planKey);
-    // After subscribe, navigate to dashboard
-    setTimeout(() => router.push("/dashboard"), 1200);
+    const cycle = isYearly ? "yearly" : "monthly";
+    const priceId = `price_${planKey}_${cycle}`;
+    await subscribe(priceId);
   };
 
   const containerVariants = {

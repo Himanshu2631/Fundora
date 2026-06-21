@@ -50,19 +50,30 @@ export function useSubscription() {
     };
   }, [fetchSubscription]);
 
-  const subscribe = async (planType) => {
+  const subscribe = async (priceId) => {
     if (!user) throw new Error("Must be logged in to subscribe");
     setLoading(true);
     setError(null);
     try {
-      const data = await apiCreateSubscription(user.id, planType);
-      setSubscription(data);
-      return data;
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ priceId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to create checkout session");
+      }
+      if (data.url) {
+        window.location.href = data.url;
+        // Keep loading state since we are redirecting
+        return;
+      }
+      throw new Error("No redirect URL returned");
     } catch (err) {
       setError(err.message || "Failed to create subscription");
-      throw err;
-    } finally {
       setLoading(false);
+      throw err;
     }
   };
 
@@ -71,8 +82,15 @@ export function useSubscription() {
     setLoading(true);
     setError(null);
     try {
-      const data = await apiCancelSubscription(user.id);
-      setSubscription(data);
+      const res = await fetch("/api/stripe/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to cancel subscription");
+      }
+      await fetchSubscription();
       return data;
     } catch (err) {
       setError(err.message || "Failed to cancel subscription");
@@ -87,6 +105,21 @@ export function useSubscription() {
     setLoading(true);
     setError(null);
     try {
+      // If updating plan_type, redirect to Stripe checkout for the new plan
+      if (updates.plan_type) {
+        const priceId = `price_${updates.plan_type}_monthly`;
+        const res = await fetch("/api/stripe/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ priceId }),
+        });
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+          return;
+        }
+      }
+      
       const data = await apiUpdateSubscription(user.id, updates);
       setSubscription(data);
       return data;
