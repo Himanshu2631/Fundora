@@ -1078,34 +1078,37 @@ export default function DashboardOverview() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
                   {
-                    name: "Marcus Klein (marcus.k)",
+                    title: "Verified Winner",
+                    tier: "Legacy Builder Member",
+                    category: "5 Match Winner",
+                    status: "Verified Payout",
                     draw: "Patagonia Eco-Retreat",
                     prize: "7-Night Luxury Eco-Retreat Pass",
-                    match: "5 Matches",
                     ticket: "FND-712-X4B",
-                    avatar: "MK",
                     proofUrl: "#",
-                    date: "June 19, 2026",
+                    date: "Jun 19, 2026",
                     hash: "0x3e89...cf40"
                   },
                   {
-                    name: "Elena Rodriguez (elena_r)",
+                    title: "Verified Winner",
+                    tier: "Global Advocate Member",
+                    category: "4 Match Winner",
+                    status: "Verified Payout",
                     draw: "Donation Match Rewards",
                     prize: "Custom Electric Bike Cruiser",
-                    match: "4 Matches",
                     ticket: "FND-556-P8M",
-                    avatar: "ER",
                     proofUrl: "#",
                     date: "May 18, 2026",
                     hash: "0x8f2a...22ba"
                   },
                   {
-                    name: "Yuki Shimizu (yuki.s)",
+                    title: "Verified Winner",
+                    tier: "Eco Scout Member",
+                    category: "4 Match Winner",
+                    status: "Verified Payout",
                     draw: "Community Impact Grants",
                     prize: "$1,500 Cash Grant Reward",
-                    match: "4 Matches",
                     ticket: "FND-041-K89",
-                    avatar: "YS",
                     proofUrl: "#",
                     date: "May 12, 2026",
                     hash: "0x6d9e...88ab"
@@ -1114,41 +1117,60 @@ export default function DashboardOverview() {
                   <Card key={idx} className="p-5 flex flex-col justify-between border-border bg-card/45 hover:border-accent/40 transition-all duration-300 relative overflow-hidden group">
                     <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div>
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 rounded-full bg-accent/15 border border-accent/30 flex items-center justify-center font-heading font-bold text-accent text-sm shrink-0">
-                          {winner.avatar}
+                      {/* Winner Header Block */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          {/* Trophy/Award icon */}
+                          <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0">
+                            <Trophy className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs font-bold text-foreground font-heading">
+                                {winner.title}
+                              </span>
+                              <ShieldCheck className="w-3.5 h-3.5 text-accent shrink-0" />
+                            </div>
+                            <span className="text-[10px] text-muted-foreground font-semibold block mt-0.5">
+                              {winner.tier}
+                            </span>
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <h4 className="text-xs font-bold text-foreground truncate">{winner.name}</h4>
-                          <span className="text-[9px] text-muted-foreground block">{winner.date}</span>
-                        </div>
+                        <Badge variant="outline" className="text-[8px] uppercase tracking-wider font-extrabold text-emerald-500 border-emerald-500/20 bg-emerald-500/5 px-2 py-0.5">
+                          {winner.status}
+                        </Badge>
                       </div>
 
+                      {/* Card Content Table */}
                       <div className="space-y-2 bg-secondary/15 p-3 rounded-xl border border-border/40 text-xs">
-                        <div className="flex justify-between">
+                        <div className="flex justify-between items-center">
                           <span className="text-muted-foreground font-semibold">Draw:</span>
                           <span className="font-bold text-foreground text-right truncate max-w-[120px]">{winner.draw}</span>
                         </div>
-                        <div className="flex justify-between">
+                        <div className="flex justify-between items-center">
                           <span className="text-muted-foreground font-semibold">Prize:</span>
                           <span className="font-bold text-accent text-right truncate max-w-[125px]">{winner.prize}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-muted-foreground font-semibold">Match Class:</span>
-                          <span className="font-bold text-emerald-500">{winner.match}</span>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground font-semibold">Winning Class:</span>
+                          <span className="font-bold text-emerald-500">{winner.category}</span>
                         </div>
-                        <div className="flex justify-between">
+                        <div className="flex justify-between items-center">
                           <span className="text-muted-foreground font-semibold">Ticket:</span>
                           <span className="font-mono text-[10px] font-bold text-foreground">{winner.ticket}</span>
                         </div>
                       </div>
                     </div>
 
+                    {/* Footer Hash and Verify Button */}
                     <div className="pt-4 mt-4 border-t border-border/30 flex justify-between items-center text-[10px]">
-                      <span className="text-muted-foreground font-mono">HASH: {winner.hash}</span>
+                      <div className="flex flex-col">
+                        <span className="text-muted-foreground font-mono">HASH: {winner.hash}</span>
+                        <span className="text-[9px] text-muted-foreground/60 mt-0.5">Drawn on: {winner.date}</span>
+                      </div>
                       <a 
                         href={winner.proofUrl}
-                        onClick={(e) => { e.preventDefault(); alert(`Verified Payout Signature: ${winner.hash}\nPaid on: ${winner.date}\nTransaction status: AUDITED & SIGNED`); }}
+                        onClick={(e) => { e.preventDefault(); alert(`Verified Payout Signature: ${winner.hash}\nPaid on: ${winner.date}\nTransaction status: AUDITED, SIGNED & PAID`); }}
                         className="text-accent hover:underline font-bold uppercase tracking-wider flex items-center gap-0.5"
                       >
                         Verify Proof <ExternalLink className="w-3 h-3" />

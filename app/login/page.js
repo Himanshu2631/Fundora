@@ -30,6 +30,18 @@ export default function Login() {
     }
   };
 
+  const handleQuickLogin = async (demoEmail, demoPassword) => {
+    setIsLoading(true);
+    setErrorMsg("");
+    try {
+      await signIn(demoEmail, demoPassword);
+      window.location.href = "/dashboard";
+    } catch (err) {
+      setErrorMsg(err.message || "Failed to sign in. Please verify credentials.");
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex min-h-screen bg-background">
       {/* Back button */}
@@ -159,6 +171,39 @@ export default function Login() {
             >
               Continue with Google
             </Button>
+
+            {/* Quick Demo Access */}
+            <div className="mt-6 p-4 rounded-2xl border border-white/[0.06] bg-card/40 backdrop-blur-sm space-y-3">
+              <div className="flex items-center gap-1.5 justify-center">
+                <Sparkles className="w-3 h-3 text-accent animate-pulse" />
+                <span className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground">
+                  Demo Console Access
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Button
+                  type="button"
+                  onClick={() => handleQuickLogin("admin@fundora.com", "admin")}
+                  disabled={isLoading}
+                  variant="outline"
+                  className="h-10 text-[10px] uppercase tracking-wider font-extrabold border-accent/20 hover:border-accent hover:bg-accent/10 hover:text-accent rounded-xl transition-all duration-200"
+                >
+                  Admin Portal
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => handleQuickLogin("user@fundora.com", "user")}
+                  disabled={isLoading}
+                  variant="outline"
+                  className="h-10 text-[10px] uppercase tracking-wider font-extrabold border-white/10 hover:border-white/20 rounded-xl transition-all duration-200"
+                >
+                  Regular User
+                </Button>
+              </div>
+              <p className="text-[9px] text-center text-muted-foreground/60 leading-normal">
+                Clicking either logs you in immediately via local mock database.
+              </p>
+            </div>
 
             <p className="text-xs sm:text-sm text-center text-muted-foreground mt-8">
               New to Fundora?{" "}

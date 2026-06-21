@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   LayoutDashboard,
   CreditCard,
@@ -15,6 +15,7 @@ import {
   ChevronRight,
   LogOut,
   ShieldCheck,
+  Shield,
   User,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -22,7 +23,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
-const NAV_SECTIONS = [
+const BASE_NAV_SECTIONS = [
   {
     label: "Main",
     items: [
@@ -56,6 +57,24 @@ export default function DashboardSidebar({ collapsed, onToggle }) {
   const pathname = usePathname();
   const { user, profile, signOut } = useAuth();
   const { subscription, status } = useSubscription();
+
+  // Admin detection — matches the pattern used across the codebase
+  const isAdmin = profile?.role === "admin" || user?.email?.includes("admin") || user?.email?.startsWith("admin@");
+
+  // Conditionally inject Admin Console nav item for admin users
+  const navSections = useMemo(() => {
+    if (!isAdmin) return BASE_NAV_SECTIONS;
+    return BASE_NAV_SECTIONS.map((section) => {
+      if (section.label !== "Account") return section;
+      return {
+        ...section,
+        items: [
+          { name: "Admin Console", href: "/admin", icon: Shield },
+          ...section.items,
+        ],
+      };
+    });
+  }, [isAdmin]);
 
   const isActive = (item) => {
     if (item.exact) return pathname === item.href;
@@ -169,7 +188,7 @@ export default function DashboardSidebar({ collapsed, onToggle }) {
 
       {/* ── Navigation ── */}
       <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-5">
-        {NAV_SECTIONS.map((section) => (
+        {navSections.map((section) => (
           <div key={section.label}>
             {/* Section label */}
             {!collapsed && (
