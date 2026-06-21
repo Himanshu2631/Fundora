@@ -12,7 +12,8 @@ import {
   submitWinnerClaim,
   reviewWinnerClaim,
   getWinnerClaims,
-  getUserClaims
+  getUserClaims,
+  updateDrawStatus
 } from "@/services/drawService";
 
 export function useDraws() {
@@ -127,6 +128,24 @@ export function useDraws() {
   };
 
   /**
+   * Transition draw status (Admin operation).
+   */
+  const changeDrawStatus = async (drawId, status) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const updatedDraw = await updateDrawStatus(drawId, status);
+      setDraws(prev => prev.map(d => d.id === drawId ? updatedDraw : d));
+      return updatedDraw;
+    } catch (err) {
+      setError(err.message || "Failed to update draw status.");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
    * Run the draw completion logic to generate winning numbers (Admin operation).
    */
   const completeDraw = async (drawId) => {
@@ -213,6 +232,7 @@ export function useDraws() {
     completeDraw,
     submitClaim,
     reviewClaim,
-    fetchAllClaims
+    fetchAllClaims,
+    changeDrawStatus
   };
 }

@@ -132,3 +132,65 @@ export async function removeAllocation(userId, charityId, supabaseClient) {
     throw error;
   }
 }
+
+/**
+ * Onboard a new charity (Admin operation).
+ * @param {object} charityData - The fields of the new charity.
+ * @param {object} [supabaseClient] - Optional server-side Supabase client.
+ * @returns {Promise<object>} The created charity.
+ */
+export async function createCharity(charityData, supabaseClient) {
+  const supabase = supabaseClient || createClient();
+  const { data, error } = await supabase
+    .from("charities")
+    .insert(charityData)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error in createCharity:", error);
+    throw error;
+  }
+  return data;
+}
+
+/**
+ * Update charity details (Admin operation).
+ * @param {string} charityId - Target charity ID.
+ * @param {object} updates - Updates object.
+ * @param {object} [supabaseClient] - Optional server-side Supabase client.
+ * @returns {Promise<object>} The updated charity.
+ */
+export async function updateCharity(charityId, updates, supabaseClient) {
+  const supabase = supabaseClient || createClient();
+  const { data, error } = await supabase
+    .from("charities")
+    .update(updates)
+    .eq("id", charityId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error in updateCharity:", error);
+    throw error;
+  }
+  return data;
+}
+
+/**
+ * Remove a charity (Admin operation).
+ * @param {string} charityId - Target charity ID.
+ * @param {object} [supabaseClient] - Optional server-side Supabase client.
+ */
+export async function deleteCharity(charityId, supabaseClient) {
+  const supabase = supabaseClient || createClient();
+  const { error } = await supabase
+    .from("charities")
+    .delete()
+    .eq("id", charityId);
+
+  if (error) {
+    console.error("Error in deleteCharity:", error);
+    throw error;
+  }
+}
