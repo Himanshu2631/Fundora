@@ -77,9 +77,15 @@ export default function DashboardLayout({ children }) {
       </AnimatePresence>
 
       {/* ── Sidebar ── */}
-      {/* Desktop: static */}
-      <div className="hidden md:flex md:flex-col md:shrink-0" style={{ width: sidebarCollapsed ? 72 : 260 }}>
-        <div className="fixed top-0 left-0 h-screen" style={{ width: sidebarCollapsed ? 72 : 260 }}>
+      {/* Desktop: floating fixed sidebar */}
+      <div className="hidden md:flex md:flex-col md:shrink-0" style={{ width: (sidebarCollapsed ? 72 : 260) + 32 }}>
+        <div
+          className="fixed top-4 left-4 z-20"
+          style={{
+            width: sidebarCollapsed ? 72 : 260,
+            height: "calc(100vh - 32px)",
+          }}
+        >
           <DashboardSidebar
             collapsed={sidebarCollapsed}
             onToggle={() => setSidebarCollapsed((c) => !c)}
@@ -87,15 +93,16 @@ export default function DashboardLayout({ children }) {
         </div>
       </div>
 
-      {/* Mobile: slide-over drawer */}
+      {/* Mobile: floating slide-over drawer */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ x: -260 }}
+            initial={{ x: -280 }}
             animate={{ x: 0 }}
-            exit={{ x: -260 }}
+            exit={{ x: -280 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 left-0 h-screen w-[260px] z-40 md:hidden"
+            className="fixed top-4 left-4 z-40 md:hidden"
+            style={{ width: 260, height: "calc(100vh - 32px)" }}
           >
             <DashboardSidebar
               collapsed={false}

@@ -623,9 +623,66 @@ export default function DashboardOverview() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
-                {/* Subscription Widget */}
-                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300">
+                {/* Subscription Widget + Contribution Breakdown (stacked) */}
+                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col gap-6 transition-all duration-300">
                   <SubscriptionWidget />
+
+                  {/* Contribution Breakdown & Draw Eligibility */}
+                  <Card className="p-6 flex-1 flex flex-col justify-between border-border bg-card">
+                    <div>
+                      <h3 className="font-heading font-extrabold text-base text-foreground mb-5 flex items-center gap-2">
+                        <Ticket className="w-4 h-4 text-accent" />
+                        Membership Benefits
+                      </h3>
+
+                      {/* Contribution Breakdown */}
+                      <div className="space-y-3 mb-5">
+                        {[
+                          { label: "Monthly Contribution", value: `$${monthlyContribution}.00`, accent: true },
+                          { label: "Charity Routing", value: `${totalAllocatedVal}% Allocated`, accent: totalAllocatedVal === 100 },
+                          { label: "Active Draw Tickets", value: `${activeTicketsCount || 6} Entries`, accent: activeTicketsCount > 0 },
+                          { label: "Giving Score", value: `${dynamicGivingScore} pts`, accent: true },
+                        ].map((row, idx) => (
+                          <div key={idx} className="flex justify-between items-center text-xs border-b border-border/25 pb-2 last:border-0 last:pb-0">
+                            <span className="text-muted-foreground font-semibold">{row.label}</span>
+                            <span className={`font-bold ${row.accent ? "text-accent" : "text-foreground"}`}>
+                              {row.value}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Draw Eligibility Status */}
+                      <div className="space-y-2.5">
+                        <div className="flex justify-between items-center text-[10px]">
+                          <span className="font-bold uppercase tracking-wider text-muted-foreground">Draw Eligibility</span>
+                          <span className={`font-extrabold ${hasActivePlan && scores.length > 0 && allocations.length > 0 ? "text-emerald-500" : "text-amber-500"}`}>
+                            {hasActivePlan && scores.length > 0 && allocations.length > 0 ? "Qualified" : "Incomplete"}
+                          </span>
+                        </div>
+                        <div className="space-y-1.5">
+                          {[
+                            { label: "Active Subscription", met: hasActivePlan },
+                            { label: "Score Submitted", met: scores.length > 0 },
+                            { label: "Charity Selected", met: allocations.length > 0 },
+                          ].map((req, idx) => (
+                            <div key={idx} className="flex items-center gap-2 text-[11px]">
+                              <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${req.met ? "bg-emerald-950/45 text-emerald-500 border border-emerald-800/40" : "bg-secondary/15 text-muted-foreground border border-border/30"}`}>
+                                <Check className="w-2.5 h-2.5" />
+                              </div>
+                              <span className={`font-medium ${req.met ? "text-foreground" : "text-muted-foreground"}`}>
+                                {req.label}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button asChild variant="outline" className="w-full mt-4 h-9 text-xs font-bold uppercase tracking-wider">
+                      <Link href="/dashboard/subscription">Manage Subscription</Link>
+                    </Button>
+                  </Card>
                 </motion.div>
 
                 {/* Charity Allocations Widget */}
