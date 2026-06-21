@@ -35,7 +35,7 @@ export function Modal({ isOpen, onClose, title, children, className }) {
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ type: "spring", duration: 0.4 }}
             className={cn(
-              "w-full max-w-lg bg-card border border-border rounded-sm shadow-xl relative z-10 overflow-hidden text-left flex flex-col max-h-[90vh]",
+              "w-full max-w-lg bg-card border border-border rounded-2xl shadow-xl relative z-10 overflow-hidden text-left flex flex-col max-h-[90vh]",
               className
             )}
           >

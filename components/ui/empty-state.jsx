@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 export function EmptyState({ title, description, icon: Icon = HelpCircle, action, className }) {
   return (
     <div className={cn(
-      "border border-dashed border-border p-12 text-center rounded-sm max-w-lg mx-auto flex flex-col items-center justify-center bg-card/10",
+      "border border-dashed border-border p-12 text-center rounded-2xl max-w-lg mx-auto flex flex-col items-center justify-center bg-card/10",
       className
     )}>
       <div className="w-12 h-12 rounded-full bg-secondary/50 border border-border flex items-center justify-center text-accent mb-4">

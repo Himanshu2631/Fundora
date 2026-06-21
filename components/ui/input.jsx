@@ -12,7 +12,7 @@ const Input = React.forwardRef(({ className, type = "text", label, error, ...pro
       <input
         type={type}
         className={cn(
-          "w-full h-11 px-3 bg-secondary/35 border border-border text-foreground text-sm rounded-sm focus:outline-none focus:border-accent transition-colors duration-200 placeholder:text-muted-foreground/60 disabled:opacity-50 disabled:cursor-not-allowed",
+          "w-full h-11 px-3 bg-secondary/35 border border-border text-foreground text-sm rounded-xl focus:outline-none focus:border-accent transition-colors duration-200 placeholder:text-muted-foreground/60 disabled:opacity-50 disabled:cursor-not-allowed",
           error && "border-destructive focus:border-destructive",
           className
         )}
