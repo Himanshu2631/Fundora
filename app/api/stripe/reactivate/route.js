@@ -19,6 +19,8 @@ export async function POST(req) {
       .from("subscriptions")
       .select("*")
       .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
       .maybeSingle();
 
     if (subError || !subscription) {
@@ -36,7 +38,7 @@ export async function POST(req) {
       const { error: reactivateError } = await supabase
         .from("subscriptions")
         .update({ status: "active" })
-        .eq("user_id", user.id);
+        .eq("id", subscription.id);
 
       if (reactivateError) {
         throw reactivateError;
@@ -55,7 +57,7 @@ export async function POST(req) {
     const { error: dbError } = await supabase
       .from("subscriptions")
       .update({ status: "active" })
-      .eq("user_id", user.id);
+      .eq("id", subscription.id);
 
     if (dbError) {
       console.error("Failed to update database status after Stripe reactivate:", dbError);

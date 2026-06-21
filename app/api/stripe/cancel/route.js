@@ -17,6 +17,8 @@ export async function POST(req) {
       .from("subscriptions")
       .select("*")
       .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
       .maybeSingle();
 
     if (subError || !subscription) {
@@ -30,7 +32,7 @@ export async function POST(req) {
       const { error: cancelError } = await supabase
         .from("subscriptions")
         .update({ status: "canceled" })
-        .eq("user_id", user.id);
+        .eq("id", subscription.id);
 
       if (cancelError) {
         throw cancelError;
@@ -49,7 +51,7 @@ export async function POST(req) {
     const { error: dbError } = await supabase
       .from("subscriptions")
       .update({ status: "canceled" })
-      .eq("user_id", user.id);
+      .eq("id", subscription.id);
 
     if (dbError) {
       console.error("Failed to update database status after Stripe cancel:", dbError);

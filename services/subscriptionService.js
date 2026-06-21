@@ -11,6 +11,8 @@ export async function getSubscription(userId, supabaseClient) {
     .from("subscriptions")
     .select("*")
     .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
     .maybeSingle();
 
   if (error) {
@@ -140,7 +142,7 @@ export function checkSubscriptionStatus(subscription) {
     return "cancelled";
   }
   
-  if (subscription.status === "past_due" || subscription.status === "unpaid" || renewal < now) {
+  if (subscription.status === "past_due" || subscription.status === "unpaid") {
     return "expired";
   }
   
