@@ -15,7 +15,7 @@ import { ShieldAlert } from "lucide-react";
 // ─── Per-route metadata ───────────────────────────────────────────────────────
 const ROUTE_META = {
   "/admin": {
-    title: "Admin Dashboard",
+    title: "Executive Dashboard",
     sub: "Platform overview, KPIs, and system health.",
   },
   "/admin/users": {
@@ -25,6 +25,10 @@ const ROUTE_META = {
   "/admin/subscriptions": {
     title: "Subscriptions",
     sub: "Tier analytics, revenue breakdown, and billing events.",
+  },
+  "/admin/payments": {
+    title: "Payment Transactions",
+    sub: "Monitor, inspect, and reconcile user financial charges.",
   },
   "/admin/charities": {
     title: "Charity Management",
@@ -41,6 +45,10 @@ const ROUTE_META = {
   "/admin/analytics": {
     title: "Platform Analytics",
     sub: "Revenue, growth, engagement, and impact metrics.",
+  },
+  "/admin/settings": {
+    title: "System Settings",
+    sub: "Configure global parameters, security settings, and API integrations.",
   },
 };
 

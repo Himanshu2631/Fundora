@@ -16,6 +16,8 @@ import {
   ArrowLeft,
   ShieldAlert,
   User,
+  Settings,
+  DollarSign,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Badge } from "@/components/ui/badge";
@@ -25,23 +27,40 @@ const NAV_SECTIONS = [
   {
     label: "Overview",
     items: [
-      { name: "Dashboard", href: "/admin", icon: LayoutDashboard, exact: true },
-      { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+      { name: "Executive Dashboard", href: "/admin", icon: LayoutDashboard, exact: true },
     ],
   },
   {
-    label: "Management",
+    label: "Operations",
     items: [
       { name: "Users", href: "/admin/users", icon: Users },
       { name: "Subscriptions", href: "/admin/subscriptions", icon: CreditCard },
+      { name: "Payments", href: "/admin/payments", icon: DollarSign },
+    ],
+  },
+  {
+    label: "Draw Management",
+    items: [
+      { name: "Draws", href: "/admin/draws", icon: Ticket },
+      { name: "Winners", href: "/admin/winners", icon: Trophy },
+    ],
+  },
+  {
+    label: "Charity Management",
+    items: [
       { name: "Charities", href: "/admin/charities", icon: Heart },
     ],
   },
   {
-    label: "Rewards",
+    label: "Insights",
     items: [
-      { name: "Draws", href: "/admin/draws", icon: Ticket },
-      { name: "Winners", href: "/admin/winners", icon: Trophy },
+      { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
+    ],
+  },
+  {
+    label: "System",
+    items: [
+      { name: "Settings", href: "/admin/settings", icon: Settings },
     ],
   },
 ];
@@ -215,31 +234,8 @@ export default function AdminSidebar({ collapsed, onToggle }) {
         ))}
       </nav>
 
-      {/* ── Bottom: Return to Dashboard ── */}
-      <div className="border-t border-[#162520] px-2 py-3 shrink-0">
-        <Link
-          href="/dashboard"
-          className={cn(
-            "flex items-center gap-3 w-full px-2.5 py-2.5 rounded-xl text-xs font-semibold text-[#8A9690] hover:text-accent hover:bg-accent/10 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200",
-            collapsed ? "justify-center" : ""
-          )}
-          title={collapsed ? "Back to Dashboard" : undefined}
-        >
-          <ArrowLeft className="w-4 h-4 shrink-0" />
-          <AnimatePresence>
-            {!collapsed && (
-              <motion.span
-                initial={{ opacity: 0, x: -6 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -6 }}
-                transition={{ duration: 0.15 }}
-              >
-                Back to Dashboard
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </Link>
-      </div>
+      {/* ── Bottom: Spacer ── */}
+      <div className="border-t border-[#162520] px-2 py-3 shrink-0" />
     </motion.aside>
   );
 }

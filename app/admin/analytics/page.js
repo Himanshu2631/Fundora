@@ -119,10 +119,17 @@ export default function AdminAnalyticsPage() {
   const activeSubscribers = allSubscriptions.filter(s => s.status === "active" || s.status === "expiring").length;
   
   // Monthly Revenue (MRR)
+  const planPrices = { scout: 10, advocate: 25, builder: 100 };
   const monthlyRevenue = allSubscriptions
     .filter(s => s.status === "active" || s.status === "expiring")
     .reduce((sum, s) => {
-      const amt = typeof s.amount === "number" ? s.amount : parseFloat(s.amount.replace("$", ""));
+      let amt = 0;
+      if (s.amount !== undefined && s.amount !== null) {
+        amt = typeof s.amount === "number" ? s.amount : parseFloat(String(s.amount).replace("$", ""));
+      } else {
+        const planKey = s.plan || s.plan_type || s.plan_name;
+        amt = planPrices[planKey] || 0;
+      }
       return sum + amt;
     }, 0);
 
@@ -133,9 +140,10 @@ export default function AdminAnalyticsPage() {
   const approvedWinnersCount = dbData.claims.filter(c => c.status === "approved" || c.status === "paid").length;
 
   // 3. Subscription growth breakdown
-  const scoutCount = allSubscriptions.filter(s => s.plan === "scout" && s.status !== "cancelled").length;
-  const advocateCount = allSubscriptions.filter(s => s.plan === "advocate" && s.status !== "cancelled").length;
-  const builderCount = allSubscriptions.filter(s => s.plan === "builder" && s.status !== "cancelled").length;
+  const getPlanKey = (s) => (s.plan || s.plan_type || s.plan_name || "").toLowerCase();
+  const scoutCount = allSubscriptions.filter(s => getPlanKey(s) === "scout" && s.status !== "cancelled").length;
+  const advocateCount = allSubscriptions.filter(s => getPlanKey(s) === "advocate" && s.status !== "cancelled").length;
+  const builderCount = allSubscriptions.filter(s => getPlanKey(s) === "builder" && s.status !== "cancelled").length;
   const totalSubs = scoutCount + advocateCount + builderCount;
   const scoutPct = totalSubs > 0 ? Math.round((scoutCount / totalSubs) * 100) : 0;
   const advocatePct = totalSubs > 0 ? Math.round((advocateCount / totalSubs) * 100) : 0;
