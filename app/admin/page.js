@@ -1,358 +1,294 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
 import { motion } from "framer-motion";
-import Navbar from "@/components/navbar";
-import Footer from "@/components/footer";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { LoadingState } from "@/components/ui/loading-state";
-import { useAuth } from "@/hooks/useAuth";
-import { 
-  ShieldAlert, Settings, Plus, RotateCw, PlusCircle, CheckCircle, 
-  Trash2, Edit3, Eye, Sparkles
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import {
+  Users,
+  CreditCard,
+  Heart,
+  Ticket,
+  TrendingUp,
+  ArrowUpRight,
+  ArrowRight,
+  Activity,
+  CheckCircle,
+  AlertTriangle,
+  Clock,
+  Trophy,
+  BarChart3,
+  DollarSign,
+  Zap,
 } from "lucide-react";
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.06 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 14 },
+  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 14 } },
+};
+
+const STATS = [
+  {
+    label: "Total Users",
+    value: "1,248",
+    change: "+14%",
+    changeLabel: "vs last month",
+    icon: Users,
+    color: "text-blue-400",
+    bgColor: "bg-blue-500/10",
+    borderColor: "border-blue-500/20",
+  },
+  {
+    label: "Monthly Revenue",
+    value: "$34,920",
+    change: "+8.2%",
+    changeLabel: "MRR growth",
+    icon: DollarSign,
+    color: "text-emerald-400",
+    bgColor: "bg-emerald-500/10",
+    borderColor: "border-emerald-500/20",
+  },
+  {
+    label: "Active Charities",
+    value: "12",
+    change: "2 pending",
+    changeLabel: "vetting queue",
+    icon: Heart,
+    color: "text-rose-400",
+    bgColor: "bg-rose-500/10",
+    borderColor: "border-rose-500/20",
+  },
+  {
+    label: "Draw Pool",
+    value: "$24,950",
+    change: "4 days",
+    changeLabel: "until next draw",
+    icon: Ticket,
+    color: "text-amber-400",
+    bgColor: "bg-amber-500/10",
+    borderColor: "border-amber-500/20",
+  },
+];
+
+const ACTIVITY_FEED = [
+  { type: "user", message: "New user registered: elena.r@email.com", time: "2 min ago", icon: Users, color: "text-blue-400" },
+  { type: "subscription", message: "Subscription upgrade: Scout → Advocate (marcus.k)", time: "18 min ago", icon: ArrowUpRight, color: "text-emerald-400" },
+  { type: "draw", message: "Draw entry auto-generated for 42 eligible users", time: "1 hr ago", icon: Ticket, color: "text-amber-400" },
+  { type: "charity", message: "Charity vetting completed: Eco Shelter Solutions", time: "2 hrs ago", icon: CheckCircle, color: "text-emerald-400" },
+  { type: "claim", message: "Winner claim submitted: FND-884-92K (Patagonia Retreat)", time: "3 hrs ago", icon: Trophy, color: "text-rose-400" },
+  { type: "system", message: "Stripe webhook sync completed — 100% health", time: "4 hrs ago", icon: Zap, color: "text-purple-400" },
+];
+
+const SYSTEM_HEALTH = [
+  { name: "Database", status: "operational", uptime: "99.98%" },
+  { name: "Auth Service", status: "operational", uptime: "99.99%" },
+  { name: "Stripe Billing", status: "operational", uptime: "99.95%" },
+  { name: "Draw Engine", status: "operational", uptime: "100%" },
+];
+
+const QUICK_ACTIONS = [
+  { label: "Manage Users", href: "/admin/users", icon: Users, desc: "View all registered members" },
+  { label: "Review Claims", href: "/admin/winners", icon: Trophy, desc: "Pending winner verifications" },
+  { label: "Trigger Draw", href: "/admin/draws", icon: Ticket, desc: "Execute monthly draw protocol" },
+  { label: "View Analytics", href: "/admin/analytics", icon: BarChart3, desc: "Revenue and growth metrics" },
+];
+
 export default function AdminDashboard() {
-  const [activeSection, setActiveSection] = useState("charities");
-  const [drawPool, setDrawPool] = useState(24950);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [winnerMessage, setWinnerMessage] = useState("");
-  const { profile, loading: authLoading } = useAuth();
-
-  const stats = [
-    { label: "Total Members", value: "1,248 active", change: "+14% this month" },
-    { label: "Monthly Recurring Volume", value: "$34,920.00", change: "98.5% efficiency" },
-    { label: "Audited Charities", value: "12 onboarded", change: "2 pending vetting" },
-    { label: "Next Draw Pool", value: `$${drawPool.toLocaleString()}`, change: "Draws in 4 days" },
-  ];
-
-  const [charities, setCharities] = useState([
-    { id: "CH-01", name: "Acres of Green", category: "Environment", status: "Active", auditorScore: "9.8", spendingRatio: "96.4%" },
-    { id: "CH-02", name: "Apex Water Initiative", category: "Clean Water", status: "Active", auditorScore: "9.9", spendingRatio: "98.1%" },
-    { id: "CH-03", name: "Empower Global Edu", category: "Education", status: "Active", auditorScore: "9.7", spendingRatio: "95.5%" },
-    { id: "CH-04", name: "BioGen Health Corps", category: "Healthcare", status: "Active", auditorScore: "9.5", spendingRatio: "94.2%" },
-    { id: "CH-05", name: "Eco Shelter Solutions", category: "Housing", status: "Pending Vetting", auditorScore: "TBD", spendingRatio: "TBD" },
-  ]);
-
-  const [upcomingDraws, setUpcomingDraws] = useState([
-    { id: "DR-42", title: "Patagonia Eco-Retreat", date: "Jun 24, 2026", minScore: "50 pts", entriesCount: 412, status: "Active" },
-    { id: "DR-43", title: "Custom Electric Cruiser", date: "Jul 01, 2026", minScore: "120 pts", entriesCount: 184, status: "Pending Init" },
-  ]);
-
-  const handleTriggerDraw = () => {
-    setIsDrawing(true);
-    setWinnerMessage("");
-    setTimeout(() => {
-      setIsDrawing(false);
-      setWinnerMessage("Winner selected: user 'hiroshi.t' (Ticket FND-884-92K) has won the Patagonia Eco-Retreat!");
-      setDrawPool(15000); // Reset pool for next round
-    }, 2500);
-  };
-
-  if (authLoading) {
-    return (
-      <div className="flex flex-col min-h-screen bg-background text-foreground">
-        <Navbar />
-        <main className="flex-1 flex items-center justify-center py-20">
-          <LoadingState message="Loading administrative session..." />
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
-  // Middleware redirects non-admins, but we add a safety check here too.
-  if (profile?.role !== "admin") {
-    return (
-      <div className="flex flex-col min-h-screen bg-background text-foreground">
-        <Navbar />
-        <main className="flex-1 flex items-center justify-center py-20 text-center px-6">
-          <Card className="p-8 max-w-md mx-auto">
-            <ShieldAlert className="w-12 h-12 text-destructive mx-auto mb-4" />
-            <h2 className="font-heading text-lg font-bold text-foreground mb-2">Access Restriced</h2>
-            <p className="text-xs text-muted-foreground leading-relaxed mb-6">
-              You must have administrative privileges to access this panel.
-            </p>
-            <Button asChild variant="default" className="w-full">
-              <Link href="/dashboard">Return to Dashboard</Link>
-            </Button>
-          </Card>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <Navbar />
-
-      <main className="flex-1 py-12">
-        <div className="mx-auto max-w-7xl px-6">
-          {/* Header */}
-          <div className="border-b border-border pb-8 mb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="p-1 rounded-sm bg-destructive/10 text-destructive border border-destructive/20">
-                  <ShieldAlert className="w-4 h-4" />
-                </span>
-                <span className="text-[10px] font-bold uppercase tracking-widest text-destructive">Administrative Suite</span>
+    <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto">
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="space-y-8"
+      >
+        {/* ── KPI Cards ── */}
+        <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {STATS.map((stat, i) => (
+            <Card key={i} className="p-5 bg-[#0A1C16] border-[#162520] hover:border-[#1E3A2E] transition-colors group">
+              <div className="flex items-start justify-between mb-4">
+                <div className={`w-10 h-10 rounded-sm ${stat.bgColor} ${stat.borderColor} border flex items-center justify-center`}>
+                  <stat.icon className={`w-5 h-5 ${stat.color}`} />
+                </div>
+                <div className="flex items-center gap-1 text-[10px] font-semibold text-emerald-400">
+                  <TrendingUp className="w-3 h-3" />
+                  {stat.change}
+                </div>
               </div>
-              <h1 className="font-heading text-3xl font-extrabold text-foreground">Console Controller</h1>
-            </div>
-            <div className="flex gap-4">
-              <Button variant="outline" size="sm" className="gap-2">
-                <Settings className="w-4 h-4" /> System Settings
-              </Button>
-            </div>
-          </div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#8A9690] mb-1">{stat.label}</p>
+              <p className="font-heading text-2xl font-extrabold text-white">{stat.value}</p>
+              <p className="text-[10px] text-[#8A9690] mt-1">{stat.changeLabel}</p>
+            </Card>
+          ))}
+        </motion.div>
 
-          {/* Quick Platform Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {stats.map((stat, i) => (
-              <Card key={i} className="p-6 bg-card">
-                <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block mb-2">{stat.label}</span>
-                <h3 className="font-heading text-2xl font-extrabold text-foreground mb-1">{stat.value}</h3>
-                <span className="text-[10px] font-semibold text-accent">{stat.change}</span>
-              </Card>
-            ))}
-          </div>
-
-          {/* Core Panel Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Sidebar Controls (3 spans) */}
-            <Card className="lg:col-span-3 p-4 space-y-2">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground block px-3 mb-4">Operations</span>
-              
-              <button
-                onClick={() => setActiveSection("charities")}
-                className={`w-full text-left px-3 py-2.5 rounded-sm text-xs font-semibold flex items-center justify-between transition-colors ${
-                  activeSection === "charities"
-                    ? "bg-accent/15 text-accent border-l-2 border-accent"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
-                }`}
-              >
-                <span>Charity Onboarding</span>
-                <span className="text-[10px] bg-secondary text-secondary-foreground px-1.5 py-0.5 rounded-sm font-bold">{charities.length}</span>
-              </button>
-
-              <button
-                onClick={() => setActiveSection("draws")}
-                className={`w-full text-left px-3 py-2.5 rounded-sm text-xs font-semibold flex items-center justify-between transition-colors ${
-                  activeSection === "draws"
-                    ? "bg-accent/15 text-accent border-l-2 border-accent"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
-                }`}
-              >
-                <span>Draw Engine Console</span>
-                <span className="text-[10px] bg-secondary text-secondary-foreground px-1.5 py-0.5 rounded-sm font-bold">{upcomingDraws.length}</span>
-              </button>
-
-              <button
-                onClick={() => setActiveSection("subscriptions")}
-                className={`w-full text-left px-3 py-2.5 rounded-sm text-xs font-semibold flex items-center justify-between transition-colors ${
-                  activeSection === "subscriptions"
-                    ? "bg-accent/15 text-accent border-l-2 border-accent"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary/40"
-                }`}
-              >
-                <span>User Subscriptions</span>
-              </button>
+        {/* ── Main Grid ── */}
+        <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          {/* Left Column: Activity Feed */}
+          <div className="lg:col-span-7 space-y-6">
+            <Card className="bg-[#0A1C16] border-[#162520]">
+              <CardHeader className="pb-4 border-b border-[#162520]">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle className="text-sm font-extrabold text-white flex items-center gap-2">
+                      <Activity className="w-4 h-4 text-red-400" />
+                      Live Activity Feed
+                    </CardTitle>
+                    <CardDescription className="text-[11px] text-[#8A9690] mt-0.5">
+                      Real-time platform events and notifications.
+                    </CardDescription>
+                  </div>
+                  <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/25 text-[9px] hover:bg-emerald-500/20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse mr-1" />
+                    Live
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-5">
+                <div className="space-y-1">
+                  {ACTIVITY_FEED.map((event, i) => (
+                    <div key={i} className="flex items-start gap-3 p-3 rounded-sm hover:bg-[#0D2B20]/40 transition-colors group/item">
+                      <div className={`w-8 h-8 rounded-sm bg-[#0D2B20] border border-[#162520] flex items-center justify-center shrink-0 group-hover/item:border-[#1E3A2E]`}>
+                        <event.icon className={`w-3.5 h-3.5 ${event.color}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-white/90 font-medium leading-relaxed">{event.message}</p>
+                        <p className="text-[10px] text-[#8A9690] mt-0.5 flex items-center gap-1">
+                          <Clock className="w-2.5 h-2.5" />
+                          {event.time}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
             </Card>
 
-            {/* Content Control Area (9 spans) */}
-            <div className="lg:col-span-9">
-              {/* CHARITIES PANEL */}
-              {activeSection === "charities" && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="space-y-6"
-                >
-                  <div className="flex justify-between items-center">
-                    <h2 className="font-heading text-lg font-bold text-foreground">Onboarded Charities Directory</h2>
-                    <Button variant="accent" size="sm" className="gap-1.5">
-                      <Plus className="w-3.5 h-3.5" /> Onboard New Charity
-                    </Button>
-                  </div>
-
-                  <Card className="overflow-hidden">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="pl-6">ID</TableHead>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Category</TableHead>
-                          <TableHead>Auditor Rating</TableHead>
-                          <TableHead>Direct Spending</TableHead>
-                          <TableHead>Vetting Status</TableHead>
-                          <TableHead className="text-right pr-6">Actions</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {charities.map((charity) => (
-                          <TableRow key={charity.id}>
-                            <TableCell className="font-mono text-muted-foreground pl-6">{charity.id}</TableCell>
-                            <TableCell className="text-foreground font-semibold">{charity.name}</TableCell>
-                            <TableCell>{charity.category}</TableCell>
-                            <TableCell className="text-foreground font-semibold">{charity.auditorScore}</TableCell>
-                            <TableCell>{charity.spendingRatio}</TableCell>
-                            <TableCell>
-                              <Badge variant={charity.status === "Active" ? "success" : "warning"}>
-                                {charity.status}
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="text-right pr-6 space-x-2">
-                              <button className="text-muted-foreground hover:text-foreground p-1">
-                                <Eye className="w-3.5 h-3.5" />
-                              </button>
-                              <button className="text-muted-foreground hover:text-accent p-1">
-                                <Edit3 className="w-3.5 h-3.5" />
-                              </button>
-                              <button className="text-muted-foreground hover:text-destructive p-1">
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </Card>
-                </motion.div>
-              )}
-
-              {/* DRAWS PANEL */}
-              {activeSection === "draws" && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="space-y-6"
-                >
-                  <div className="flex justify-between items-center">
-                    <h2 className="font-heading text-lg font-bold text-foreground">Reward Draw Management</h2>
-                    <Button variant="outline" size="sm" className="gap-1.5">
-                      <PlusCircle className="w-3.5 h-3.5" /> Create New Reward Draw
-                    </Button>
-                  </div>
-
-                  {/* Draw Engine Trigger Console widget */}
-                  <Card className="p-6">
-                    <h3 className="font-heading font-bold text-sm text-foreground mb-2 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-accent" /> Cryptographic Draw Trigger
-                    </h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed mb-6">
-                      Trigger the verified pseudorandom selection protocol for the active draw. This imports active members eligibility hashes and checks signature validity.
-                    </p>
-
-                    <div className="space-y-6">
-                      <div>
-                        <Button
-                          onClick={handleTriggerDraw}
-                          disabled={isDrawing}
-                          variant="accent"
-                        >
-                          {isDrawing ? (
-                            <>
-                              <RotateCw className="w-4 h-4 animate-spin" /> Selecting Winner...
-                            </>
-                          ) : (
-                            "Trigger Draw Protocol"
-                          )}
-                        </Button>
+            {/* Quick Actions */}
+            <Card className="bg-[#0A1C16] border-[#162520]">
+              <CardHeader className="pb-4 border-b border-[#162520]">
+                <CardTitle className="text-sm font-extrabold text-white flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-amber-400" />
+                  Quick Actions
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {QUICK_ACTIONS.map((action) => (
+                    <Link key={action.href} href={action.href}>
+                      <div className="p-4 bg-[#0D2B20]/30 border border-[#162520] rounded-sm hover:border-red-500/25 hover:bg-[#0D2B20]/50 transition-all group/action cursor-pointer">
+                        <div className="flex items-center justify-between mb-2">
+                          <action.icon className="w-4 h-4 text-[#8A9690] group-hover/action:text-red-400 transition-colors" />
+                          <ArrowRight className="w-3.5 h-3.5 text-[#8A9690]/40 group-hover/action:text-red-400 transition-colors" />
+                        </div>
+                        <p className="text-xs font-bold text-white mb-0.5">{action.label}</p>
+                        <p className="text-[10px] text-[#8A9690]">{action.desc}</p>
                       </div>
-                      
-                      {winnerMessage && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                        >
-                          <Alert variant="success">
-                            <CheckCircle className="w-4 h-4" />
-                            <AlertTitle>Selection Succeeded</AlertTitle>
-                            <AlertDescription>{winnerMessage}</AlertDescription>
-                          </Alert>
-                        </motion.div>
-                      )}
-                    </div>
-                  </Card>
-
-                  {/* Upcoming draws table */}
-                  <Card className="overflow-hidden">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="pl-6">ID</TableHead>
-                          <TableHead>Draw Prize</TableHead>
-                          <TableHead>Scheduled Date</TableHead>
-                          <TableHead>Min Rank</TableHead>
-                          <TableHead>Entrants</TableHead>
-                          <TableHead className="text-right pr-6">Engine Status</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {upcomingDraws.map((draw) => (
-                          <TableRow key={draw.id}>
-                            <TableCell className="font-mono text-muted-foreground pl-6">{draw.id}</TableCell>
-                            <TableCell className="text-foreground font-semibold">{draw.title}</TableCell>
-                            <TableCell>{draw.date}</TableCell>
-                            <TableCell className="text-foreground font-semibold">{draw.minScore}</TableCell>
-                            <TableCell className="text-foreground">{draw.entriesCount} users</TableCell>
-                            <TableCell className="text-right pr-6">
-                              <Badge variant={draw.status === "Active" ? "accent" : "outline"}>
-                                {draw.status}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </Card>
-                </motion.div>
-              )}
-
-              {/* SUBSCRIPTIONS PANEL */}
-              {activeSection === "subscriptions" && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="space-y-6"
-                >
-                  <div className="flex justify-between items-center">
-                    <h2 className="font-heading text-lg font-bold text-foreground">Active Subscription Brackets</h2>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {[
-                      { name: "Eco Scout ($10/mo)", count: "542 users", total: "$5,420/mo", color: "text-muted-foreground/80" },
-                      { name: "Global Advocate ($25/mo)", count: "482 users", total: "$12,050/mo", color: "text-accent" },
-                      { name: "Legacy Builder ($100/mo)", count: "174 users", total: "$17,400/mo", color: "text-foreground" },
-                    ].map((tier, i) => (
-                      <Card key={i} className="p-6">
-                        <h4 className={`font-heading font-bold text-sm mb-2 ${tier.color}`}>{tier.name}</h4>
-                        <p className="text-2xl font-extrabold text-foreground mb-1">{tier.count}</p>
-                        <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-bold">Volume: {tier.total}</span>
-                      </Card>
-                    ))}
-                  </div>
-
-                  <Card className="p-6">
-                    <p className="text-xs text-muted-foreground leading-relaxed text-center">
-                      All subscriptions are integrated via Stripe billing nodes. Stripe webhook sync checks out at 100% status health.
-                    </p>
-                  </Card>
-                </motion.div>
-              )}
-            </div>
+                    </Link>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </div>
-      </main>
 
-      <Footer />
+          {/* Right Column: System Health + Revenue Summary */}
+          <div className="lg:col-span-5 space-y-6">
+            {/* System Health */}
+            <Card className="bg-[#0A1C16] border-[#162520]">
+              <CardHeader className="pb-4 border-b border-[#162520]">
+                <CardTitle className="text-sm font-extrabold text-white flex items-center gap-2">
+                  <Activity className="w-4 h-4 text-emerald-400" />
+                  System Health
+                </CardTitle>
+                <CardDescription className="text-[11px] text-[#8A9690] mt-0.5">
+                  All services operational.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-5">
+                <div className="space-y-3">
+                  {SYSTEM_HEALTH.map((service) => (
+                    <div key={service.name} className="flex items-center justify-between p-3 bg-[#0D2B20]/30 border border-[#162520] rounded-sm">
+                      <div className="flex items-center gap-3">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-xs font-semibold text-white">{service.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-[#8A9690] font-mono">{service.uptime}</span>
+                        <Badge className="bg-emerald-500/15 text-emerald-400 border-emerald-500/25 text-[8px] py-0 px-1.5 hover:bg-emerald-500/20">
+                          Healthy
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Revenue Breakdown */}
+            <Card className="bg-[#0A1C16] border-[#162520]">
+              <CardHeader className="pb-4 border-b border-[#162520]">
+                <CardTitle className="text-sm font-extrabold text-white flex items-center gap-2">
+                  <DollarSign className="w-4 h-4 text-emerald-400" />
+                  Revenue Breakdown
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-5 space-y-4">
+                {[
+                  { tier: "Legacy Builder", price: "$100/mo", users: 174, revenue: "$17,400", pct: 49.8, color: "bg-amber-500" },
+                  { tier: "Global Advocate", price: "$25/mo", users: 482, revenue: "$12,050", pct: 34.5, color: "bg-emerald-500" },
+                  { tier: "Eco Scout", price: "$10/mo", users: 542, revenue: "$5,420", pct: 15.5, color: "bg-blue-500" },
+                ].map((tier) => (
+                  <div key={tier.tier} className="space-y-2">
+                    <div className="flex justify-between items-center text-xs">
+                      <div>
+                        <span className="font-bold text-white">{tier.tier}</span>
+                        <span className="text-[#8A9690] ml-1.5">({tier.price})</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="font-bold text-white">{tier.revenue}</span>
+                        <span className="text-[#8A9690] ml-1.5">· {tier.users} users</span>
+                      </div>
+                    </div>
+                    <div className="h-1.5 bg-[#0D2B20] rounded-full overflow-hidden">
+                      <div className={`h-full ${tier.color} rounded-full`} style={{ width: `${tier.pct}%` }} />
+                    </div>
+                  </div>
+                ))}
+                <div className="pt-3 border-t border-[#162520] flex justify-between items-center text-xs">
+                  <span className="font-bold text-[#8A9690]">Total MRR</span>
+                  <span className="font-heading font-extrabold text-lg text-white">$34,870</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Platform Summary */}
+            <Card className="bg-[#0A1C16] border-[#162520] p-5">
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { label: "Conversion Rate", value: "12.4%", icon: TrendingUp },
+                  { label: "Churn Rate", value: "2.1%", icon: AlertTriangle },
+                  { label: "Avg Score", value: "284 pts", icon: Trophy },
+                  { label: "Active Draws", value: "2", icon: Ticket },
+                ].map((metric) => (
+                  <div key={metric.label} className="p-3 bg-[#0D2B20]/30 border border-[#162520] rounded-sm text-center">
+                    <metric.icon className="w-3.5 h-3.5 text-[#8A9690] mx-auto mb-1.5" />
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A9690]">{metric.label}</p>
+                    <p className="font-heading text-sm font-extrabold text-white mt-0.5">{metric.value}</p>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
