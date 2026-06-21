@@ -10,6 +10,7 @@ export const AuthContext = createContext({
   signIn: async () => {},
   signUp: async () => {},
   signOut: async () => {},
+  updateProfile: async () => {},
 });
 
 const supabase = createClient();
@@ -137,8 +138,38 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const updateProfile = async (updates) => {
+    if (!user) throw new Error("No active session");
+    setLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .update(updates)
+        .eq("id", user.id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      setProfile(data);
+      
+      // Update display name inside auth user metadata
+      if (updates.full_name) {
+        await supabase.auth.updateUser({
+          data: { full_name: updates.full_name }
+        });
+      }
+      
+      return data;
+    } catch (err) {
+      console.error("❌ [AuthProvider] updateProfile failed:", err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
