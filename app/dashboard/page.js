@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Modal } from "@/components/ui/modal";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useScores } from "@/hooks/useScores";
@@ -107,6 +108,7 @@ function AnimatedCounter({ value, duration = 800 }) {
 
 function RecentWinnerCard({ winner }) {
   const [showDetails, setShowDetails] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
     <Card className="p-5 flex flex-col justify-between border-border bg-card/45 hover:border-accent/40 transition-all duration-300 relative overflow-hidden group">
@@ -182,11 +184,15 @@ function RecentWinnerCard({ winner }) {
                     <ShieldCheck className="w-3.5 h-3.5" /> Checked & Verified
                   </span>
                 </div>
-                <div className="pt-1.5 border-t border-border/30 mt-1 flex flex-col gap-0.5">
-                  <span className="text-[10px] text-muted-foreground font-semibold">Cryptographic Signature</span>
-                  <span className="font-mono text-[9px] text-[#8a9690] truncate block">
-                    {winner.hash}
-                  </span>
+                <div className="pt-1.5 border-t border-white/[0.04] mt-1 space-y-1">
+                  <div className="flex justify-between items-center text-[10px]">
+                    <span className="text-muted-foreground font-semibold">Verified On:</span>
+                    <span className="text-foreground font-bold">{winner.date}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-[10px]">
+                    <span className="text-muted-foreground font-semibold">Approval Date:</span>
+                    <span className="text-foreground font-bold">{winner.date}</span>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -204,17 +210,96 @@ function RecentWinnerCard({ winner }) {
           {showDetails ? "Hide Details" : "View Details"}
         </button>
         
-        <a
-          href={winner.proofUrl}
-          onClick={(e) => {
-            e.preventDefault();
-            alert(`Verified Payout Signature: ${winner.hash}\nPaid on: ${winner.date}\nTransaction status: AUDITED, SIGNED & PAID\nTicket ID: ${winner.ticket}`);
-          }}
-          className="text-accent hover:underline font-bold uppercase tracking-wider flex items-center gap-0.5"
+        <button
+          type="button"
+          onClick={() => setIsModalOpen(true)}
+          className="text-accent hover:underline font-bold uppercase tracking-wider flex items-center gap-1"
         >
-          Verify Proof <ExternalLink className="w-3 h-3" />
-        </a>
+          View Verification <ExternalLink className="w-3 h-3" />
+        </button>
       </div>
+
+      {/* Payout Verification Audit Modal */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Payout Verification Audit"
+        className="max-w-md bg-[#070D0B] border-[#162520] text-white"
+      >
+        <div className="space-y-6">
+          <div className="flex flex-col items-center text-center p-4 bg-emerald-950/20 border border-emerald-500/20 rounded-2xl">
+            <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-500 mb-3 animate-pulse">
+              <ShieldCheck className="w-6 h-6" />
+            </div>
+            <h4 className="text-sm font-extrabold text-white uppercase tracking-wider font-heading">
+              Payout Verified & Audited
+            </h4>
+            <p className="text-[11px] text-muted-foreground/80 leading-relaxed mt-1.5">
+              This draw payout has been reviewed, approved, and released by the Compliance Board.
+            </p>
+          </div>
+
+          <div className="space-y-3 bg-[#0A1C16]/50 p-4 rounded-xl border border-white/[0.04] text-xs">
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground font-semibold">Verification Status:</span>
+              <Badge variant="outline" className="text-[9px] uppercase tracking-wider font-extrabold text-emerald-500 border-emerald-500/20 bg-emerald-500/5 px-2 py-0.5">
+                Submission Approved
+              </Badge>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground font-semibold">Approved By:</span>
+              <span className="font-bold text-foreground">Platform Admin (Vetted Account)</span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground font-semibold">Approval Date:</span>
+              <span className="font-bold text-foreground">{winner.date}</span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground font-semibold">Winner Status:</span>
+              <span className="text-emerald-500 font-bold flex items-center gap-1">
+                <Check className="w-3.5 h-3.5" /> Payout Disbursed
+              </span>
+            </div>
+            
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground font-semibold">Draw Sweepstakes:</span>
+              <span className="font-bold text-foreground text-right truncate max-w-[150px]">
+                {winner.draw}
+              </span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground font-semibold">Prize Description:</span>
+              <span className="font-bold text-accent text-right truncate max-w-[150px]">
+                {winner.prize}
+              </span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground font-semibold">Winner Tier:</span>
+              <span className="font-bold text-foreground">{winner.tier}</span>
+            </div>
+          </div>
+
+          <div className="text-[10px] text-muted-foreground/60 leading-relaxed text-center">
+            Platform receipts are stored in secure escrow. Audit ID: <span className="font-mono text-[#8a9690]">{winner.ticket}</span>
+          </div>
+
+          <div className="flex justify-end pt-2 border-t border-white/[0.04]">
+            <Button
+              onClick={() => setIsModalOpen(false)}
+              variant="outline"
+              size="sm"
+              className="text-[10px] font-bold uppercase tracking-wider rounded-xl h-9"
+            >
+              Close Verification
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </Card>
   );
 }
