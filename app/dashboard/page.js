@@ -541,9 +541,9 @@ export default function DashboardOverview() {
               }}
               className="space-y-6"
             >
-              <div className="flex items-center gap-2 border-b border-border/60 pb-3">
-                <div className="w-6 h-6 rounded-full bg-accent/15 border border-accent/35 flex items-center justify-center text-xs font-bold text-accent font-heading">
-                  01
+              <div className="flex items-center gap-3 border-b border-border/60 pb-3">
+                <div className="w-8 h-8 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0">
+                  <Trophy className="w-4 h-4" />
                 </div>
                 <h3 className="font-heading text-lg font-bold text-foreground">Compete</h3>
                 <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold ml-auto">
@@ -726,9 +726,9 @@ export default function DashboardOverview() {
               }}
               className="space-y-6"
             >
-              <div className="flex items-center gap-2 border-b border-border/60 pb-3">
-                <div className="w-6 h-6 rounded-full bg-accent/15 border border-accent/35 flex items-center justify-center text-xs font-bold text-accent font-heading">
-                  02
+              <div className="flex items-center gap-3 border-b border-border/60 pb-3">
+                <div className="w-8 h-8 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0">
+                  <Heart className="w-4 h-4" />
                 </div>
                 <h3 className="font-heading text-lg font-bold text-foreground">Impact</h3>
                 <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold ml-auto">
@@ -1011,9 +1011,9 @@ export default function DashboardOverview() {
               }}
               className="space-y-6"
             >
-              <div className="flex items-center gap-2 border-b border-border/60 pb-3">
-                <div className="w-6 h-6 rounded-full bg-accent/15 border border-accent/35 flex items-center justify-center text-xs font-bold text-accent font-heading">
-                  03
+              <div className="flex items-center gap-3 border-b border-border/60 pb-3">
+                <div className="w-8 h-8 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0">
+                  <Ticket className="w-4 h-4" />
                 </div>
                 <h3 className="font-heading text-lg font-bold text-foreground">Rewards</h3>
                 <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold ml-auto">
@@ -1179,11 +1179,11 @@ export default function DashboardOverview() {
               }}
               className="space-y-6 pt-4"
             >
-              <div className="flex items-center gap-2 border-b border-border/60 pb-3">
-                <div className="w-6 h-6 rounded-full bg-accent/15 border border-accent/35 flex items-center justify-center text-xs font-bold text-accent font-heading">
-                  04
+              <div className="flex items-center gap-3 border-b border-border/60 pb-3">
+                <div className="w-8 h-8 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0">
+                  <ShieldCheck className="w-4 h-4" />
                 </div>
-                <h3 className="font-heading text-lg font-bold text-foreground">Recent Winners Showcase</h3>
+                <h3 className="font-heading text-lg font-bold text-foreground">Recent Verified Winners</h3>
                 <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold ml-auto">
                   Cryptographically Verified Payouts
                 </span>
