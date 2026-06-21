@@ -57,9 +57,19 @@ export async function POST(req) {
         // Fetch Stripe Subscription to get details
         const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
         const priceId = sub.items.data[0].price.id;
-        const status = sub.status;
+        let status = sub.status;
+        if (sub.cancel_at_period_end) {
+          status = "canceled";
+        }
         const renewalDate = new Date(sub.current_period_end * 1000).toISOString();
 
+        // 1. Save stripe_customer_id on user profile for future lookups
+        await supabase
+          .from("profiles")
+          .update({ stripe_customer_id: stripeCustomerId })
+          .eq("id", userId);
+
+        // 2. Sync subscription details to database
         await syncStripeSubscriptionToDatabase(userId, stripeSubscriptionId, priceId, status, renewalDate, supabase);
         console.log(`[Stripe Webhook] Handled checkout.session.completed for user ${userId}`);
         break;
@@ -71,7 +81,10 @@ export async function POST(req) {
         const stripeCustomerId = sub.customer;
         const stripeSubscriptionId = sub.id;
         const priceId = sub.items.data[0].price.id;
-        const status = sub.status;
+        let status = sub.status;
+        if (sub.cancel_at_period_end) {
+          status = "canceled";
+        }
         const renewalDate = new Date(sub.current_period_end * 1000).toISOString();
 
         let userId = sub.metadata?.supabase_user_id;
@@ -107,11 +120,16 @@ export async function POST(req) {
           .maybeSingle();
 
         if (dbSub) {
+          // If deleted in Stripe, set status to canceled and set renewal date to end time (past/current)
+          const endedAt = sub.ended_at ? new Date(sub.ended_at * 1000).toISOString() : new Date().toISOString();
           await supabase
             .from("subscriptions")
-            .update({ status: "canceled" })
+            .update({ 
+              status: "canceled",
+              renewal_date: endedAt
+            })
             .eq("user_id", dbSub.user_id);
-          console.log(`[Stripe Webhook] Handled customer.subscription.deleted, subscription marked canceled for user ${dbSub.user_id}`);
+          console.log(`[Stripe Webhook] Handled customer.subscription.deleted, marked canceled & ended at ${endedAt} for user ${dbSub.user_id}`);
         } else {
           console.warn(`[Stripe Webhook] Deleted Stripe subscription ${stripeSubscriptionId} not found in database`);
         }
@@ -162,14 +180,21 @@ export async function POST(req) {
             created_at: new Date().toISOString()
           });
 
-          // Also update renewal date if subscription details are present
+          // Also update renewal date and status if subscription details are present
           if (stripeSubscriptionId) {
             try {
               const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+              let status = sub.status;
+              if (sub.cancel_at_period_end) {
+                status = "canceled";
+              }
               const renewalDate = new Date(sub.current_period_end * 1000).toISOString();
               await supabase
                 .from("subscriptions")
-                .update({ renewal_date: renewalDate })
+                .update({ 
+                  renewal_date: renewalDate,
+                  status: status
+                })
                 .eq("user_id", userId);
             } catch (err) {
               console.error("[Stripe Webhook] Failed to update renewal date on payment success:", err.message);

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { LoadingState } from "@/components/ui/loading-state";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import SubscriptionWidget from "@/features/subscriptions/SubscriptionWidget";
+import SubscriptionSimulatorPanel from "@/features/subscriptions/SubscriptionSimulatorPanel";
 import { useSubscription } from "@/hooks/useSubscription";
 import {
   ArrowRight,
@@ -49,7 +51,20 @@ const itemVariants = {
 };
 
 export default function SubscriptionPage() {
-  const { subscription, status, loading, error } = useSubscription();
+  const { subscription, status, loading, error, refresh } = useSubscription();
+  const [isMock, setIsMock] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/stripe/config")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.isMock) {
+          setIsMock(true);
+        }
+      })
+      .catch((err) => console.error("Failed to load stripe config:", err));
+  }, []);
+
   const planKey = subscription?.plan_type;
   const plan = PLAN_DETAILS[planKey];
 
@@ -331,6 +346,13 @@ export default function SubscriptionPage() {
             })}
           </div>
         </motion.div>
+
+        {/* Developer Webhook Simulation Panel */}
+        {isMock && (
+          <motion.div variants={itemVariants}>
+            <SubscriptionSimulatorPanel onRefresh={refresh} />
+          </motion.div>
+        )}
 
         {/* FAQ Notice and Support */}
         <motion.div variants={itemVariants}>

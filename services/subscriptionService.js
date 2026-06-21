@@ -134,6 +134,9 @@ export function checkSubscriptionStatus(subscription) {
   const renewal = new Date(subscription.renewal_date);
   
   if (subscription.status === "canceled" || subscription.status === "cancelled") {
+    if (renewal < now) {
+      return "expired";
+    }
     return "cancelled";
   }
   
