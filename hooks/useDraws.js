@@ -7,7 +7,8 @@ import {
   getUserEntries, 
   generateEntriesForUser, 
   recordWinningNumbers, 
-  createDraw 
+  createDraw,
+  generateDraw
 } from "@/services/drawService";
 
 export function useDraws() {
@@ -116,6 +117,24 @@ export function useDraws() {
     }
   };
 
+  /**
+   * Run the draw completion logic to generate winning numbers (Admin operation).
+   */
+  const completeDraw = async (drawId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const updatedDraw = await generateDraw(drawId);
+      setDraws(prev => prev.map(d => d.id === drawId ? updatedDraw : d));
+      return updatedDraw;
+    } catch (err) {
+      setError(err.message || "Failed to complete draw.");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     draws,
     userEntries,
@@ -124,6 +143,7 @@ export function useDraws() {
     refresh: fetchData,
     registerForDraw,
     enterWinningNumbers,
-    addNewDraw
+    addNewDraw,
+    completeDraw
   };
 }

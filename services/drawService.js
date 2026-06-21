@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase";
 import { validateDraw, validateDrawEntry, validateWinningNumbers } from "@/lib/drawValidation";
-import { calculateTicketCount, generateTicketNumber, isTicketWinning } from "@/lib/drawUtilities";
+import { calculateTicketCount, generateTicketNumber, isTicketWinning, generateLotteryNumbers } from "@/lib/drawUtilities";
 
 /**
  * Create a new monthly draw.
@@ -298,4 +298,79 @@ export async function getWinners(drawId, supabaseClient) {
   return entries.filter(entry => 
     isTicketWinning(entry.ticket_number, draw.winning_numbers)
   );
+}
+
+/**
+ * Execute monthly draw generation of 5 unique numbers.
+ * Enforces no duplicates, consistent formatting, and reproducible storage.
+ * @param {string} drawId - Draw ID to execute.
+ * @param {object} [supabaseClient] - Optional server-side Supabase client.
+ * @returns {Promise<object>} The updated/completed draw.
+ */
+export async function generateDraw(drawId, supabaseClient) {
+  const supabase = supabaseClient || createClient();
+
+  // 1. Fetch draw details
+  const draw = await getDrawById(drawId, supabase);
+  if (!draw) {
+    throw new Error("Draw not found.");
+  }
+  if (draw.status === "completed") {
+    throw new Error("Draw has already been completed.");
+  }
+
+  // 2. Generate 5 unique lottery numbers
+  const generatedNumbers = generateLotteryNumbers(5, 1, 99);
+
+  // 3. Selection of winning tickets from entries pool
+  // Fetch entries for this draw
+  const { data: entries, error: entriesError } = await supabase
+    .from("draw_entries")
+    .select("ticket_number")
+    .eq("draw_id", drawId);
+
+  if (entriesError) {
+    console.error(`Error fetching entries pool for draw ${drawId}:`, entriesError);
+    throw entriesError;
+  }
+
+  let winningTickets = [];
+  if (entries && entries.length > 0) {
+    // Select up to 5 unique ticket numbers randomly from entries pool
+    const pool = entries.map(e => e.ticket_number);
+    // Shuffle pool
+    const shuffled = [...pool].sort(() => Math.random() - 0.5);
+    winningTickets = shuffled.slice(0, 5);
+  }
+
+  // If there are less than 5 entries, generate dummy winning ticket numbers in standard format
+  if (winningTickets.length < 5) {
+    const dummyNeeded = 5 - winningTickets.length;
+    for (let i = 0; i < dummyNeeded; i++) {
+      // Use mock user identifiers to maintain format consistency
+      const dummyTicket = generateTicketNumber(`DUMMY-${i}`, drawId, i);
+      winningTickets.push(dummyTicket);
+    }
+  }
+
+  // 4. Update draw record in Supabase
+  const timestamp = new Date().toISOString();
+  const { data, error } = await supabase
+    .from("draws")
+    .update({
+      status: "completed",
+      winning_numbers: winningTickets, // Store winning tickets for raffle matching
+      draw_month: draw.month,
+      generated_numbers: generatedNumbers, // Store generated lottery numbers
+      generated_timestamp: timestamp
+    })
+    .eq("id", drawId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error executing generateDraw:", error);
+    throw error;
+  }
+  return data;
 }
