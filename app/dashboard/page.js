@@ -420,91 +420,94 @@ export default function DashboardOverview() {
         animate="visible"
       >
         <motion.div variants={itemVariants} className="w-full mb-8">
-          <Card className="bg-gradient-to-br from-[#061511] via-[#0A1C16] to-[#040D09] border-[#162520] relative overflow-hidden shadow-2xl rounded-3xl p-6 md:p-8">
-            {/* Ambient Background Blur / Glow */}
-            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-accent/5 blur-3xl rounded-full -z-10 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-emerald-800/5 blur-3xl rounded-full -z-10 pointer-events-none" />
+          <Card className="bg-gradient-to-br from-[#061511] via-[#0A1C16] to-[#040D09] border-accent/25 relative overflow-hidden shadow-[0_0_50px_rgba(212,185,147,0.06)] rounded-3xl p-8 md:p-10 transition-all duration-300 hover:border-accent/40">
+            {/* Glowing top line */}
+            <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-accent/35 to-transparent" />
+            
+            {/* Ambient Background Glows */}
+            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-accent/5 blur-[120px] rounded-full pointer-events-none -z-10" />
+            <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-emerald-800/5 blur-[100px] rounded-full pointer-events-none -z-10" />
             {/* Grid Pattern mask */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c1d18_1px,transparent_1px),linear-gradient(to_bottom,#0c1d18_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-25 -z-10 pointer-events-none" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c1d18_1px,transparent_1px),linear-gradient(to_bottom,#0c1d18_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-30 -z-10 pointer-events-none" />
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
               {/* Left Column - Target Draw Sweepstakes details */}
               <div className="lg:col-span-7 flex flex-col justify-between h-full">
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Badge variant="accent" className="gap-1 px-2.5 py-0.5 text-[10px] uppercase font-bold tracking-wider">
-                      <Flame className="w-3 h-3 text-[#060C0A] animate-pulse" /> Live Reward Sweepstakes
+                  <div className="flex flex-wrap items-center gap-3 mb-4">
+                    <Badge variant="accent" className="gap-1.5 px-3 py-1 text-[10px] uppercase font-extrabold tracking-widest text-[#060C0A] bg-accent animate-pulse">
+                      <Flame className="w-3.5 h-3.5" /> Reward Command Center
                     </Badge>
-                    <span className="text-[10px] text-muted-foreground font-semibold">
-                      Logged as <strong className="text-foreground">{displayUser.name.split(" ")[0]}</strong>
+                    <span className="text-xs text-muted-foreground/85 font-semibold">
+                      Welcome back, <strong className="text-white">{displayUser.name.split(" ")[0]}</strong>
                     </span>
                   </div>
                   
-                  <h2 className="font-heading text-2xl md:text-3xl font-extrabold text-foreground mb-6 leading-tight">
-                    What are you working toward?
-                  </h2>
+                  <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight tracking-tight mb-8">
+                    What are you <span className="text-accent">working toward?</span>
+                  </h1>
                 </div>
 
-                <div className="flex flex-col md:flex-row items-stretch md:items-center gap-5 mb-6">
-                  {/* Jackpot Pool Card */}
-                  <div className="bg-[#05110D]/90 border border-border/20 p-5 rounded-xl flex-1 relative overflow-hidden shadow-inner">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
+                  {/* Current Jackpot */}
+                  <div className="md:col-span-6 bg-[#05110D]/95 border border-border/20 p-6 rounded-2xl relative overflow-hidden shadow-inner group/jackpot hover:border-accent/40 transition-all duration-300">
                     <div className="absolute top-0 left-0 w-[3px] h-full bg-accent" />
-                    <span className="text-[9px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-1">
-                      Current Jackpot Pool
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground block mb-2">
+                      Current Estimated Jackpot Pool
                     </span>
-                    <span className="text-3xl md:text-4xl font-extrabold text-accent font-heading block tracking-tight">
+                    <span className="text-4xl md:text-5xl font-black text-accent font-heading block tracking-tight drop-shadow-[0_0_15px_rgba(212,185,147,0.15)]">
                       <AnimatedCounter value={activePrize} />
                     </span>
-                    <span className="text-[10px] text-muted-foreground font-medium mt-1.5 block">
-                      Active Prize Draw: Eco-Retreat
+                    <span className="text-[10px] text-muted-foreground font-medium mt-3 block">
+                      Active Draw: <strong>{activeDrawSub}</strong>
                     </span>
                   </div>
 
-                  {/* Countdown Timer Card */}
-                  <div className="bg-[#05110D]/90 border border-border/20 p-5 rounded-xl flex-1 relative overflow-hidden shadow-inner">
+                  {/* Countdown Timer */}
+                  <div className="md:col-span-6 bg-[#05110D]/95 border border-border/20 p-6 rounded-2xl relative overflow-hidden shadow-inner hover:border-emerald-500/30 transition-all duration-300">
                     <div className="absolute top-0 left-0 w-[3px] h-full bg-emerald-600" />
-                    <span className="text-[9px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-2.5">
-                      Time Remaining Until Draw
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground block mb-3.5">
+                      Countdown to Live Draw
                     </span>
                     <div className="flex items-center gap-2 text-foreground font-heading">
                       <div className="flex flex-col items-center">
-                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-xl border border-border/30 text-foreground w-[44px] text-center">
+                        <span className="text-2xl md:text-3xl font-black bg-[#060C0A] px-2.5 py-1.5 rounded-xl border border-border/30 text-white w-[48px] text-center">
                           {String(timeLeft.days).padStart(2, "0")}
                         </span>
-                        <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground mt-1">Days</span>
+                        <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground mt-1.5">Days</span>
                       </div>
-                      <span className="text-lg font-black text-muted-foreground/60 -mt-3">:</span>
+                      <span className="text-xl font-black text-muted-foreground/60 -mt-4">:</span>
                       <div className="flex flex-col items-center">
-                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-xl border border-border/30 text-foreground w-[44px] text-center">
+                        <span className="text-2xl md:text-3xl font-black bg-[#060C0A] px-2.5 py-1.5 rounded-xl border border-border/30 text-white w-[48px] text-center">
                           {String(timeLeft.hours).padStart(2, "0")}
                         </span>
-                        <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground mt-1">Hrs</span>
+                        <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground mt-1.5">Hours</span>
                       </div>
-                      <span className="text-lg font-black text-muted-foreground/60 -mt-3">:</span>
+                      <span className="text-xl font-black text-muted-foreground/60 -mt-4">:</span>
                       <div className="flex flex-col items-center">
-                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-xl border border-border/30 text-foreground w-[44px] text-center">
+                        <span className="text-2xl md:text-3xl font-black bg-[#060C0A] px-2.5 py-1.5 rounded-xl border border-border/30 text-white w-[48px] text-center">
                           {String(timeLeft.minutes).padStart(2, "0")}
                         </span>
-                        <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground mt-1">Min</span>
+                        <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground mt-1.5">Mins</span>
                       </div>
-                      <span className="text-lg font-black text-muted-foreground/60 -mt-3">:</span>
+                      <span className="text-xl font-black text-muted-foreground/60 -mt-4">:</span>
                       <div className="flex flex-col items-center">
-                        <span className="text-xl md:text-2xl font-black bg-[#060C0A] px-2.5 py-1 rounded-xl border border-accent/40 text-accent w-[44px] text-center animate-pulse">
+                        <span className="text-2xl md:text-3xl font-black bg-[#060C0A] px-2.5 py-1.5 rounded-xl border border-accent/40 text-accent w-[48px] text-center animate-pulse">
                           {String(timeLeft.seconds).padStart(2, "0")}
                         </span>
-                        <span className="text-[8px] uppercase font-bold tracking-wider text-accent mt-1">Sec</span>
+                        <span className="text-[8px] uppercase font-bold tracking-wider text-accent mt-1.5">Secs</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Score Progress bar */}
-                <div className="space-y-2.5 bg-[#05110D]/40 border border-border/10 p-4 rounded-xl">
+                <div className="space-y-3 bg-[#05110D]/40 border border-border/10 p-5 rounded-2xl">
                   <div className="flex justify-between items-center text-xs">
                     <span className="font-bold text-foreground">Weekly Score Logging Progress</span>
                     <span className="font-extrabold text-accent">{scores?.length || 0} / 5 Logged</span>
                   </div>
-                  <div className="w-full h-2.5 bg-[#05110D] border border-border/20 rounded-full overflow-hidden">
+                  <div className="w-full h-3 bg-[#05110D] border border-border/20 rounded-full overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${Math.min(((scores?.length || 0) / 5) * 100, 100)}%` }}
@@ -514,65 +517,89 @@ export default function DashboardOverview() {
                   </div>
                   <p className="text-[10px] text-muted-foreground flex items-center gap-1.5 leading-none">
                     {scores?.length === 5 
-                      ? "✓ All weekly scores logged! Multipliers are active." 
+                      ? "✓ All weekly scores logged! Max multipliers and bonus tickets are active." 
                       : `Log ${5 - (scores?.length || 0)} more golf Stableford score${5 - (scores?.length || 0) > 1 ? "s" : ""} to unlock maximum draw entry bonuses.`}
                   </p>
                 </div>
               </div>
 
-              {/* Right Column - User standings grid */}
-              <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-4">
-                {/* Score Widget */}
-                <div className="bg-[#05110D]/50 border border-border/20 p-4 rounded-xl relative flex items-center justify-between group hover:border-accent/40 transition-colors">
+              {/* Right Column - User command center widgets */}
+              <div className="lg:col-span-5 flex flex-col justify-between gap-4">
+                {/* Membership Tier Widget */}
+                <div className="bg-[#05110D]/50 border border-border/20 p-4.5 rounded-2xl flex items-center justify-between group hover:border-accent/40 hover:bg-[#071611]/70 transition-all duration-300">
                   <div>
                     <span className="text-[8px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-1">
-                      Your Current Score
+                      Your Membership Tier
                     </span>
-                    <span className="text-2xl font-extrabold text-foreground font-heading block">
-                      <AnimatedCounter value={displayUser.score} /> <span className="text-xs text-muted-foreground font-normal">pts</span>
+                    <span className="text-xl font-extrabold text-white font-heading block">
+                      {displayUser.tier}
                     </span>
-                    <span className="text-[9px] text-accent font-semibold block mt-1.5">
-                      +{displayUser.streak * 5}wk streak bonus active
+                    <span className="text-[9px] text-[#8a9690] font-semibold block mt-1">
+                      {subscription?.plan_type === "builder" 
+                        ? "10x entries ticket multiplier active" 
+                        : subscription?.plan_type === "advocate" 
+                          ? "3x entries ticket multiplier active" 
+                          : subscription?.plan_type === "scout" 
+                            ? "Base draw entries active" 
+                            : "No active giving plan"}
                     </span>
                   </div>
-                  <div className="w-10 h-10 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-xl text-accent group-hover:scale-105 transition-transform">
-                    <Trophy className="w-5 h-5" />
+                  <div className="w-11 h-11 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-xl text-accent group-hover:scale-105 transition-transform shadow-inner">
+                    <ShieldCheck className="w-5.5 h-5.5" />
                   </div>
                 </div>
 
-                {/* Draw Entries Widget */}
-                <div className="bg-[#05110D]/50 border border-border/20 p-4 rounded-xl relative flex items-center justify-between group hover:border-accent/40 transition-colors">
+                {/* Active Tickets Widget */}
+                <div className="bg-[#05110D]/50 border border-border/20 p-4.5 rounded-2xl flex items-center justify-between group hover:border-accent/40 hover:bg-[#071611]/70 transition-all duration-300">
                   <div>
                     <span className="text-[8px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-1">
-                      Your Draw Entries
+                      Your Active Tickets
                     </span>
-                    <span className="text-2xl font-extrabold text-foreground font-heading block">
+                    <span className="text-xl font-extrabold text-white font-heading block">
                       <AnimatedCounter value={activeTicketsCount} /> <span className="text-xs text-muted-foreground font-normal">tickets</span>
                     </span>
-                    <span className="text-[9px] text-emerald-500 font-semibold block mt-1.5">
-                      {subscription?.plan_type ? `${PLAN_LABELS[subscription?.plan_type]} Tier Active` : "No multiplier active"}
+                    <span className="text-[9px] text-emerald-400 font-semibold block mt-1">
+                      Registered in active pools
                     </span>
                   </div>
-                  <div className="w-10 h-10 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-xl text-emerald-500 group-hover:scale-105 transition-transform">
-                    <Ticket className="w-5 h-5" />
+                  <div className="w-11 h-11 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-xl text-emerald-400 group-hover:scale-105 transition-transform shadow-inner">
+                    <Ticket className="w-5.5 h-5.5" />
+                  </div>
+                </div>
+
+                {/* Score Widget */}
+                <div className="bg-[#05110D]/50 border border-border/20 p-4.5 rounded-2xl flex items-center justify-between group hover:border-accent/40 hover:bg-[#071611]/70 transition-all duration-300">
+                  <div>
+                    <span className="text-[8px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-1">
+                      Your Total Score
+                    </span>
+                    <span className="text-xl font-extrabold text-white font-heading block">
+                      <AnimatedCounter value={displayUser.score} /> <span className="text-xs text-muted-foreground font-normal">pts</span>
+                    </span>
+                    <span className="text-[9px] text-accent font-semibold block mt-1">
+                      +{displayUser.streak * 5}wk logging streak active
+                    </span>
+                  </div>
+                  <div className="w-11 h-11 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-xl text-accent group-hover:scale-105 transition-transform shadow-inner">
+                    <Trophy className="w-5.5 h-5.5" />
                   </div>
                 </div>
 
                 {/* Global Rank Widget */}
-                <div className="bg-[#05110D]/50 border border-border/20 p-4 rounded-xl relative flex items-center justify-between group hover:border-accent/40 transition-colors">
+                <div className="bg-[#05110D]/50 border border-border/20 p-4.5 rounded-2xl flex items-center justify-between group hover:border-accent/40 hover:bg-[#071611]/70 transition-all duration-300">
                   <div>
                     <span className="text-[8px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-1">
-                      Your Standings Rank
+                      Your Leaderboard Rank
                     </span>
-                    <span className="text-2xl font-extrabold text-accent font-heading block">
-                      <AnimatedCounter value={displayUser.rank} />
+                    <span className="text-xl font-extrabold text-white font-heading block">
+                      {displayUser.rank}
                     </span>
-                    <span className="text-[9px] text-muted-foreground block mt-1.5">
+                    <span className="text-[9px] text-emerald-400 font-semibold block mt-1">
                       Top 25% of global golfers
                     </span>
                   </div>
-                  <div className="w-10 h-10 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-xl text-accent group-hover:scale-105 transition-transform">
-                    <TrendingUp className="w-5 h-5" />
+                  <div className="w-11 h-11 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-xl text-emerald-400 group-hover:scale-105 transition-transform shadow-inner">
+                    <TrendingUp className="w-5.5 h-5.5" />
                   </div>
                 </div>
               </div>
