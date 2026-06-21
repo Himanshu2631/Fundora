@@ -20,6 +20,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useScores } from "@/hooks/useScores";
 import { useCharities } from "@/hooks/useCharities";
+import { useDraws } from "@/hooks/useDraws";
 import SubscriptionWidget from "@/features/subscriptions/SubscriptionWidget";
 import {
   Trophy,
@@ -58,6 +59,7 @@ export default function DashboardOverview() {
   // Day 3 Real Data integration via custom hooks
   const { scores, loading: scoresLoading, error: scoresError } = useScores();
   const { allocations, loading: charitiesLoading, error: charitiesError } = useCharities();
+  const { userEntries, draws, loading: drawsLoading } = useDraws();
 
   const monthlyContribution = PLAN_PRICES[subscription?.plan_type] ?? 0;
   const hasActivePlan = status === "active" || status === "cancelled";
@@ -82,6 +84,15 @@ export default function DashboardOverview() {
   // Active allocations summary
   const totalAllocatedVal = allocations ? allocations.reduce((sum, item) => sum + item.contribution_percentage, 0) : 0;
 
+  // Filter active draw entries count
+  const activeTicketsCount = userEntries.filter(e => {
+    const d = draws.find(dr => dr.id === e.draw_id);
+    return d && d.status === "active";
+  }).length;
+
+  const firstActiveDraw = draws.find(d => d.status === "active");
+  const activeDrawSub = firstActiveDraw ? firstActiveDraw.title : "No active draws";
+
   const displayUser = {
     name: profile?.full_name || authUser?.email?.split("@")[0] || "Member",
     email: authUser?.email || "—",
@@ -105,13 +116,19 @@ export default function DashboardOverview() {
     { id: "TXN-4019", date: "Feb 15, 2026", amount: "$25.00", charity: "Empower Global Edu", status: "Audited", docUrl: "#" },
   ];
 
-  // FUTURE ARCHITECTURE PLACEHOLDER: Future Draw entries and rewards modules will leverage hook-based state
-  // from useDraws() / useRewards() here instead of the statically simulated registries.
-  const currentDrawEntries = [
-    { ticketNumber: "FND-884-29A", drawName: "Patagonia Eco-Retreat", date: "Jun 24, 2026", status: "Active" },
-    { ticketNumber: "FND-884-29B", drawName: "Patagonia Eco-Retreat", date: "Jun 24, 2026", status: "Active" },
-    { ticketNumber: "FND-884-29C", drawName: "Patagonia Eco-Retreat", date: "Jun 24, 2026", status: "Active" },
-  ];
+  // Map user entries using real Supabase draw relations
+  const currentDrawEntries = userEntries.map(entry => {
+    const matchingDraw = draws.find(d => d.id === entry.draw_id);
+    const drawDateStr = matchingDraw 
+      ? new Date(matchingDraw.draw_date).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
+      : "—";
+    return {
+      ticketNumber: entry.ticket_number,
+      drawName: matchingDraw ? matchingDraw.title : "Eco Prize Draw",
+      date: drawDateStr,
+      status: matchingDraw ? (matchingDraw.status === "active" ? "Active" : matchingDraw.status === "completed" ? "Completed" : "Upcoming") : "Active"
+    };
+  });
 
   return (
     <div className="p-6 md:p-8 space-y-8">
@@ -179,8 +196,8 @@ export default function DashboardOverview() {
             },
             {
               label: "Active Draw Tickets",
-              value: hasActivePlan ? "3" : "0",
-              sub: "Patagonia Eco-Retreat",
+              value: hasActivePlan ? String(activeTicketsCount) : "0",
+              sub: hasActivePlan ? activeDrawSub : "No active plan",
               icon: Ticket,
               accent: false,
             },
@@ -524,7 +541,7 @@ export default function DashboardOverview() {
                   Every dollar you subscribe awards points towards your Philanthropy Score. When draws open, tickets are automatically distributed based on score requirements. Keep your streak active to gain multiplier bonuses.
                 </p>
               </Card>
-              {hasActivePlan ? (
+              {hasActivePlan && currentDrawEntries.length > 0 ? (
                 <Card className="overflow-hidden">
                   <CardHeader className="bg-secondary/5 py-4 border-b border-border/40">
                     <CardTitle className="text-sm">Active Draw Tickets</CardTitle>
@@ -541,7 +558,7 @@ export default function DashboardOverview() {
                           </TableCell>
                           <TableCell className="text-right pr-6">
                             <div className="inline-flex flex-col items-end">
-                              <Badge variant="accent" className="mb-1.5">{ticket.status}</Badge>
+                              <Badge variant={ticket.status === "Active" ? "accent" : "outline"} className="mb-1.5">{ticket.status}</Badge>
                               <span className="text-muted-foreground text-[10px]">
                                 Draw schedule: {ticket.date}
                               </span>
@@ -555,12 +572,12 @@ export default function DashboardOverview() {
               ) : (
                 <EmptyState
                   title="No Active Draw Tickets"
-                  description="Activate a subscription to automatically receive draw entries and compete for exclusive eco-retreat prizes."
+                  description={hasActivePlan ? "You meet the eco-subscription requirements but no draw entries have been recorded yet. Complete your eligibility checklist to generate entries." : "Activate a subscription to automatically receive draw entries and compete for exclusive eco-retreat prizes."}
                   icon={Ticket}
                   action={
                     <Button asChild variant="accent" size="sm">
-                      <Link href="/dashboard/subscription">
-                        Activate Subscription <ArrowRight className="w-3.5 h-3.5" />
+                      <Link href={hasActivePlan ? "/dashboard/draws" : "/dashboard/subscription"}>
+                        {hasActivePlan ? "View Draws Checklist" : "Activate Subscription"} <ArrowRight className="w-3.5 h-3.5" />
                       </Link>
                     </Button>
                   }
