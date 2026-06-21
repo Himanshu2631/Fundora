@@ -11,6 +11,7 @@ export const AuthContext = createContext({
   signUp: async () => {},
   signOut: async () => {},
   updateProfile: async () => {},
+  refreshProfile: async () => {},
 });
 
 const supabase = createClient();
@@ -168,8 +169,25 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const refreshProfile = async () => {
+    if (!user) return;
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+      
+      if (!error && data) {
+        setProfile(data);
+      }
+    } catch (err) {
+      console.error("❌ [AuthProvider] refreshProfile failed:", err);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut, updateProfile }}>
+    <AuthContext.Provider value={{ user, profile, loading, signIn, signUp, signOut, updateProfile, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );
