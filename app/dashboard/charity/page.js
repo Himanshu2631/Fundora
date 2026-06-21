@@ -71,6 +71,9 @@ export default function CharityDashboard() {
 
   // Local component feedback notifications (e.g. general success/error)
   const [feedback, setFeedback] = useState(null);
+  
+  // Expand states for causes
+  const [expandedCharityId, setExpandedCharityId] = useState(null);
 
   // Auto-clear feedback notification after 4s
   React.useEffect(() => {
@@ -420,7 +423,7 @@ export default function CharityDashboard() {
 
             {/* Description & Impact Metrics */}
             <div className="p-6 md:w-7/12 flex flex-col justify-between space-y-4">
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 <div className="flex items-center gap-1.5 text-accent font-bold text-[10px] tracking-wider uppercase">
                   <Sparkles className="w-3 h-3" />
                   Primary Partner Spotlight
@@ -431,6 +434,13 @@ export default function CharityDashboard() {
                 <p className="text-xs text-muted-foreground leading-relaxed">
                   {featuredCharity.description}
                 </p>
+
+                {featuredCharity.why_matters && (
+                  <div className="bg-accent/5 border border-accent/15 p-2.5 rounded-sm text-[10.5px] leading-relaxed text-muted-foreground">
+                    <span className="text-[9px] font-extrabold uppercase text-accent tracking-widest block mb-1">Why This Cause Matters</span>
+                    {featuredCharity.why_matters}
+                  </div>
+                )}
                 
                 {/* Verified Impact Highlight */}
                 <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-sm p-2 text-[11px] text-emerald-400 font-medium">
@@ -577,7 +587,6 @@ export default function CharityDashboard() {
                       )}
                     </div>
 
-                    {/* Content */}
                     <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                       <div className="space-y-2">
                         <h4 className="font-heading text-sm font-bold text-foreground group-hover:text-accent transition-colors line-clamp-1">
@@ -586,6 +595,34 @@ export default function CharityDashboard() {
                         <p className="text-[11.5px] text-muted-foreground leading-relaxed line-clamp-3">
                           {charity.description}
                         </p>
+
+                        {charity.why_matters && (
+                          <div className="pt-1.5">
+                            <button
+                              type="button"
+                              onClick={() => setExpandedCharityId(expandedCharityId === charity.id ? null : charity.id)}
+                              className="text-[10px] font-bold text-accent hover:underline flex items-center gap-1 focus:outline-none uppercase tracking-wider"
+                            >
+                              <span>{expandedCharityId === charity.id ? "Hide Details" : "Why This Matters"}</span>
+                              <Info className="w-3.5 h-3.5" />
+                            </button>
+                            <AnimatePresence initial={false}>
+                              {expandedCharityId === charity.id && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: "auto", opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  transition={{ duration: 0.2 }}
+                                  className="overflow-hidden"
+                                >
+                                  <p className="text-[10.5px] leading-relaxed text-muted-foreground bg-accent/5 border border-accent/15 p-2 rounded-sm mt-2">
+                                    {charity.why_matters}
+                                  </p>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        )}
                       </div>
 
                       {/* Auditor efficiency values */}
@@ -681,6 +718,13 @@ export default function CharityDashboard() {
                   </p>
                 </div>
               </div>
+
+              {selectedCharity.why_matters && (
+                <div className="bg-accent/5 border border-accent/15 p-3 rounded-sm text-[10.5px] leading-relaxed text-muted-foreground">
+                  <span className="text-[9px] font-extrabold uppercase text-accent tracking-widest block mb-1">Why This Cause Matters</span>
+                  {selectedCharity.why_matters}
+                </div>
+              )}
 
               {/* Status Alert Context */}
               {modalError && (

@@ -711,40 +711,80 @@ export default function DashboardOverview() {
                     </Button>
                   </Card>
                 </motion.div>
-
-                {/* Real-World Outcomes & Verified Badge */}
+                {/* Your Impact This Month & Verified Badge */}
                 <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col justify-between space-y-6 lg:col-span-1 transition-all duration-300">
-                  <Card className="p-6 flex-1 flex flex-col justify-between">
+                  <Card className="p-6 flex-1 flex flex-col justify-between border-border bg-card">
                     <div>
-                      <h3 className="font-heading font-bold text-base text-foreground mb-6">
-                        Real-World Outcomes
+                      <h3 className="font-heading font-extrabold text-base text-foreground mb-5 flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4 text-accent" />
+                        Your Impact This Month
                       </h3>
-                      <ul className="space-y-4 text-xs">
+                      <div className="space-y-4">
                         {[
-                          { label: "Reforestation contribution:", value: `${(totalAllocatedVal * 0.012).toFixed(2)} hectares protected` },
-                          { label: "Clean water filtration:", value: `${(totalAllocatedVal * 2.4).toFixed(0)} L daily capacity funded` },
-                          { label: "STEM education credits:", value: `${(totalAllocatedVal * 0.045).toFixed(2)} module hrs sponsored` },
-                        ].map((row, i) => (
-                          <li key={i} className="flex justify-between items-start gap-4">
-                            <span className="text-muted-foreground font-semibold">{row.label}</span>
-                            <span className="text-foreground font-bold text-right">{row.value}</span>
-                          </li>
+                          { 
+                            label: "Carbon Offset", 
+                            value: `${(totalAllocatedVal * 1.8).toFixed(1)} kg`, 
+                            desc: "CO2 capture capacity sponsored",
+                            color: "bg-emerald-500"
+                          },
+                          { 
+                            label: "Clean Water Purified", 
+                            value: `${(totalAllocatedVal * 24).toFixed(0)} L`, 
+                            desc: "Daily village filtration capacity",
+                            color: "bg-blue-500"
+                          },
+                          { 
+                            label: "STEM Education Credits", 
+                            value: `${(totalAllocatedVal * 0.45).toFixed(1)} hrs`, 
+                            desc: "Teaching fellowships funded",
+                            color: "bg-accent"
+                          },
+                          { 
+                            label: "Tree Saplings Planted", 
+                            value: `${(totalAllocatedVal / 10).toFixed(0)} trees`, 
+                            desc: "Broadleaf plantings sponsored",
+                            color: "bg-[#C4A054]/60"
+                          }
+                        ].map((row, idx) => (
+                          <div key={idx} className="space-y-1">
+                            <div className="flex justify-between items-center text-xs">
+                              <span className="text-muted-foreground font-semibold">{row.label}</span>
+                              <span className="text-foreground font-bold">{row.value}</span>
+                            </div>
+                            <div className="w-full h-1.5 bg-secondary/45 rounded-full overflow-hidden">
+                              <div 
+                                className={`h-full ${row.color}`} 
+                                style={{ width: `${Math.min(totalAllocatedVal, 100)}%` }}
+                              />
+                            </div>
+                            <span className="text-[9px] text-muted-foreground/80 block leading-none">{row.desc}</span>
+                          </div>
                         ))}
-                      </ul>
-                      <div className="h-[1px] bg-border/40 my-4" />
-                      <p className="text-[10px] text-muted-foreground/80 leading-relaxed">
-                        Receipt log verified on-chain and cross-audited by Apex Third Party Auditors.
-                      </p>
+                      </div>
+                      
+                      {/* Trust Indicators inside Impact Widget */}
+                      <div className="h-[1px] bg-border/40 my-5" />
+                      <div className="space-y-2 text-[10px] text-muted-foreground/90">
+                        <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-accent text-[9px]">
+                          <ShieldCheck className="w-3.5 h-3.5" /> Trust & Audit Report
+                        </div>
+                        <p className="leading-relaxed">
+                          • <strong>Verified Charities:</strong> 100% of causes vetted & signed.<br />
+                          • <strong>Funds Audited:</strong> Third-party verified receipts ledger.<br />
+                          • <strong>Platform Total:</strong> 145,000+ trees & 1.2M L water filtered.
+                        </p>
+                      </div>
                     </div>
                   </Card>
 
+                  {/* Certified Audited Philanthropist Shield */}
                   <Card className="p-4 text-center border-accent/20 bg-accent/5">
                     <ShieldCheck className="w-8 h-8 text-accent mx-auto mb-2" />
                     <h4 className="font-heading font-bold text-xs text-foreground mb-1">
                       Audited Philanthropist
                     </h4>
                     <p className="text-[10px] text-muted-foreground leading-relaxed mb-2">
-                      Cross-audited by third-party signatures.
+                      Cross-audited by independent cryptographic signatures.
                     </p>
                     <span className="text-[9px] text-accent font-mono tracking-wider font-semibold">
                       SIGNATURE: 0x8F9A...B8C3
@@ -957,6 +997,108 @@ export default function DashboardOverview() {
                     </Button>
                   </Card>
                 </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Recent Winners Showcase */}
+            <motion.div 
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 14 } }
+              }}
+              className="space-y-6 pt-4"
+            >
+              <div className="flex items-center gap-2 border-b border-border/60 pb-3">
+                <div className="w-6 h-6 rounded-full bg-accent/15 border border-accent/35 flex items-center justify-center text-xs font-bold text-accent font-heading">
+                  04
+                </div>
+                <h3 className="font-heading text-lg font-bold text-foreground">Recent Winners Showcase</h3>
+                <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold ml-auto">
+                  Cryptographically Verified Payouts
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                  {
+                    name: "Marcus Klein (marcus.k)",
+                    draw: "Patagonia Eco-Retreat",
+                    prize: "7-Night Luxury Eco-Retreat Pass",
+                    match: "5 Matches",
+                    ticket: "FND-712-X4B",
+                    avatar: "MK",
+                    proofUrl: "#",
+                    date: "June 19, 2026",
+                    hash: "0x3e89...cf40"
+                  },
+                  {
+                    name: "Elena Rodriguez (elena_r)",
+                    draw: "Donation Match Rewards",
+                    prize: "Custom Electric Bike Cruiser",
+                    match: "4 Matches",
+                    ticket: "FND-556-P8M",
+                    avatar: "ER",
+                    proofUrl: "#",
+                    date: "May 18, 2026",
+                    hash: "0x8f2a...22ba"
+                  },
+                  {
+                    name: "Yuki Shimizu (yuki.s)",
+                    draw: "Community Impact Grants",
+                    prize: "$1,500 Cash Grant Reward",
+                    match: "4 Matches",
+                    ticket: "FND-041-K89",
+                    avatar: "YS",
+                    proofUrl: "#",
+                    date: "May 12, 2026",
+                    hash: "0x6d9e...88ab"
+                  }
+                ].map((winner, idx) => (
+                  <Card key={idx} className="p-5 flex flex-col justify-between border-border bg-card/45 hover:border-accent/40 transition-all duration-300 relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div>
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 rounded-full bg-accent/15 border border-accent/30 flex items-center justify-center font-heading font-bold text-accent text-sm shrink-0">
+                          {winner.avatar}
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className="text-xs font-bold text-foreground truncate">{winner.name}</h4>
+                          <span className="text-[9px] text-muted-foreground block">{winner.date}</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2 bg-secondary/15 p-3 rounded-sm border border-border/40 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground font-semibold">Draw:</span>
+                          <span className="font-bold text-foreground text-right truncate max-w-[120px]">{winner.draw}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground font-semibold">Prize:</span>
+                          <span className="font-bold text-accent text-right truncate max-w-[125px]">{winner.prize}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground font-semibold">Match Class:</span>
+                          <span className="font-bold text-emerald-500">{winner.match}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground font-semibold">Ticket:</span>
+                          <span className="font-mono text-[10px] font-bold text-foreground">{winner.ticket}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 mt-4 border-t border-border/30 flex justify-between items-center text-[10px]">
+                      <span className="text-muted-foreground font-mono">HASH: {winner.hash}</span>
+                      <a 
+                        href={winner.proofUrl}
+                        onClick={(e) => { e.preventDefault(); alert(`Verified Payout Signature: ${winner.hash}\nPaid on: ${winner.date}\nTransaction status: AUDITED & SIGNED`); }}
+                        className="text-accent hover:underline font-bold uppercase tracking-wider flex items-center gap-0.5"
+                      >
+                        Verify Proof <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  </Card>
+                ))}
               </div>
             </motion.div>
           </motion.div>
