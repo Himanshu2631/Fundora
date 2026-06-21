@@ -107,7 +107,6 @@ function AnimatedCounter({ value, duration = 800 }) {
 }
 
 function RecentWinnerCard({ winner }) {
-  const [showDetails, setShowDetails] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -118,99 +117,53 @@ function RecentWinnerCard({ winner }) {
       {/* Glowing background bubble */}
       <div className="absolute -top-10 -right-10 w-24 h-24 bg-accent/5 rounded-full blur-2xl group-hover:bg-accent/10 transition-colors pointer-events-none" />
 
-      <div className="space-y-5">
-        {/* Tier and Status Row */}
-        <div className="flex items-center justify-between border-b border-white/[0.04] pb-3">
-          <span className="text-[9px] uppercase font-black tracking-widest text-[#8a9690] bg-[#07130F] border border-white/[0.05] px-2 py-1 rounded-md">
-            {winner.tier}
-          </span>
-          <Badge variant="outline" className="text-[8px] uppercase tracking-wider font-extrabold text-emerald-400 border-emerald-500/20 bg-emerald-500/5 px-2 py-0.5">
+      <div className="space-y-4">
+        {/* Header: Verified Winner Label & Member Tier */}
+        <div className="flex items-start justify-between border-b border-white/[0.04] pb-3">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-xs font-bold text-white flex items-center gap-1.5 font-heading">
+              Verified Winner
+            </span>
+            <span className="text-[9px] uppercase font-semibold tracking-wider text-muted-foreground/80">
+              {winner.tier}
+            </span>
+          </div>
+          <Badge variant="outline" className="text-[8px] uppercase tracking-wider font-extrabold text-emerald-400 border-emerald-500/20 bg-emerald-500/5 px-2 py-0.5 h-fit shrink-0">
             ✓ Verified Payout
           </Badge>
         </div>
 
-        {/* Primary Title: Match Winner */}
-        <div className="space-y-1">
-          <span className="text-[10px] uppercase font-bold tracking-wider text-accent flex items-center gap-1.5 font-heading">
-            🏆 {winner.category}
+        {/* Primary Showcase: Prize Won */}
+        <div className="space-y-1 pt-1">
+          <span className="text-[9px] font-extrabold uppercase tracking-widest text-accent block">
+            Prize Won
           </span>
-          <p className="text-[10px] text-muted-foreground/80 leading-none font-semibold">Winner Reward</p>
-        </div>
-
-        {/* Primary Showcase Feature: The Prize */}
-        <div className="bg-[#05100D]/55 border border-white/[0.05] p-4 rounded-2xl space-y-2 relative overflow-hidden shadow-inner group-hover:bg-[#071612]/70 transition-colors">
-          <span className="text-[8px] font-extrabold uppercase tracking-widest text-muted-foreground block">
-            Prize Awarded
-          </span>
-          <h4 className="text-sm font-extrabold text-white leading-snug font-heading tracking-wide group-hover:text-accent transition-colors">
-            {winner.prize}
+          <h4 className="text-base font-extrabold text-white leading-snug font-heading tracking-wide group-hover:text-accent transition-colors">
+            🏆 {winner.prize}
           </h4>
-          <span className="text-[10px] text-muted-foreground block font-medium">
-            Draw: {winner.draw}
-          </span>
         </div>
 
-        {/* Approval info */}
-        <div className="flex justify-between items-center text-[10px] text-muted-foreground py-0.5">
-          <span className="font-semibold">Verification status</span>
-          <span className="font-bold text-foreground/90">Approved {winner.date}</span>
+        {/* Details Row: Winning Category */}
+        <div className="flex justify-between items-center text-xs py-2.5 border-t border-b border-white/[0.04] mt-3">
+          <span className="text-muted-foreground/80 font-semibold">Winning Category</span>
+          <span className="text-foreground font-bold">{winner.category}</span>
         </div>
 
-        {/* Collapsible details drawer */}
-        <AnimatePresence initial={false}>
-          {showDetails && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden"
-            >
-              <div className="space-y-2 bg-[#05100D]/65 p-3 rounded-xl border border-white/[0.05] text-xs mt-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground font-semibold">Verification Code:</span>
-                  <span className="font-mono text-[10px] font-bold text-foreground">
-                    {winner.ticket}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground font-semibold">Audit Check:</span>
-                  <span className="text-emerald-400 font-bold flex items-center gap-1 text-[11px]">
-                    <ShieldCheck className="w-3.5 h-3.5 shrink-0" /> Compliance Verified
-                  </span>
-                </div>
-                <div className="pt-2 border-t border-white/[0.04] mt-1 space-y-1">
-                  <div className="flex justify-between items-center text-[10px]">
-                    <span className="text-muted-foreground font-semibold">Approval Date:</span>
-                    <span className="text-foreground font-bold">{winner.date}</span>
-                  </div>
-                  <div className="flex justify-between items-center text-[10px]">
-                    <span className="text-muted-foreground font-semibold">Verified On:</span>
-                    <span className="text-foreground font-bold">{winner.date}</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Supporting Row: Approved Date */}
+        <div className="flex justify-between items-center text-[10px] text-muted-foreground pt-1">
+          <span>Approved Date</span>
+          <span className="font-bold text-foreground/90">{winner.date}</span>
+        </div>
       </div>
 
-      {/* Footer / CTA Actions */}
-      <div className="pt-4 mt-5 border-t border-white/[0.06] flex justify-between items-center text-[10px]">
-        <button
-          type="button"
-          onClick={() => setShowDetails(!showDetails)}
-          className="text-[#8a9690] hover:text-foreground font-extrabold uppercase tracking-wider flex items-center gap-1 transition-colors"
-        >
-          {showDetails ? "Hide Audit Data" : "View Audit Data"}
-        </button>
-        
+      {/* Footer action to view verification details */}
+      <div className="pt-4 mt-5 border-t border-white/[0.06] flex items-center justify-end">
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="text-accent hover:text-accent-foreground hover:scale-[1.03] active:scale-[0.97] font-black uppercase tracking-wider flex items-center gap-1 transition-all"
+          className="text-accent hover:text-accent-foreground hover:scale-[1.03] active:scale-[0.97] font-black uppercase tracking-wider text-[10px] flex items-center gap-1 transition-all"
         >
-          View Verification <ExternalLink className="w-3 h-3" />
+          View Verification <ArrowRight className="w-3.5 h-3.5" />
         </button>
       </div>
 
@@ -276,6 +229,16 @@ function RecentWinnerCard({ winner }) {
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground font-semibold">Winner Tier:</span>
               <span className="font-bold text-foreground">{winner.tier}</span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground font-semibold">Verification Code:</span>
+              <span className="font-mono text-[10px] font-bold text-foreground">{winner.ticket}</span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground font-semibold">Escrow Audit Hash:</span>
+              <span className="font-mono text-[10px] font-bold text-accent">{winner.hash}</span>
             </div>
           </div>
 
