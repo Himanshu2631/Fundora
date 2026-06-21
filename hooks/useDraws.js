@@ -8,13 +8,18 @@ import {
   generateEntriesForUser, 
   recordWinningNumbers, 
   createDraw,
-  generateDraw
+  generateDraw,
+  submitWinnerClaim,
+  reviewWinnerClaim,
+  getWinnerClaims,
+  getUserClaims
 } from "@/services/drawService";
 
 export function useDraws() {
   const { user } = useAuth();
   const [draws, setDraws] = useState([]);
   const [userEntries, setUserEntries] = useState([]);
+  const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -28,8 +33,12 @@ export function useDraws() {
       if (user) {
         const entriesData = await getUserEntries(user.id);
         setUserEntries(entriesData);
+
+        const claimsData = await getUserClaims(user.id);
+        setClaims(claimsData);
       } else {
         setUserEntries([]);
+        setClaims([]);
       }
     } catch (err) {
       console.error("useDraws hook fetch error:", err);
@@ -135,15 +144,75 @@ export function useDraws() {
     }
   };
 
+  /**
+   * Submit a winner claim for a completed draw entry.
+   */
+  const submitClaim = async (drawId, entryId, screenshotUrl) => {
+    if (!user) throw new Error("Must be logged in to submit a claim.");
+    setLoading(true);
+    setError(null);
+    try {
+      const newClaim = await submitWinnerClaim(user.id, drawId, entryId, screenshotUrl);
+      const claimsData = await getUserClaims(user.id);
+      setClaims(claimsData);
+      return newClaim;
+    } catch (err) {
+      setError(err.message || "Failed to submit winner claim.");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Review winner claim status (Admin operation).
+   */
+  const reviewClaim = async (claimId, status) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const updatedClaim = await reviewWinnerClaim(claimId, status);
+      setClaims(prev => prev.map(c => c.id === claimId ? updatedClaim : c));
+      return updatedClaim;
+    } catch (err) {
+      setError(err.message || "Failed to review claim.");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Fetch all winner claims (Admin operation).
+   */
+  const fetchAllClaims = useCallback(async (status = null) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const claimsData = await getWinnerClaims(status);
+      setClaims(claimsData);
+      return claimsData;
+    } catch (err) {
+      setError(err.message || "Failed to fetch all winner claims.");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
     draws,
     userEntries,
+    claims,
     loading,
     error,
     refresh: fetchData,
     registerForDraw,
     enterWinningNumbers,
     addNewDraw,
-    completeDraw
+    completeDraw,
+    submitClaim,
+    reviewClaim,
+    fetchAllClaims
   };
 }

@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase";
-import { validateDraw, validateDrawEntry, validateWinningNumbers } from "@/lib/drawValidation";
-import { calculateTicketCount, generateTicketNumber, isTicketWinning, generateLotteryNumbers } from "@/lib/drawUtilities";
+import { validateDraw, validateDrawEntry, validateWinningNumbers, validateWinnerClaim, validateClaimReview } from "@/lib/drawValidation";
+import { calculateTicketCount, generateTicketNumber, isTicketWinning, generateLotteryNumbers, calculateMatches, getPrizeCategory } from "@/lib/drawUtilities";
 
 /**
  * Create a new monthly draw.
@@ -265,9 +265,11 @@ export async function recordWinningNumbers(drawId, winningNumbers, supabaseClien
 
 /**
  * Identify matching winning user entries for a completed draw.
+ * Calculates match counts between draw entries and draw winning numbers,
+ * filters those with matches >= 3, and returns them along with their match counts and prize categories.
  * @param {string} drawId - Draw ID.
  * @param {object} [supabaseClient] - Optional server-side Supabase client.
- * @returns {Promise<Array>} List of winning entries matching winning tickets.
+ * @returns {Promise<Array>} List of winning entries matching winning numbers (matches >= 3).
  */
 export async function getWinners(drawId, supabaseClient) {
   const supabase = supabaseClient || createClient();
@@ -277,7 +279,7 @@ export async function getWinners(drawId, supabaseClient) {
   if (!draw) {
     throw new Error("Draw not found.");
   }
-  if (draw.status !== "completed" || !draw.winning_numbers || draw.winning_numbers.length === 0) {
+  if (draw.status !== "completed") {
     return []; // No winners calculated for incomplete draws
   }
 
@@ -294,10 +296,24 @@ export async function getWinners(drawId, supabaseClient) {
 
   if (!entries || entries.length === 0) return [];
 
-  // 3. Filter entries that match winning numbers
-  return entries.filter(entry => 
-    isTicketWinning(entry.ticket_number, draw.winning_numbers)
-  );
+  const winningNumbers = draw.generated_numbers || [];
+  const winners = [];
+
+  // 3. Filter entries that match >= 3 numbers in generated_numbers
+  for (const entry of entries) {
+    const entryNumbers = entry.numbers || [];
+    const matchCount = calculateMatches(entryNumbers, winningNumbers);
+    if (matchCount >= 3) {
+      const prizeCategory = getPrizeCategory(matchCount);
+      winners.push({
+        ...entry,
+        match_count: matchCount,
+        prize_category: prizeCategory
+      });
+    }
+  }
+
+  return winners;
 }
 
 /**
@@ -373,4 +389,166 @@ export async function generateDraw(drawId, supabaseClient) {
     throw error;
   }
   return data;
+}
+
+/**
+ * Submit a winner claim for a completed draw entry.
+ * @param {string} userId - User ID claiming the win.
+ * @param {string} drawId - Draw ID.
+ * @param {string} entryId - Draw entry ID.
+ * @param {string} screenshotUrl - Screenshot verification URL.
+ * @param {object} [supabaseClient] - Optional server-side Supabase client.
+ * @returns {Promise<object>} The created claim.
+ */
+export async function submitWinnerClaim(userId, drawId, entryId, screenshotUrl, supabaseClient) {
+  const supabase = supabaseClient || createClient();
+
+  // 1. Validate claim payload
+  const claimPayload = { entry_id: entryId, screenshot_url: screenshotUrl };
+  const valResult = validateWinnerClaim(claimPayload);
+  if (!valResult.isValid) {
+    throw new Error(valResult.error);
+  }
+
+  // 2. Fetch draw details
+  const draw = await getDrawById(drawId, supabase);
+  if (!draw) {
+    throw new Error("Draw not found.");
+  }
+  if (draw.status !== "completed") {
+    throw new Error("Draw is not completed yet.");
+  }
+
+  // 3. Fetch entry details
+  const { data: entry, error: entryError } = await supabase
+    .from("draw_entries")
+    .select("*")
+    .eq("id", entryId)
+    .single();
+
+  if (entryError || !entry) {
+    throw new Error("Draw entry not found.");
+  }
+  if (entry.user_id !== userId) {
+    throw new Error("Entry does not belong to the user.");
+  }
+  if (entry.draw_id !== drawId) {
+    throw new Error("Entry does not belong to the specified draw.");
+  }
+
+  // 4. Verify existing claim for this entry
+  const { data: existingClaim, error: claimError } = await supabase
+    .from("winner_claims")
+    .select("*")
+    .eq("entry_id", entryId)
+    .maybeSingle();
+
+  if (existingClaim) {
+    throw new Error("A claim has already been submitted for this entry.");
+  }
+
+  // 5. Calculate matches to ensure it qualifies (matches >= 3)
+  const entryNumbers = entry.numbers || [];
+  const winningNumbers = draw.generated_numbers || [];
+  const matchCount = calculateMatches(entryNumbers, winningNumbers);
+  if (matchCount < 3) {
+    throw new Error(`Entry does not qualify as a winner. Matches: ${matchCount}`);
+  }
+
+  const prizeCategory = getPrizeCategory(matchCount);
+
+  // 6. Insert claim record
+  const { data: claim, error: insertError } = await supabase
+    .from("winner_claims")
+    .insert({
+      user_id: userId,
+      draw_id: drawId,
+      entry_id: entryId,
+      match_count: matchCount,
+      prize_category: prizeCategory,
+      screenshot_url: screenshotUrl,
+      status: "pending",
+      submitted_at: new Date().toISOString()
+    })
+    .select()
+    .single();
+
+  if (insertError) {
+    console.error("Error inserting winner claim:", insertError);
+    throw insertError;
+  }
+
+  return claim;
+}
+
+/**
+ * Admin method to retrieve all claim submissions.
+ * @param {string} [status] - Optional status filter ('pending', 'approved', 'rejected', 'paid').
+ * @param {object} [supabaseClient] - Optional server-side Supabase client.
+ * @returns {Promise<Array>} List of claims.
+ */
+export async function getWinnerClaims(status = null, supabaseClient) {
+  const supabase = supabaseClient || createClient();
+  let query = supabase.from("winner_claims").select("*");
+  if (status) {
+    query = query.eq("status", status);
+  }
+  const { data, error } = await query;
+  if (error) {
+    console.error("Error fetching winner claims:", error);
+    throw error;
+  }
+  return data || [];
+}
+
+/**
+ * Retrieve claim submissions for a specific user.
+ * @param {string} userId - User ID.
+ * @param {object} [supabaseClient] - Optional server-side Supabase client.
+ * @returns {Promise<Array>} List of claims.
+ */
+export async function getUserClaims(userId, supabaseClient) {
+  const supabase = supabaseClient || createClient();
+  const { data, error } = await supabase
+    .from("winner_claims")
+    .select("*")
+    .eq("user_id", userId);
+  if (error) {
+    console.error(`Error fetching claims for user ${userId}:`, error);
+    throw error;
+  }
+  return data || [];
+}
+
+/**
+ * Admin method to update claim verification status.
+ * Validates transitions to pending, approved, rejected, or paid.
+ * @param {string} claimId - Claim ID.
+ * @param {string} status - Target status ('pending', 'approved', 'rejected', 'paid').
+ * @param {object} [supabaseClient] - Optional server-side Supabase client.
+ * @returns {Promise<object>} The updated claim.
+ */
+export async function reviewWinnerClaim(claimId, status, supabaseClient) {
+  const supabase = supabaseClient || createClient();
+
+  // Validate status
+  const valResult = validateClaimReview(status);
+  if (!valResult.isValid) {
+    throw new Error(valResult.error);
+  }
+
+  // Update claim
+  const { data: updatedClaim, error } = await supabase
+    .from("winner_claims")
+    .update({ status })
+    .eq("id", claimId)
+    .select()
+    .single();
+
+  if (error) {
+    console.error(`Error updating claim status for claim ${claimId}:`, error);
+    throw error;
+  }
+
+  return updatedClaim;
 }
