@@ -122,6 +122,7 @@ export async function POST(req) {
         const invoice = event.data.object;
         const stripeCustomerId = invoice.customer;
         const stripeSubscriptionId = invoice.subscription;
+        const stripeInvoiceId = invoice.id;
         
         let userId = invoice.subscription_details?.metadata?.supabase_user_id;
 
@@ -135,12 +136,27 @@ export async function POST(req) {
         }
 
         if (userId) {
+          // Idempotency check
+          if (stripeInvoiceId) {
+            const { data: existingPayment } = await supabase
+              .from("payments")
+              .select("id")
+              .eq("stripe_invoice_id", stripeInvoiceId)
+              .maybeSingle();
+
+            if (existingPayment) {
+              console.log(`[Stripe Webhook] Duplicate payment event skipped for invoice: ${stripeInvoiceId}`);
+              break;
+            }
+          }
+
           const amount = invoice.amount_paid / 100;
           
           await supabase.from("payments").insert({
             user_id: userId,
             amount: amount,
             status: "succeeded",
+            stripe_invoice_id: stripeInvoiceId,
             created_at: new Date().toISOString()
           });
 
@@ -166,6 +182,7 @@ export async function POST(req) {
       case "invoice.payment_failed": {
         const invoice = event.data.object;
         const stripeCustomerId = invoice.customer;
+        const stripeInvoiceId = invoice.id;
         
         let userId = invoice.subscription_details?.metadata?.supabase_user_id;
 
@@ -179,11 +196,26 @@ export async function POST(req) {
         }
 
         if (userId) {
+          // Idempotency check
+          if (stripeInvoiceId) {
+            const { data: existingPayment } = await supabase
+              .from("payments")
+              .select("id")
+              .eq("stripe_invoice_id", stripeInvoiceId)
+              .maybeSingle();
+
+            if (existingPayment) {
+              console.log(`[Stripe Webhook] Duplicate payment failure event skipped for invoice: ${stripeInvoiceId}`);
+              break;
+            }
+          }
+
           const amount = invoice.amount_due / 100;
           await supabase.from("payments").insert({
             user_id: userId,
             amount: amount,
             status: "failed",
+            stripe_invoice_id: stripeInvoiceId,
             created_at: new Date().toISOString()
           });
           

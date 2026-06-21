@@ -57,7 +57,7 @@ function MockCheckoutForm() {
       if (response.ok) {
         setSuccess(true);
         setTimeout(() => {
-          router.push("/dashboard/subscription?success=true");
+          router.push(`/dashboard/subscription/success?session_id=mock-session-${Math.random().toString(36).substring(2, 10)}`);
         }, 1500);
       } else {
         alert("Simulated transaction failed. Please check the logs.");
@@ -76,7 +76,7 @@ function MockCheckoutForm() {
       <header className="border-b border-border/40 bg-card/25 backdrop-blur-md px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <button 
-            onClick={() => router.back()} 
+            onClick={() => router.push("/dashboard/subscription/cancel")} 
             className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Back

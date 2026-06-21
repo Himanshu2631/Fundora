@@ -78,8 +78,8 @@ export async function POST(req) {
       ],
       mode: "subscription",
       customer: stripeCustomerId,
-      success_url: `${origin}/dashboard/subscription?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/pricing`,
+      success_url: `${origin}/dashboard/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/dashboard/subscription/cancel`,
       metadata: {
         supabase_user_id: user.id
       }

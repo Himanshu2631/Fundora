@@ -55,10 +55,12 @@ export async function POST(req) {
     else if (priceId.includes("advocate")) amount = priceId.includes("yearly") ? 240.00 : 25.00;
     else if (priceId.includes("builder")) amount = priceId.includes("yearly") ? 960.00 : 100.00;
 
+    const stripeInvoiceId = "mock-in-" + Math.random().toString(36).substring(2, 15);
     await supabase.from("payments").insert({
       user_id: user.id,
       amount: amount,
       status: "succeeded",
+      stripe_invoice_id: stripeInvoiceId,
       created_at: new Date().toISOString()
     });
 
