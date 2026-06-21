@@ -178,7 +178,7 @@ export async function getSubscriptionPlans(supabaseClient) {
  * @param {string} renewalDate - Renewal date ISO string.
  * @param {object} [supabaseClient] - Optional server-side Supabase client.
  */
-export async function syncStripeSubscriptionToDatabase(userId, stripeSubId, priceId, status, renewalDate, supabaseClient) {
+export async function syncStripeSubscriptionToDatabase(userId, stripeSubId, priceId, status, renewalDate, supabaseClient, cardBrand = null, cardLast4 = null) {
   const supabase = supabaseClient || createClient();
 
   // 1. Fetch the plan details to get plan_name (scout, advocate, builder)
@@ -224,9 +224,19 @@ export async function syncStripeSubscriptionToDatabase(userId, stripeSubId, pric
     renewal_date: renewalDate,
     stripe_subscription_id: stripeSubId,
     stripe_price_id: priceId,
+    card_brand: cardBrand,
+    card_last4: cardLast4,
   };
 
   if (existing) {
+    // If updating and new card details are not provided but exist in the DB, preserve them
+    if (cardBrand === null && existing.card_brand) {
+      subPayload.card_brand = existing.card_brand;
+    }
+    if (cardLast4 === null && existing.card_last4) {
+      subPayload.card_last4 = existing.card_last4;
+    }
+
     const { data, error } = await supabase
       .from("subscriptions")
       .update(subPayload)

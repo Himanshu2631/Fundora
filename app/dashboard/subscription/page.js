@@ -10,6 +10,7 @@ import { LoadingState } from "@/components/ui/loading-state";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import SubscriptionWidget from "@/features/subscriptions/SubscriptionWidget";
 import SubscriptionSimulatorPanel from "@/features/subscriptions/SubscriptionSimulatorPanel";
+import SubscriptionTimeline from "@/features/subscriptions/SubscriptionTimeline";
 import { useSubscription } from "@/hooks/useSubscription";
 import {
   ArrowRight,
@@ -53,8 +54,10 @@ const itemVariants = {
 export default function SubscriptionPage() {
   const { subscription, status, loading, error, refresh } = useSubscription();
   const [isMock, setIsMock] = useState(false);
+  const [showMockPortalNotice, setShowMockPortalNotice] = useState(false);
 
   useEffect(() => {
+    // Check if Stripe is mock
     fetch("/api/stripe/config")
       .then((res) => res.json())
       .then((data) => {
@@ -63,6 +66,14 @@ export default function SubscriptionPage() {
         }
       })
       .catch((err) => console.error("Failed to load stripe config:", err));
+
+    // Safely check query param for mock customer portal redirect notice
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("mock_portal") === "true") {
+        setShowMockPortalNotice(true);
+      }
+    }
   }, []);
 
   const planKey = subscription?.plan_type;
@@ -137,6 +148,22 @@ export default function SubscriptionPage() {
               <AlertCircle className="w-4 h-4" />
               <AlertTitle>Connection Error</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
+
+        {/* Mock Portal Notice Alert */}
+        {showMockPortalNotice && (
+          <motion.div variants={itemVariants}>
+            <Alert variant="accent" className="bg-accent/15 border-accent/25 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-[3px] bg-accent" />
+              <Info className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+              <div>
+                <AlertTitle className="text-xs font-bold text-foreground">Stripe Sandbox Billing Portal</AlertTitle>
+                <AlertDescription className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
+                  The Stripe Billing Customer Portal is disabled in sandboxed mock mode. Use the dashboard controls directly to manage, upgrade, or reactivate your subscription.
+                </AlertDescription>
+              </div>
             </Alert>
           </motion.div>
         )}
@@ -261,6 +288,13 @@ export default function SubscriptionPage() {
                 </div>
               </div>
             </Card>
+          </motion.div>
+        )}
+
+        {/* Subscription Timeline */}
+        {subscription && (
+          <motion.div variants={itemVariants}>
+            <SubscriptionTimeline subscription={subscription} status={status} />
           </motion.div>
         )}
 

@@ -57,7 +57,9 @@ export async function POST(req) {
         priceId,
         "active",
         renewalDate.toISOString(),
-        supabase
+        supabase,
+        "Visa",
+        "4242"
       );
 
       // Log a simulated payment succeeded record
@@ -195,6 +197,20 @@ export async function POST(req) {
 
       console.log(`[Stripe Mock webhook simulator] Processed immediate subscription deletion for user ${user.id}.`);
       return NextResponse.json({ success: true, action: "delete" });
+    }
+
+    if (actionType === "reactivate") {
+      if (!currentSub) {
+        return NextResponse.json({ error: "No active subscription to reactivate." }, { status: 400 });
+      }
+
+      await supabase
+        .from("subscriptions")
+        .update({ status: "active" })
+        .eq("user_id", user.id);
+
+      console.log(`[Stripe Mock webhook simulator] Processed reactivate request for user ${user.id}.`);
+      return NextResponse.json({ success: true, action: "reactivate" });
     }
 
     return NextResponse.json({ error: "Unhandled action type" }, { status: 400 });

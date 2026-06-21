@@ -22,7 +22,7 @@ import {
 import { useState } from "react";
 
 export default function SubscriptionWidget() {
-  const { subscription, status, loading, error, subscribe, cancel, update } = useSubscription();
+  const { subscription, status, loading, error, subscribe, cancel, reactivate, openPortal, update } = useSubscription();
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError, setActionError] = useState(null);
   const [isCancelModalOpen, _setIsCancelModalOpen] = useState(false);
@@ -141,6 +141,32 @@ export default function SubscriptionWidget() {
     }
   };
 
+  const handleReactivate = async () => {
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      await reactivate();
+    } catch (err) {
+      console.error(err);
+      setActionError(err.message || "Failed to reactivate subscription.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleOpenPortal = async () => {
+    setActionLoading(true);
+    setActionError(null);
+    try {
+      await openPortal();
+    } catch (err) {
+      console.error(err);
+      setActionError(err.message || "Failed to open customer billing portal.");
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   if (loading || actionLoading) {
     return (
       <Card className="p-6 flex items-center justify-center min-h-[260px] border border-border bg-card">
@@ -213,6 +239,21 @@ export default function SubscriptionWidget() {
                 {getMembershipDuration(subscription.created_at)}
               </span>
             </div>
+            <div className="flex justify-between border-b border-border/40 pb-2 items-center">
+              <span className="text-muted-foreground font-semibold">Payment Method</span>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-foreground flex items-center gap-1.5 capitalize">
+                  <CreditCard className="w-3.5 h-3.5 text-accent" />
+                  {subscription.card_brand ? `${subscription.card_brand} •••• ${subscription.card_last4}` : "Stripe Card"}
+                </span>
+                <button 
+                  onClick={handleOpenPortal}
+                  className="text-[10px] text-accent hover:underline font-bold"
+                >
+                  (Manage)
+                </button>
+              </div>
+            </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground font-semibold">Audited Routing</span>
               <span className="font-bold text-emerald-500">100.0% Verified</span>
@@ -268,15 +309,30 @@ export default function SubscriptionWidget() {
                 {getMembershipDuration(subscription.created_at)}
               </span>
             </div>
+            <div className="flex justify-between border-t border-border/20 pt-2.5 items-center">
+              <span className="text-muted-foreground font-semibold">Payment Method</span>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-foreground flex items-center gap-1.5 capitalize">
+                  <CreditCard className="w-3.5 h-3.5 text-accent" />
+                  {subscription.card_brand ? `${subscription.card_brand} •••• ${subscription.card_last4}` : "Stripe Card"}
+                </span>
+                <button 
+                  onClick={handleOpenPortal}
+                  className="text-[10px] text-accent hover:underline font-bold"
+                >
+                  (Manage)
+                </button>
+              </div>
+            </div>
           </div>
 
           <div className="pt-4 border-t border-border/30 flex gap-3">
             <Button 
-              onClick={handleRenew} 
+              onClick={handleReactivate} 
               variant="accent" 
               className="flex-1 text-xs font-bold uppercase tracking-wider reactivate-subscription-btn"
             >
-              <RefreshCw className="w-3.5 h-3.5" /> Renew Subscription
+              <RefreshCw className="w-3.5 h-3.5" /> Reactivate Subscription
             </Button>
             <Button 
               onClick={() => setIsUpgradeModalOpen(true)} 

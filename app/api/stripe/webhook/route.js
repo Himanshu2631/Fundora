@@ -63,6 +63,24 @@ export async function POST(req) {
         }
         const renewalDate = new Date(sub.current_period_end * 1000).toISOString();
 
+        // Retrieve card details from subscription if available
+        let cardBrand = null;
+        let cardLast4 = null;
+        const defaultPaymentMethodId = sub.default_payment_method;
+        if (defaultPaymentMethodId) {
+          try {
+            const pm = await stripe.paymentMethods.retrieve(
+              typeof defaultPaymentMethodId === "string" ? defaultPaymentMethodId : defaultPaymentMethodId.id
+            );
+            if (pm.card) {
+              cardBrand = pm.card.brand;
+              cardLast4 = pm.card.last4;
+            }
+          } catch (e) {
+            console.error("[Stripe Webhook] Error retrieving payment method from Stripe:", e.message);
+          }
+        }
+
         // 1. Save stripe_customer_id on user profile for future lookups
         await supabase
           .from("profiles")
@@ -70,7 +88,7 @@ export async function POST(req) {
           .eq("id", userId);
 
         // 2. Sync subscription details to database
-        await syncStripeSubscriptionToDatabase(userId, stripeSubscriptionId, priceId, status, renewalDate, supabase);
+        await syncStripeSubscriptionToDatabase(userId, stripeSubscriptionId, priceId, status, renewalDate, supabase, cardBrand, cardLast4);
         console.log(`[Stripe Webhook] Handled checkout.session.completed for user ${userId}`);
         break;
       }
@@ -103,7 +121,25 @@ export async function POST(req) {
           break;
         }
 
-        await syncStripeSubscriptionToDatabase(userId, stripeSubscriptionId, priceId, status, renewalDate, supabase);
+        // Retrieve card details from subscription if available
+        let cardBrand = null;
+        let cardLast4 = null;
+        const defaultPaymentMethodId = sub.default_payment_method;
+        if (defaultPaymentMethodId) {
+          try {
+            const pm = await stripe.paymentMethods.retrieve(
+              typeof defaultPaymentMethodId === "string" ? defaultPaymentMethodId : defaultPaymentMethodId.id
+            );
+            if (pm.card) {
+              cardBrand = pm.card.brand;
+              cardLast4 = pm.card.last4;
+            }
+          } catch (e) {
+            console.error("[Stripe Webhook] Error retrieving payment method from Stripe:", e.message);
+          }
+        }
+
+        await syncStripeSubscriptionToDatabase(userId, stripeSubscriptionId, priceId, status, renewalDate, supabase, cardBrand, cardLast4);
         console.log(`[Stripe Webhook] Handled customer.subscription.updated for user ${userId}`);
         break;
       }

@@ -100,6 +100,52 @@ export function useSubscription() {
     }
   };
 
+  const reactivate = async () => {
+    if (!user) throw new Error("Must be logged in to reactivate subscription");
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/stripe/reactivate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to reactivate subscription");
+      }
+      await fetchSubscription();
+      return data;
+    } catch (err) {
+      setError(err.message || "Failed to reactivate subscription");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openPortal = async () => {
+    if (!user) throw new Error("Must be logged in to manage subscription");
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/stripe/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to open customer portal");
+      }
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (err) {
+      setError(err.message || "Failed to open customer portal");
+      setLoading(false);
+      throw err;
+    }
+  };
+
   const update = async (updates) => {
     if (!user) throw new Error("Must be logged in to update subscription");
     setLoading(true);
@@ -140,6 +186,8 @@ export function useSubscription() {
     error,
     subscribe,
     cancel,
+    reactivate,
+    openPortal,
     update,
     refresh: fetchSubscription,
   };
