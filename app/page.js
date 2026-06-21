@@ -8,7 +8,8 @@ import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, ShieldCheck, Trophy, Sparkles, Heart, Check, HelpCircle, Gift, Users } from "lucide-react";
+import { ArrowRight, ShieldCheck, Trophy, Sparkles, Heart, Check, HelpCircle, Gift, Users, CreditCard, Activity, Award, Ticket, Zap } from "lucide-react";
+
 
 export default function Home() {
   const [isYearly, setIsYearly] = useState(false);
@@ -129,14 +130,14 @@ export default function Home() {
                   variants={itemVariants}
                   className="font-heading text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.05] mb-6"
                 >
-                  Play Golf. Support Charity. <span className="text-accent">Win Premium Rewards.</span>
+                  Golf Standings. Vetted Giving. <span className="text-accent">Monthly Rewards.</span>
                 </motion.h1>
-
+ 
                 <motion.p
                   variants={itemVariants}
                   className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl mb-8"
                 >
-                  Fundora is the ultimate giving platform for golfers. Subscribe to fund verified, audited non-profits, log your weekly Stableford golf scores to boost your draw entries, and win monthly luxury eco-retreats or high-end green tech rewards. 100% of your subscription goes directly to your chosen charity.
+                  Fundora is a member-driven platform where your passion for golf fuels global change. Subscribe to a tax-deductible giving plan, log your golf Stableford rounds to earn entry tickets, and win premium monthly rewards—while 100% of your subscription flows directly to audited, vetted charities.
                 </motion.p>
 
                 <motion.div
@@ -217,158 +218,192 @@ export default function Home() {
         <section id="how-it-works" className="py-24 border-b border-border bg-background">
           <div className="mx-auto max-w-7xl px-6">
             <div className="max-w-2xl mb-20">
-              <span className="text-xs uppercase tracking-widest text-accent font-bold block mb-3">Process</span>
+              <span className="text-xs uppercase tracking-widest text-accent font-bold block mb-3">Process Flow</span>
               <h2 className="font-heading text-3xl sm:text-4xl font-extrabold text-foreground">
-                How It Works
+                How Fundora Works
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground mt-4 leading-relaxed">
-                Fundora bridges golf scores, charity subscriptions, and premium incentives. Follow these 5 steps to start making an impact and winning rewards.
+                We bridge your passion for golf with verified global impact. Follow this simple 5-step progression to start giving and winning.
               </p>
             </div>
-
-            {/* 5-Step How It Works Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-6 relative">
-              {/* Step 1 */}
-              <div className="relative flex flex-col justify-between p-6 bg-card border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
-                <div>
-                  <div className="flex justify-between items-center mb-6">
-                    <div className="w-10 h-10 flex items-center justify-center bg-background border border-border text-accent font-heading font-extrabold text-sm rounded-full">
-                      01
+ 
+            {/* Horizontal flow sequence */}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 relative">
+              {[
+                {
+                  step: "01",
+                  title: "1. Subscribe",
+                  icon: CreditCard,
+                  category: "Setup Plan",
+                  desc: "Select a membership tier (Eco Scout, Global Advocate, or Legacy Builder) that fits your target monthly contribution.",
+                  tag: "Flexible Tiers"
+                },
+                {
+                  step: "02",
+                  title: "2. Enter Scores",
+                  icon: Trophy,
+                  category: "Log rounds",
+                  desc: "Log your weekly Stableford golf scores directly in the portal. Your logged scores determine your giving score multiplier.",
+                  tag: "Stableford Points"
+                },
+                {
+                  step: "03",
+                  title: "3. Support Charity",
+                  icon: Heart,
+                  category: "Fund Causes",
+                  desc: "Allocate 100% of your subscription to vetted, audited charities. Track routing transparently through your dashboard.",
+                  tag: "100% Direct Routing"
+                },
+                {
+                  step: "04",
+                  title: "4. Receive Draw Tickets",
+                  icon: Ticket,
+                  category: "Get Entries",
+                  desc: "Your subscription tier and logged golf scores automatically calculate your active tickets for the monthly drawings.",
+                  tag: "Automated Multipliers"
+                },
+                {
+                  step: "05",
+                  title: "5. Win Rewards",
+                  icon: Gift,
+                  category: "Win Prizes",
+                  desc: "Stand a chance to win monthly luxury eco-retreat getaways, premium electric cruisers, and green technology rewards.",
+                  tag: "Monthly Eco Draws"
+                }
+              ].map((stepObj, idx) => {
+                const IconComponent = stepObj.icon;
+                return (
+                  <div key={idx} className="relative flex flex-col justify-between p-6 bg-card/40 border border-border/80 hover:border-accent/40 rounded-2xl shadow-sm hover:-translate-y-1 transition-all duration-300 group">
+                    {/* Glowing top line */}
+                    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    
+                    <div>
+                      {/* Step Header */}
+                      <div className="flex justify-between items-center mb-6">
+                        <div className="w-9 h-9 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
+                          <IconComponent className="w-4 h-4" />
+                        </div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-[#07130F] border border-white/[0.05] px-2 py-0.5 rounded-md">
+                          {stepObj.category}
+                        </span>
+                      </div>
+                      
+                      <h3 className="font-heading text-base font-bold text-foreground mb-3 group-hover:text-accent transition-colors">
+                        {stepObj.title}
+                      </h3>
+                      <p className="text-[11px] text-muted-foreground/80 leading-relaxed">
+                        {stepObj.desc}
+                      </p>
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Setup</span>
-                  </div>
-                  <h3 className="font-heading text-lg font-bold text-foreground mb-4">Step 1: Subscribe</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Choose a monthly or annual membership tier matching your capacity. Automate giving as a tax-deductible contribution.
-                  </p>
-                </div>
-                <div className="mt-8 flex items-center gap-2 text-xs font-semibold text-accent">
-                  <Check className="w-3.5 h-3.5" /> Flexible Giving Tiers
-                </div>
-
-                {/* Connector pointing right (desktop) */}
-                <div className="hidden lg:block absolute top-1/2 -right-3 -translate-y-1/2 translate-x-1/2 z-10">
-                  <ArrowRight className="w-5 h-5 text-accent/60 animate-pulse" />
-                </div>
-                {/* Connector pointing down (mobile) */}
-                <div className="lg:hidden absolute left-1/2 -bottom-8 -translate-x-1/2 z-10 rotate-90">
-                  <ArrowRight className="w-5 h-5 text-accent/60 animate-pulse" />
-                </div>
-              </div>
-
-              {/* Step 2 */}
-              <div className="relative flex flex-col justify-between p-6 bg-card border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
-                <div>
-                  <div className="flex justify-between items-center mb-6">
-                    <div className="w-10 h-10 flex items-center justify-center bg-background border border-border text-accent font-heading font-extrabold text-sm rounded-full">
-                      02
+ 
+                    <div className="mt-6 flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-accent">
+                      <Check className="w-3.5 h-3.5 shrink-0" /> {stepObj.tag}
                     </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Log Scores</span>
+ 
+                    {/* Progress indicators / arrows */}
+                    {idx < 4 && (
+                      <>
+                        {/* Horizontal Arrow (Desktop) */}
+                        <div className="hidden lg:block absolute top-[28px] -right-4 -translate-y-1/2 translate-x-1/2 z-25">
+                          <ArrowRight className="w-4 h-4 text-accent/60 animate-pulse" />
+                        </div>
+                        {/* Vertical Arrow (Mobile) */}
+                        <div className="lg:hidden absolute left-1/2 -bottom-6 -translate-x-1/2 z-25 rotate-90">
+                          <ArrowRight className="w-4 h-4 text-accent/60 animate-pulse" />
+                        </div>
+                      </>
+                    )}
                   </div>
-                  <h3 className="font-heading text-lg font-bold text-foreground mb-4">Step 2: Submit Golf Scores</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Log your Stableford golf scores in the Score Centre to determine your performance-based giving score.
-                  </p>
-                </div>
-                <div className="mt-8 flex items-center gap-2 text-xs font-semibold text-accent">
-                  <Trophy className="w-3.5 h-3.5" /> Stableford Points
-                </div>
-
-                {/* Connector pointing right (desktop) */}
-                <div className="hidden lg:block absolute top-1/2 -right-3 -translate-y-1/2 translate-x-1/2 z-10">
-                  <ArrowRight className="w-5 h-5 text-accent/60 animate-pulse" />
-                </div>
-                {/* Connector pointing down (mobile) */}
-                <div className="lg:hidden absolute left-1/2 -bottom-8 -translate-x-1/2 z-10 rotate-90">
-                  <ArrowRight className="w-5 h-5 text-accent/60 animate-pulse" />
-                </div>
-              </div>
-
-              {/* Step 3 */}
-              <div className="relative flex flex-col justify-between p-6 bg-card border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
-                <div>
-                  <div className="flex justify-between items-center mb-6">
-                    <div className="w-10 h-10 flex items-center justify-center bg-background border border-border text-accent font-heading font-extrabold text-sm rounded-full">
-                      03
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Allocation</span>
-                  </div>
-                  <h3 className="font-heading text-lg font-bold text-foreground mb-4">Step 3: Support Your Favorite Charity</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    100% of your subscription funds go directly to your chosen vetted, audited non-profit organization.
-                  </p>
-                </div>
-                <div className="mt-8 flex items-center gap-2 text-xs font-semibold text-accent">
-                  <Heart className="w-3.5 h-3.5" /> 100% Direct Routing
-                </div>
-
-                {/* Connector pointing right (desktop) */}
-                <div className="hidden lg:block absolute top-1/2 -right-3 -translate-y-1/2 translate-x-1/2 z-10">
-                  <ArrowRight className="w-5 h-5 text-accent/60 animate-pulse" />
-                </div>
-                {/* Connector pointing down (mobile) */}
-                <div className="lg:hidden absolute left-1/2 -bottom-8 -translate-x-1/2 z-10 rotate-90">
-                  <ArrowRight className="w-5 h-5 text-accent/60 animate-pulse" />
-                </div>
-              </div>
-
-              {/* Step 4 */}
-              <div className="relative flex flex-col justify-between p-6 bg-card border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
-                <div>
-                  <div className="flex justify-between items-center mb-6">
-                    <div className="w-10 h-10 flex items-center justify-center bg-background border border-border text-accent font-heading font-extrabold text-sm rounded-full">
-                      04
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Entries</span>
-                  </div>
-                  <h3 className="font-heading text-lg font-bold text-foreground mb-4">Step 4: Receive Draw Entries</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Get automatically registered for draws. Your logged scores plus active subscription multipliers generate your entries.
-                  </p>
-                </div>
-                <div className="mt-8 flex items-center gap-2 text-xs font-semibold text-accent">
-                  <Sparkles className="w-3.5 h-3.5" /> Automated Multipliers
-                </div>
-
-                {/* Connector pointing right (desktop) */}
-                <div className="hidden lg:block absolute top-1/2 -right-3 -translate-y-1/2 translate-x-1/2 z-10">
-                  <ArrowRight className="w-5 h-5 text-accent/60 animate-pulse" />
-                </div>
-                {/* Connector pointing down (mobile) */}
-                <div className="lg:hidden absolute left-1/2 -bottom-8 -translate-x-1/2 z-10 rotate-90">
-                  <ArrowRight className="w-5 h-5 text-accent/60 animate-pulse" />
-                </div>
-              </div>
-
-              {/* Step 5 */}
-              <div className="relative flex flex-col justify-between p-6 bg-card border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
-                <div>
-                  <div className="flex justify-between items-center mb-6">
-                    <div className="w-10 h-10 flex items-center justify-center bg-background border border-border text-accent font-heading font-extrabold text-sm rounded-full">
-                      05
-                    </div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Prizes</span>
-                  </div>
-                  <h3 className="font-heading text-lg font-bold text-foreground mb-4">Step 5: Win Monthly Rewards</h3>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Win monthly eco-retreats, green technology bundles, and premium golf prizes in transparent draws.
-                  </p>
-                </div>
-                <div className="mt-8 flex items-center gap-2 text-xs font-semibold text-accent">
-                  <Check className="w-3.5 h-3.5" /> Monthly Eco Draws
-                </div>
-              </div>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        {/* WHY PEOPLE JOIN SECTION */}
-        <section className="py-24 border-b border-border bg-card/20">
+        {/* WHAT HAPPENS AFTER YOU SUBSCRIBE SECTION */}
+        <section className="py-24 border-b border-border bg-[#091512]">
+          <div className="mx-auto max-w-7xl px-6">
+            <div className="max-w-3xl mb-16">
+              <span className="text-xs uppercase tracking-widest text-accent font-bold block mb-3">Timeline Lifecycle</span>
+              <h2 className="font-heading text-3xl sm:text-4xl font-extrabold text-foreground">
+                What Happens After You Subscribe
+              </h2>
+              <p className="text-xs sm:text-sm text-muted-foreground mt-4 leading-relaxed">
+                As soon as your membership is activated, a sequence of automated events ensures your contribution is routed and your rewards are tracked.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
+              {[
+                {
+                  step: "01",
+                  title: "Subscription Activates",
+                  subtitle: "Instant Baseline Activation",
+                  icon: Zap,
+                  desc: "Your membership becomes active instantly, establishing your baseline giving score and initializing your monthly draw status."
+                },
+                {
+                  step: "02",
+                  title: "Scores Are Tracked",
+                  subtitle: "Stableford Score Logs",
+                  icon: Activity,
+                  desc: "Connect your round history or log your golf Stableford score cards. Our system automatically processes your performance and updates leaderboards."
+                },
+                {
+                  step: "03",
+                  title: "Draw Eligibility Begins",
+                  subtitle: "Reward Pool Integration",
+                  icon: Award,
+                  desc: "Your subscription tier combined with your logged golf scores calculates and registers your entries into the upcoming premium reward pools."
+                },
+                {
+                  step: "04",
+                  title: "Charity Allocation Starts",
+                  subtitle: "100% Direct audited Routing",
+                  icon: ShieldCheck,
+                  desc: "100% of subscription funds are instantly routed to audited charities, and cryptographic receipts are generated and displayed on your user dashboard."
+                }
+              ].map((step, idx) => {
+                const IconComponent = step.icon;
+                return (
+                  <div key={idx} className="relative flex flex-col justify-between p-6 bg-card/30 border border-border/50 hover:border-accent/30 rounded-2xl transition-all duration-300 group">
+                    {/* Top Accent Gradient Line */}
+                    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent/35 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    
+                    <div>
+                      <div className="flex justify-between items-center mb-6">
+                        <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent group-hover:bg-accent/20 transition-all duration-300">
+                          <IconComponent className="w-5 h-5" />
+                        </div>
+                        <span className="text-[10px] font-extrabold tracking-wider text-muted-foreground uppercase bg-[#07130F] border border-white/[0.05] px-2.5 py-1 rounded-md">
+                          Step {step.step}
+                        </span>
+                      </div>
+                      
+                      <span className="text-[9px] font-extrabold uppercase tracking-widest text-accent/80 block mb-1">
+                        {step.subtitle}
+                      </span>
+                      <h3 className="font-heading text-base font-bold text-foreground mb-3 group-hover:text-accent transition-colors">
+                        {step.title}
+                      </h3>
+                      <p className="text-[11px] text-muted-foreground/80 leading-relaxed">
+                        {step.desc}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* WHY MEMBERS JOIN SECTION */}
+        <section className="py-24 border-b border-border bg-card/10">
           <div className="mx-auto max-w-7xl px-6">
             <div className="max-w-3xl mb-16">
               <span className="text-xs uppercase tracking-widest text-accent font-bold block mb-3">Benefits</span>
               <h2 className="font-heading text-3xl sm:text-4xl font-extrabold text-foreground">
-                Why People Join Fundora
+                Why Members Join Fundora
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground mt-4 leading-relaxed">
                 We bridge the gap between premium rewards and global impact, powered by your passion for golf.
@@ -376,41 +411,54 @@ export default function Home() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Pillar 1: Reward Opportunities */}
-              <div className="flex flex-col p-8 bg-background border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
-                <div className="w-12 h-12 flex items-center justify-center bg-card border border-border text-accent rounded-2xl mb-6">
+              {/* Pillar 1: Monthly Rewards */}
+              <div className="flex flex-col p-8 bg-background border border-border/80 rounded-2xl shadow-sm hover:border-accent/40 hover:scale-[1.02] hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="w-12 h-12 flex items-center justify-center bg-[#07130F] border border-accent/20 text-accent rounded-2xl mb-6 group-hover:bg-accent/10 transition-colors">
                   <Gift className="w-6 h-6" />
                 </div>
-                <h3 className="font-heading text-xl font-bold text-foreground mb-4">Reward Opportunities</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed flex-1">
-                  Win premium incentives including luxury eco-retreats, green tech bundles, and exclusive golf getaways. Boost your chances with active subscription multipliers and consistent golf score submissions.
+                <h3 className="font-heading text-xl font-bold text-foreground mb-4 group-hover:text-accent transition-colors">Monthly Rewards</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed flex-1 mb-6">
+                  Win premium incentives including luxury eco-retreats, electric cruiser bikes, and curated green tech getaways. Submissions and active subscription multipliers automatically boost your draw chances.
                 </p>
+                <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-wider text-accent">
+                  <span>Eco-Travel & Tech Draws</span>
+                </div>
               </div>
 
               {/* Pillar 2: Charity Impact */}
-              <div className="flex flex-col p-8 bg-background border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
-                <div className="w-12 h-12 flex items-center justify-center bg-card border border-border text-accent rounded-2xl mb-6">
+              <div className="flex flex-col p-8 bg-background border border-border/80 rounded-2xl shadow-sm hover:border-accent/40 hover:scale-[1.02] hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="w-12 h-12 flex items-center justify-center bg-[#07130F] border border-accent/20 text-accent rounded-2xl mb-6 group-hover:bg-accent/10 transition-colors">
                   <ShieldCheck className="w-6 h-6" />
                 </div>
-                <h3 className="font-heading text-xl font-bold text-foreground mb-4">Charity Impact</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed flex-1">
+                <h3 className="font-heading text-xl font-bold text-foreground mb-4 group-hover:text-accent transition-colors">Charity Impact</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed flex-1 mb-6">
                   Ensure 100% of your contributions go directly to verified non-profits of your choice. Track and audit the exact flow of funds with transparent cryptographic receipts and impact reports.
                 </p>
+                <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-wider text-accent">
+                  <span>100% Vetted & Audited Routing</span>
+                </div>
               </div>
 
-              {/* Pillar 3: Community Participation */}
-              <div className="flex flex-col p-8 bg-background border border-border rounded-2xl shadow-sm hover:border-accent/40 transition-all duration-300">
-                <div className="w-12 h-12 flex items-center justify-center bg-card border border-border text-accent rounded-2xl mb-6">
+              {/* Pillar 3: Community Competition */}
+              <div className="flex flex-col p-8 bg-background border border-border/80 rounded-2xl shadow-sm hover:border-accent/40 hover:scale-[1.02] hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                <div className="w-12 h-12 flex items-center justify-center bg-[#07130F] border border-accent/20 text-accent rounded-2xl mb-6 group-hover:bg-accent/10 transition-colors">
                   <Users className="w-6 h-6" />
                 </div>
-                <h3 className="font-heading text-xl font-bold text-foreground mb-4">Community Participation</h3>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed flex-1">
-                  Compete on global performance and giving leaderboards. Share your score milestones, build donation streaks, and connect with a dedicated community of golfers who care.
+                <h3 className="font-heading text-xl font-bold text-foreground mb-4 group-hover:text-accent transition-colors">Community Competition</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed flex-1 mb-6">
+                  Compete on global performance and giving leaderboards. Log Stableford golf rounds, track detailed game statistics, and connect with a dedicated community of golfers who care.
                 </p>
+                <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-wider text-accent">
+                  <span>Leaderboards & Score Tracking</span>
+                </div>
               </div>
             </div>
           </div>
         </section>
+
 
         {/* IMPACT SECTION */}
         <section className="py-24 border-b border-border bg-card/40">
