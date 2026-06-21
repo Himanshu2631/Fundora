@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { LoadingState } from "@/components/ui/loading-state";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import SubscriptionWidget from "@/features/subscriptions/SubscriptionWidget";
 import { useSubscription } from "@/hooks/useSubscription";
 import {
@@ -14,6 +16,10 @@ import {
   CreditCard,
   Info,
   Zap,
+  Clock,
+  Sparkles,
+  HelpCircle,
+  AlertCircle
 } from "lucide-react";
 
 const PLAN_DETAILS = {
@@ -43,9 +49,63 @@ const itemVariants = {
 };
 
 export default function SubscriptionPage() {
-  const { subscription, status } = useSubscription();
+  const { subscription, status, loading, error } = useSubscription();
   const planKey = subscription?.plan_type;
   const plan = PLAN_DETAILS[planKey];
+
+  const getMembershipDuration = (createdAt) => {
+    if (!createdAt) return "Not a member yet";
+    const created = new Date(createdAt);
+    const now = new Date();
+    const diffTime = Math.abs(now - created);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) {
+      return "Started today";
+    }
+    if (diffDays < 30) {
+      return `${diffDays} ${diffDays === 1 ? "day" : "days"}`;
+    }
+    const diffMonths = Math.floor(diffDays / 30);
+    const remainingDays = diffDays % 30;
+    
+    if (diffMonths < 12) {
+      return `${diffMonths} ${diffMonths === 1 ? "month" : "months"}${remainingDays > 0 ? ` and ${remainingDays} ${remainingDays === 1 ? "day" : "days"}` : ""}`;
+    }
+    const diffYears = Math.floor(diffMonths / 12);
+    const remainingMonths = diffMonths % 12;
+    return `${diffYears} ${diffYears === 1 ? "year" : "years"}${remainingMonths > 0 ? `, ${remainingMonths} ${remainingMonths === 1 ? "month" : "months"}` : ""}`;
+  };
+
+  // Helper to render badge based on status
+  const renderStatusBadge = (statusStr) => {
+    switch (statusStr) {
+      case "active":
+        return <Badge variant="success">Active</Badge>;
+      case "cancelled":
+        return <Badge variant="destructive">Cancelled</Badge>;
+      case "expired":
+        return <Badge variant="warning">Expired</Badge>;
+      case "inactive":
+      default:
+        return <Badge variant="outline">Inactive</Badge>;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="p-6 md:p-8 space-y-8 animate-pulse">
+        <div className="space-y-2">
+          <div className="h-4 w-24 bg-secondary/30 rounded-sm" />
+          <div className="h-7 w-64 bg-secondary/20 rounded-sm" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="h-[280px] bg-secondary/15 border border-border/30 rounded-sm" />
+          <div className="h-[280px] bg-secondary/15 border border-border/30 rounded-sm" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 md:p-8">
@@ -55,105 +115,127 @@ export default function SubscriptionPage() {
         variants={{ visible: { transition: { staggerChildren: 0.09 } } }}
         className="max-w-5xl space-y-8"
       >
-        {/* ── Current subscription widget ── */}
-        <motion.div variants={itemVariants}>
-          <div className="mb-4">
+        {/* Error Alert */}
+        {error && (
+          <motion.div variants={itemVariants}>
+            <Alert variant="destructive">
+              <AlertCircle className="w-4 h-4" />
+              <AlertTitle>Connection Error</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
+
+        {/* Header Title */}
+        <motion.div variants={itemVariants} className="flex justify-between items-end">
+          <div>
             <span className="text-[10px] uppercase tracking-widest font-bold text-accent">
-              Current Plan
+              Membership Overview
             </span>
-            <h2 className="font-heading text-lg font-extrabold text-foreground mt-1">
+            <h2 className="font-heading text-xl font-extrabold text-foreground mt-1">
               Manage your giving subscription
             </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Live widget */}
-            <SubscriptionWidget />
+          <div className="hidden sm:block text-right">
+            <span className="text-[10px] text-muted-foreground block">MEMBER ID</span>
+            <span className="font-mono text-xs font-bold text-foreground">{subscription?.id?.substring(0, 8) || "—"}</span>
+          </div>
+        </motion.div>
 
-            {/* Plan perks panel (only when active/cancelled) */}
-            {plan && (status === "active" || status === "cancelled") ? (
-              <Card className="p-6">
+        {/* Main Grid: Widget and Perks Panel */}
+        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+          {/* Live Subscription Widget */}
+          <SubscriptionWidget />
+
+          {/* Perks Panel */}
+          {plan && (status === "active" || status === "cancelled") ? (
+            <Card className="p-6 border border-border bg-card relative overflow-hidden h-full flex flex-col justify-between">
+              <div>
                 <div className="flex items-center gap-2 mb-4">
                   <Zap className="w-4 h-4 text-accent" />
                   <h3 className="font-heading font-bold text-sm text-foreground">
-                    {plan.name} Perks
+                    {plan.name} Benefits
                   </h3>
                 </div>
-                <ul className="space-y-3">
+                <ul className="space-y-3.5">
                   {plan.perks.map((perk, i) => (
-                    <li key={i} className="flex items-center gap-2.5 text-xs text-muted-foreground">
-                      <ShieldCheck className="w-3.5 h-3.5 text-accent shrink-0" />
+                    <li key={i} className="flex items-center gap-2.5 text-xs text-muted-foreground font-medium">
+                      <ShieldCheck className="w-4 h-4 text-accent shrink-0" />
                       {perk}
                     </li>
                   ))}
                 </ul>
-                <div className="mt-6 pt-4 border-t border-border/40">
-                  <p className="text-[10px] text-muted-foreground/70">
-                    Yearly plan saves 20% · billed as ${plan.yearlyPrice}/mo
-                  </p>
-                </div>
-              </Card>
-            ) : (
-              <Card className="p-6 flex flex-col items-center justify-center text-center gap-4 border-dashed">
-                <CreditCard className="w-8 h-8 text-muted-foreground/40" />
-                <div>
-                  <h4 className="font-heading font-bold text-sm text-foreground mb-1">
-                    No active plan selected
-                  </h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed">
-                    Choose a giving tier to begin automated charity routing, score accumulation, and draw entries.
-                  </p>
-                </div>
-                <Button asChild variant="accent" size="sm">
-                  <Link href="/pricing">
-                    View All Plans <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </Button>
-              </Card>
-            )}
-          </div>
+              </div>
+              <div className="mt-8 pt-4 border-t border-border/40">
+                <p className="text-[10px] text-muted-foreground/75 leading-relaxed">
+                  Your contribution goes directly to audited impact channels. Select a yearly pricing cycle to save up to 20% on monthly billing.
+                </p>
+              </div>
+            </Card>
+          ) : (
+            <Card className="p-6 flex flex-col items-center justify-center text-center gap-5 border border-dashed border-border/70 bg-secondary/5 min-h-[280px]">
+              <div className="p-3 bg-secondary/10 rounded-full border border-border/30">
+                <CreditCard className="w-6 h-6 text-muted-foreground/50" />
+              </div>
+              <div>
+                <h4 className="font-heading font-bold text-sm text-foreground mb-1">
+                  No Active Giving Tier
+                </h4>
+                <p className="text-xs text-muted-foreground leading-relaxed max-w-xs mx-auto">
+                  Subscribe to a giving tier to participate in secure charity routing, gain Giving Score rankings, and enter eco-retreat prize draws.
+                </p>
+              </div>
+              <Button asChild variant="accent" size="sm" className="font-bold shadow-sm">
+                <a href="#comparison-matrix">
+                  Browse Plan Tiers <ArrowRight className="w-3.5 h-3.5" />
+                </a>
+              </Button>
+            </Card>
+          )}
         </motion.div>
 
-        {/* ── Billing info ── */}
+        {/* Billing Detailed Information Card */}
         {subscription && (
           <motion.div variants={itemVariants}>
-            <Card className="p-6">
+            <Card className="p-6 border border-border bg-card">
               <div className="flex items-center gap-2 mb-5">
                 <Calendar className="w-4 h-4 text-accent" />
                 <h3 className="font-heading font-bold text-sm text-foreground">
-                  Billing Information
+                  Billing Details
                 </h3>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-xs">
                 <div>
-                  <span className="text-muted-foreground font-semibold block mb-1 uppercase tracking-wider text-[10px]">
+                  <span className="text-muted-foreground font-semibold block mb-1 uppercase tracking-wider text-[9px]">
                     Plan Type
                   </span>
                   <span className="font-bold text-foreground capitalize">
-                    {plan?.name || planKey || "—"}
+                    {plan?.name || planKey || "None"}
                   </span>
                 </div>
                 <div>
-                  <span className="text-muted-foreground font-semibold block mb-1 uppercase tracking-wider text-[10px]">
+                  <span className="text-muted-foreground font-semibold block mb-1 uppercase tracking-wider text-[9px]">
                     Status
                   </span>
-                  <Badge
-                    variant={
-                      status === "active"
-                        ? "success"
-                        : status === "cancelled"
-                        ? "destructive"
-                        : "outline"
-                    }
-                  >
-                    {status}
-                  </Badge>
+                  <div className="flex items-center mt-0.5">
+                    {renderStatusBadge(status)}
+                  </div>
                 </div>
                 <div>
-                  <span className="text-muted-foreground font-semibold block mb-1 uppercase tracking-wider text-[10px]">
-                    Next Renewal
+                  <span className="text-muted-foreground font-semibold block mb-1 uppercase tracking-wider text-[9px]">
+                    Membership Duration
                   </span>
-                  <span className="font-bold text-foreground">
-                    {subscription.renewal_date
+                  <span className="font-bold text-foreground flex items-center gap-1.5 mt-0.5">
+                    <Clock className="w-3.5 h-3.5 text-accent" />
+                    {getMembershipDuration(subscription.created_at)}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-muted-foreground font-semibold block mb-1 uppercase tracking-wider text-[9px]">
+                    {status === "cancelled" ? "Expiration Date" : "Renewal Date"}
+                  </span>
+                  <span className="font-bold text-foreground block mt-0.5">
+                    {subscription.renewal_date && status !== "expired"
                       ? new Date(subscription.renewal_date).toLocaleDateString(undefined, {
                           month: "long",
                           day: "numeric",
@@ -167,44 +249,104 @@ export default function SubscriptionPage() {
           </motion.div>
         )}
 
-        {/* ── FAQ notice ── */}
-        <motion.div variants={itemVariants}>
-          <div className="flex items-start gap-3 p-4 bg-secondary/20 border border-border/60 rounded-sm text-xs text-muted-foreground">
-            <Info className="w-4 h-4 text-accent shrink-0 mt-0.5" />
-            <div>
-              <p className="font-bold text-foreground mb-0.5">Payment gateway coming soon</p>
-              <p className="leading-relaxed">
-                Stripe payment integration is in progress. When live, you will be able to manage billing directly here. For now, subscription changes are processed via our team at{" "}
-                <span className="text-accent font-semibold">billing@fundora.org</span>
-              </p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* ── Upgrade prompt (when on scout / no plan) ── */}
-        {(planKey === "scout" || !planKey) && (
+        {/* Upgrade Prompt Banner */}
+        {planKey === "scout" && status === "active" && (
           <motion.div variants={itemVariants}>
-            <Card className="p-6 relative overflow-hidden">
+            <Card className="p-6 relative overflow-hidden border border-border/80 bg-card">
               <div className="absolute top-0 left-0 w-full h-[3px] bg-accent" />
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <Badge variant="accent" className="mb-2">Upgrade Available</Badge>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="accent">Upgrade Available</Badge>
+                    <span className="text-[10px] text-accent font-bold uppercase tracking-wider">3× Draw Multiplier</span>
+                  </div>
                   <h3 className="font-heading font-bold text-base text-foreground">
                     Unlock more impact with Global Advocate
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1 max-w-md">
-                    Get 3× draw entries, priority corporate draw access, and cause rotation for just $25/mo.
+                    Get 3× draw entries, priority corporate draw access, and rotating NGO allocation lists for just $25/mo.
                   </p>
                 </div>
-                <Button asChild variant="accent" className="shrink-0">
-                  <Link href="/pricing">
-                    Compare Plans <ArrowRight className="w-4 h-4" />
-                  </Link>
+                <Button asChild variant="accent" className="shrink-0 font-bold">
+                  <a href="#comparison-matrix">
+                    Upgrade Now <Sparkles className="w-4 h-4" />
+                  </a>
                 </Button>
               </div>
             </Card>
           </motion.div>
         )}
+
+        {/* Plan Comparison Matrix Section */}
+        <motion.div variants={itemVariants} id="comparison-matrix" className="pt-6">
+          <div className="mb-6">
+            <h3 className="font-heading font-bold text-base text-foreground">
+              Compare Giving Tiers
+            </h3>
+            <p className="text-xs text-muted-foreground mt-1">
+              Select or upgrade your plan to direct your giving stream and gain exclusive benefits.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {Object.entries(PLAN_DETAILS).map(([key, p]) => {
+              const isCurrent = subscription?.plan_type === key && (status === "active" || status === "cancelled");
+              return (
+                <Card 
+                  key={key} 
+                  className={`p-6 border relative overflow-hidden flex flex-col justify-between transition-all hover:shadow-md ${
+                    isCurrent 
+                      ? "border-accent bg-accent/5 ring-1 ring-accent/20" 
+                      : "border-border bg-card"
+                  }`}
+                >
+                  {isCurrent && (
+                    <div className="absolute top-0 right-0 bg-accent text-accent-foreground text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-bl-sm">
+                      Current
+                    </div>
+                  )}
+                  <div>
+                    <h4 className="font-heading font-bold text-base text-foreground mb-1">{p.name}</h4>
+                    <div className="flex items-baseline gap-1 my-3">
+                      <span className="text-2xl font-extrabold text-foreground">${p.price}</span>
+                      <span className="text-[10px] text-muted-foreground font-semibold">/ month</span>
+                    </div>
+                    <ul className="space-y-3 my-5">
+                      {p.perks.map((perk, i) => (
+                        <li key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <ShieldCheck className="w-3.5 h-3.5 text-accent shrink-0" />
+                          <span>{perk}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="pt-4 border-t border-border/30">
+                    <p className="text-[10px] text-muted-foreground/60 mb-4">
+                      Billed monthly · Cancel anytime
+                    </p>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        </motion.div>
+
+        {/* FAQ Notice and Support */}
+        <motion.div variants={itemVariants}>
+          <div className="flex items-start gap-3 p-4 bg-secondary/15 border border-border/40 rounded-sm text-xs text-muted-foreground">
+            <Info className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+            <div>
+              <p className="font-bold text-foreground mb-0.5 flex items-center gap-1.5">
+                <HelpCircle className="w-3.5 h-3.5 text-accent" /> Payment Integration Information
+              </p>
+              <p className="leading-relaxed mt-1">
+                Stripe payment integration is active in sandbox mode. You can fully test subscription upgrades, renewals, and cancellations using our mock-gateway client. If you encounter any billing queries, please contact our administrator dashboard or email support at{" "}
+                <span className="text-accent font-semibold hover:underline cursor-pointer">billing@fundora.org</span>.
+              </p>
+            </div>
+          </div>
+        </motion.div>
       </motion.div>
     </div>
   );
