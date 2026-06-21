@@ -36,6 +36,7 @@ import {
   Loader2,
   Calendar,
   AlertTriangle,
+  Sparkles,
 } from "lucide-react";
 
 const PLAN_PRICES = { scout: 10, advocate: 25, builder: 100 };
@@ -51,8 +52,62 @@ const containerVariants = {
   visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
 };
 
+function AnimatedCounter({ value, duration = 800 }) {
+  const [count, setCount] = useState(value);
+
+  useEffect(() => {
+    const strVal = String(value);
+    const cleanVal = strVal.replace(/,/g, "");
+    const match = cleanVal.match(/^([^\d\.]*)([\d\.]+)([^\d\.]*)$/);
+    
+    if (!match) {
+      setCount(value);
+      return;
+    }
+
+    const prefix = match[1] || "";
+    const end = parseFloat(match[2]);
+    const suffix = match[3] || "";
+    const decimalPlaces = (match[2].split(".")[1] || "").length;
+
+    if (isNaN(end) || end === 0) {
+      setCount(value);
+      return;
+    }
+
+    let startTime = null;
+    let animationFrameId;
+
+    const animate = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const progressRatio = Math.min(progress / duration, 1);
+      const easedProgress = progressRatio * (2 - progressRatio); // easeOutQuad
+      
+      const current = easedProgress * end;
+      const parts = current.toFixed(decimalPlaces).split(".");
+      const integerPart = parseInt(parts[0], 10).toLocaleString();
+      const formatted = parts[1] ? `${integerPart}.${parts[1]}` : integerPart;
+
+      setCount(`${prefix}${formatted}${suffix}`);
+
+      if (progressRatio < 1) {
+        animationFrameId = window.requestAnimationFrame(animate);
+      } else {
+        setCount(value);
+      }
+    };
+    
+    animationFrameId = window.requestAnimationFrame(animate);
+    return () => window.cancelAnimationFrame(animationFrameId);
+  }, [value, duration]);
+
+  return <span>{count}</span>;
+}
+
 export default function DashboardOverview() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [rewardTab, setRewardTab] = useState("tickets");
   const { user: authUser, profile } = useAuth();
   const { subscription, status } = useSubscription();
 
@@ -204,7 +259,7 @@ export default function DashboardOverview() {
                       Current Jackpot Pool
                     </span>
                     <span className="text-3xl md:text-4xl font-extrabold text-accent font-heading block tracking-tight">
-                      {activePrize}
+                      <AnimatedCounter value={activePrize} />
                     </span>
                     <span className="text-[10px] text-muted-foreground font-medium mt-1.5 block">
                       Active Prize Draw: Eco-Retreat
@@ -259,7 +314,7 @@ export default function DashboardOverview() {
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${Math.min(((scores?.length || 0) / 5) * 100, 100)}%` }}
-                      transition={{ duration: 1.2, ease: "easeOut" }}
+                      transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.15 }}
                       className="h-full bg-gradient-to-r from-emerald-600 to-accent"
                     />
                   </div>
@@ -280,7 +335,7 @@ export default function DashboardOverview() {
                       Your Current Score
                     </span>
                     <span className="text-2xl font-extrabold text-foreground font-heading block">
-                      {displayUser.score} <span className="text-xs text-muted-foreground font-normal">pts</span>
+                      <AnimatedCounter value={displayUser.score} /> <span className="text-xs text-muted-foreground font-normal">pts</span>
                     </span>
                     <span className="text-[9px] text-accent font-semibold block mt-1.5">
                       +{displayUser.streak * 5}wk streak bonus active
@@ -298,7 +353,7 @@ export default function DashboardOverview() {
                       Your Draw Entries
                     </span>
                     <span className="text-2xl font-extrabold text-foreground font-heading block">
-                      {activeTicketsCount} <span className="text-xs text-muted-foreground font-normal">tickets</span>
+                      <AnimatedCounter value={activeTicketsCount} /> <span className="text-xs text-muted-foreground font-normal">tickets</span>
                     </span>
                     <span className="text-[9px] text-emerald-500 font-semibold block mt-1.5">
                       {subscription?.plan_type ? `${PLAN_LABELS[subscription?.plan_type]} Tier Active` : "No multiplier active"}
@@ -316,7 +371,7 @@ export default function DashboardOverview() {
                       Your Standings Rank
                     </span>
                     <span className="text-2xl font-extrabold text-accent font-heading block">
-                      {displayUser.rank}
+                      <AnimatedCounter value={displayUser.rank} />
                     </span>
                     <span className="text-[9px] text-muted-foreground block mt-1.5">
                       Top 25% of global golfers
@@ -365,7 +420,13 @@ export default function DashboardOverview() {
             className="space-y-12"
           >
             {/* Section 1: Compete */}
-            <div className="space-y-6">
+            <motion.div 
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 14 } }
+              }}
+              className="space-y-6"
+            >
               <div className="flex items-center gap-2 border-b border-border/60 pb-3">
                 <div className="w-6 h-6 rounded-full bg-accent/15 border border-accent/35 flex items-center justify-center text-xs font-bold text-accent font-heading">
                   01
@@ -376,9 +437,9 @@ export default function DashboardOverview() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
                 {/* Scores Widget */}
-                <div className="lg:col-span-6 flex flex-col">
+                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300">
                   <Card className="p-6 flex flex-col justify-between border-border bg-card h-full">
                     <div>
                       <div className="flex justify-between items-center mb-4">
@@ -455,10 +516,50 @@ export default function DashboardOverview() {
                       <Link href="/dashboard/scores">Manage Scores</Link>
                     </Button>
                   </Card>
-                </div>
+                </motion.div>
+
+                {/* Achievements Showcase */}
+                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300">
+                  <Card className="p-6 flex flex-col justify-between border-border bg-card h-full relative overflow-hidden">
+                    <div>
+                      <h3 className="font-heading font-bold text-base text-foreground flex items-center gap-2 mb-6">
+                        <Sparkles className="w-4 h-4 text-accent" />
+                        Achievements & Streaks
+                      </h3>
+                      <div className="space-y-3.5">
+                        {[
+                          { name: "First Draw Entry", desc: "Registered your first ticket", unlocked: true, icon: Check },
+                          { name: "Top 25% Standing", desc: "Climbed leaderboard to #284", unlocked: true, icon: Trophy },
+                          { name: "Global Advocate", desc: "Active Advocate tier selected", unlocked: true, icon: ShieldCheck },
+                          { name: "5 Draw Streak", desc: "Log rounds consistently (3/5)", unlocked: false, progress: 60, icon: Flame }
+                        ].map((ach, idx) => (
+                          <div key={idx} className="flex items-start gap-2.5 p-2 rounded-sm bg-secondary/5 border border-border/20">
+                            <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${ach.unlocked ? "bg-emerald-950/45 text-emerald-500 border border-emerald-800/40" : "bg-secondary/15 text-muted-foreground border border-border/30"}`}>
+                              <ach.icon className="w-3.5 h-3.5" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex justify-between items-center mb-0.5">
+                                <span className="text-xs font-bold text-foreground truncate">{ach.name}</span>
+                                <span className={`text-[8px] uppercase font-extrabold px-1.5 py-0.5 rounded-full ${ach.unlocked ? "bg-emerald-950/30 text-emerald-500" : "bg-secondary/20 text-muted-foreground"}`}>
+                                  {ach.unlocked ? "Unlocked" : "60%"}
+                                </span>
+                              </div>
+                              <p className="text-[9px] text-muted-foreground leading-none truncate">{ach.desc}</p>
+                              {!ach.unlocked && ach.progress && (
+                                <div className="w-full h-1 bg-secondary/35 rounded-full mt-1.5 overflow-hidden">
+                                  <div className="h-full bg-accent" style={{ width: `${ach.progress}%` }} />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
 
                 {/* Score Leaderboard */}
-                <div className="lg:col-span-6 flex flex-col">
+                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300">
                   <Card className="p-6 flex flex-col justify-between border-border bg-card h-full">
                     <div>
                       <h3 className="font-heading font-bold text-sm text-foreground mb-6 flex justify-between items-center">
@@ -499,12 +600,18 @@ export default function DashboardOverview() {
                       <Link href="/dashboard/scores">View My Score Details</Link>
                     </Button>
                   </Card>
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Section 2: Impact */}
-            <div className="space-y-6">
+            <motion.div 
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 14 } }
+              }}
+              className="space-y-6"
+            >
               <div className="flex items-center gap-2 border-b border-border/60 pb-3">
                 <div className="w-6 h-6 rounded-full bg-accent/15 border border-accent/35 flex items-center justify-center text-xs font-bold text-accent font-heading">
                   02
@@ -517,12 +624,12 @@ export default function DashboardOverview() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
                 {/* Subscription Widget */}
-                <div className="flex flex-col">
+                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300">
                   <SubscriptionWidget />
-                </div>
+                </motion.div>
 
                 {/* Charity Allocations Widget */}
-                <div className="flex flex-col">
+                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300">
                   <Card className="p-6 flex flex-col justify-between border-border bg-card h-full">
                     <div>
                       <div className="flex justify-between items-center mb-4">
@@ -585,10 +692,12 @@ export default function DashboardOverview() {
                               {allocations.map((item, idx) => {
                                 const colors = ["bg-emerald-600", "bg-accent", "bg-[#C4A054]/60", "bg-indigo-600"];
                                 return (
-                                  <div
+                                  <motion.div
                                     key={item.id}
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${item.contribution_percentage}%` }}
+                                    transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }}
                                     className={`${colors[idx % colors.length]} h-full`}
-                                    style={{ width: `${item.contribution_percentage}%` }}
                                   />
                                 );
                               })}
@@ -601,10 +710,10 @@ export default function DashboardOverview() {
                       <Link href="/dashboard/charity">Manage Allocations</Link>
                     </Button>
                   </Card>
-                </div>
+                </motion.div>
 
                 {/* Real-World Outcomes & Verified Badge */}
-                <div className="flex flex-col justify-between space-y-6 lg:col-span-1">
+                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col justify-between space-y-6 lg:col-span-1 transition-all duration-300">
                   <Card className="p-6 flex-1 flex flex-col justify-between">
                     <div>
                       <h3 className="font-heading font-bold text-base text-foreground mb-6">
@@ -641,7 +750,7 @@ export default function DashboardOverview() {
                       SIGNATURE: 0x8F9A...B8C3
                     </span>
                   </Card>
-                </div>
+                </motion.div>
               </div>
 
               {/* Quick Audit Trail */}
@@ -681,10 +790,16 @@ export default function DashboardOverview() {
                   </TableBody>
                 </Table>
               </Card>
-            </div>
+            </motion.div>
 
             {/* Section 3: Rewards */}
-            <div className="space-y-6">
+            <motion.div 
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 14 } }
+              }}
+              className="space-y-6"
+            >
               <div className="flex items-center gap-2 border-b border-border/60 pb-3">
                 <div className="w-6 h-6 rounded-full bg-accent/15 border border-accent/35 flex items-center justify-center text-xs font-bold text-accent font-heading">
                   03
@@ -697,7 +812,7 @@ export default function DashboardOverview() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
                 {/* Active Draw / Current Jackpot */}
-                <div className="flex flex-col">
+                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300">
                   <Card className="p-6 flex flex-col justify-between border-border bg-card h-full">
                     <div>
                       <h3 className="font-heading font-bold text-base text-foreground flex items-center gap-2 mb-4">
@@ -707,7 +822,7 @@ export default function DashboardOverview() {
                       <div className="p-4 bg-secondary/10 border border-border/30 rounded-sm space-y-3">
                         <span className="text-[9px] uppercase font-bold text-muted-foreground block">Active Jackpot Pool</span>
                         <span className="text-3xl font-black text-accent font-heading block leading-none">
-                          {activePrize}
+                          <AnimatedCounter value={activePrize} />
                         </span>
                         <span className="text-xs font-semibold text-foreground block">
                           Active Target: {activeDrawSub}
@@ -721,82 +836,119 @@ export default function DashboardOverview() {
                       <Link href="/dashboard/draws">Browse All Draws</Link>
                     </Button>
                   </Card>
-                </div>
+                </motion.div>
 
-                {/* Draw Entries Widget */}
-                <div className="flex flex-col">
-                  <Card className="p-6 flex flex-col justify-between border-border bg-card h-full">
+                {/* Live Activity Feed */}
+                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300">
+                  <Card className="p-6 flex flex-col justify-between border-border bg-card h-full relative overflow-hidden">
                     <div>
-                      <h3 className="font-heading font-bold text-base text-foreground flex items-center gap-2 mb-4">
-                        <Ticket className="w-4 h-4 text-accent" />
-                        Your Active Tickets
+                      <h3 className="font-heading font-bold text-base text-foreground flex items-center gap-2 mb-6">
+                        <TrendingUp className="w-4 h-4 text-accent animate-pulse" />
+                        Live Activity Feed
                       </h3>
-                      {hasActivePlan && currentDrawEntries.length > 0 ? (
-                        <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
-                          {currentDrawEntries.slice(0, 4).map((ticket, i) => (
-                            <div key={i} className="flex justify-between items-center p-2.5 bg-secondary/15 rounded-sm border border-border/30">
-                              <div>
-                                <span className="font-mono font-bold text-accent text-xs block">{ticket.ticketNumber}</span>
-                                <span className="text-muted-foreground text-[9px] font-semibold truncate max-w-[150px] block">
-                                  {ticket.drawName}
-                                </span>
-                              </div>
-                              <Badge variant={ticket.status === "Active" ? "accent" : "outline"} className="text-[8px] py-0.5">{ticket.status}</Badge>
+                      <div className="space-y-4">
+                        {[
+                          { text: "sam_drive joined June's Eco Retreat draw", time: "2m ago", type: "draw" },
+                          { text: "Apex Water Initiative reached milestone", time: "1h ago", type: "charity" },
+                          { text: "alicia_golf claimed Eco Retreat prize", time: "1d ago", type: "winner" },
+                          { text: "hiro_putt logged a 42 Stableford score", time: "3h ago", type: "score" }
+                        ].map((act, idx) => (
+                          <div key={idx} className="flex items-start justify-between text-xs border-b border-border/20 pb-3 last:border-0 last:pb-0">
+                            <div className="flex items-start gap-2.5">
+                              <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
+                                act.type === 'winner' ? 'bg-accent animate-ping' :
+                                act.type === 'draw' ? 'bg-emerald-500' :
+                                act.type === 'charity' ? 'bg-blue-500' : 'bg-[#C4A054]/40'
+                              }`} />
+                              <span className="text-muted-foreground leading-relaxed">
+                                {act.text}
+                              </span>
                             </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-6 border border-dashed border-border/60 rounded-sm bg-secondary/5">
-                          <Ticket className="w-6 h-6 text-muted-foreground/35 mx-auto mb-2" />
-                          <p className="text-[11px] font-semibold text-foreground/80">No Active Tickets</p>
-                          <p className="text-[9.5px] text-muted-foreground mt-1 mb-3">
-                            You don't have any tickets registered for this draw pool.
-                          </p>
-                        </div>
-                      )}
+                            <span className="text-[9px] text-muted-foreground font-semibold shrink-0 ml-2">{act.time}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <Button asChild variant="outline" className="w-full mt-4 h-9 text-xs font-bold uppercase tracking-wider">
-                      <Link href="/dashboard/draws">Configure Tickets</Link>
-                    </Button>
                   </Card>
-                </div>
+                </motion.div>
 
-                {/* Previous Wins (User Claims) */}
-                <div className="flex flex-col">
+                {/* Unified Tickets & Winner Claims Tabbed Card */}
+                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300">
                   <Card className="p-6 flex flex-col justify-between border-border bg-card h-full">
                     <div>
-                      <h3 className="font-heading font-bold text-base text-foreground flex items-center gap-2 mb-4">
-                        <Trophy className="w-4 h-4 text-accent" />
-                        Previous Wins & Claims
-                      </h3>
-                      {Array.isArray(claims) && claims.length > 0 ? (
-                        <div className="space-y-2.5 max-h-[220px] overflow-y-auto pr-1">
-                          {claims.map((claim) => (
-                            <div key={claim.id} className="p-3 bg-secondary/15 rounded-sm border border-border/40 space-y-1 hover:border-accent/15 transition-all">
-                              <div className="flex justify-between items-start">
-                                <span className="text-xs font-bold text-foreground truncate max-w-[120px]">{claim.draw_title || "Prize Claim"}</span>
-                                <Badge variant={
-                                  claim.status === "paid" ? "success" : 
-                                  claim.status === "approved" ? "success" : 
-                                  claim.status === "rejected" ? "destructive" : "warning"
-                                } className="text-[8px] py-0 px-1">
-                                  {claim.status}
-                                </Badge>
-                              </div>
-                              <div className="flex justify-between text-[9px] text-muted-foreground">
-                                <span>Ticket: {claim.ticket_number || "—"}</span>
-                                <span>{claim.claim_date ? new Date(claim.claim_date).toLocaleDateString() : "Jun 2026"}</span>
-                              </div>
+                      <div className="flex gap-4 border-b border-border/30 pb-2 mb-4 text-xs font-bold uppercase tracking-wider">
+                        <button 
+                          onClick={() => setRewardTab("tickets")}
+                          className={`pb-1.5 border-b-2 transition-all ${rewardTab === "tickets" ? "border-accent text-accent" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+                        >
+                          Tickets ({currentDrawEntries.length})
+                        </button>
+                        <button 
+                          onClick={() => setRewardTab("claims")}
+                          className={`pb-1.5 border-b-2 transition-all ${rewardTab === "claims" ? "border-accent text-accent" : "border-transparent text-muted-foreground hover:text-foreground"}`}
+                        >
+                          Claims ({claims.length})
+                        </button>
+                      </div>
+
+                      {rewardTab === "tickets" ? (
+                        <div>
+                          {hasActivePlan && currentDrawEntries.length > 0 ? (
+                            <div className="space-y-2 max-h-[170px] overflow-y-auto pr-1">
+                              {currentDrawEntries.slice(0, 3).map((ticket, i) => (
+                                <div key={i} className="flex justify-between items-center p-2.5 bg-secondary/15 rounded-sm border border-border/30">
+                                  <div>
+                                    <span className="font-mono font-bold text-accent text-xs block">{ticket.ticketNumber}</span>
+                                    <span className="text-muted-foreground text-[9px] font-semibold truncate max-w-[150px] block">
+                                      {ticket.drawName}
+                                    </span>
+                                  </div>
+                                  <Badge variant={ticket.status === "Active" ? "accent" : "outline"} className="text-[8px] py-0.5">{ticket.status}</Badge>
+                                </div>
+                              ))}
                             </div>
-                          ))}
+                          ) : (
+                            <div className="text-center py-6 border border-dashed border-border/60 rounded-sm bg-secondary/5">
+                              <Ticket className="w-6 h-6 text-muted-foreground/35 mx-auto mb-2" />
+                              <p className="text-[11px] font-semibold text-foreground/80">No Active Tickets</p>
+                              <p className="text-[9.5px] text-muted-foreground mt-1 mb-3">
+                                You don't have any tickets registered for this draw pool.
+                              </p>
+                            </div>
+                          )}
                         </div>
                       ) : (
-                        <div className="text-center py-6 border border-dashed border-border/60 rounded-sm bg-secondary/5">
-                          <Inbox className="w-6 h-6 text-muted-foreground/35 mx-auto mb-2" />
-                          <p className="text-[11px] font-semibold text-foreground/80">No Winning Claims Yet</p>
-                          <p className="text-[9.5px] text-muted-foreground mt-1 mb-3">
-                            Check past completed draws in draws tab to submit payout claim proof screenshots.
-                          </p>
+                        <div>
+                          {claims && claims.length > 0 ? (
+                            <div className="space-y-2.5 max-h-[170px] overflow-y-auto pr-1">
+                              {claims.slice(0, 3).map((claim) => (
+                                <div key={claim.id} className="p-2.5 bg-secondary/15 rounded-sm border border-border/40 space-y-1 hover:border-accent/15 transition-all">
+                                  <div className="flex justify-between items-start">
+                                    <span className="text-xs font-bold text-foreground truncate max-w-[110px]">{claim.draw_title || "Prize Claim"}</span>
+                                    <Badge variant={
+                                      claim.status === "paid" ? "success" : 
+                                      claim.status === "approved" ? "success" : 
+                                      claim.status === "rejected" ? "destructive" : "warning"
+                                    } className="text-[8px] py-0 px-1">
+                                      {claim.status}
+                                    </Badge>
+                                  </div>
+                                  <div className="flex justify-between text-[9px] text-muted-foreground leading-none mt-1">
+                                    <span>Ticket: {claim.ticket_number || "—"}</span>
+                                    <span>{claim.claim_date ? new Date(claim.claim_date).toLocaleDateString() : "Jun 2026"}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center py-6 border border-dashed border-border/60 rounded-sm bg-secondary/5">
+                              <Inbox className="w-6 h-6 text-muted-foreground/35 mx-auto mb-2" />
+                              <p className="text-[11px] font-semibold text-foreground/80">No Winning Claims Yet</p>
+                              <p className="text-[9.5px] text-muted-foreground mt-1 mb-3">
+                                Check completed draws to submit claim screenshots.
+                              </p>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -804,9 +956,9 @@ export default function DashboardOverview() {
                       <Link href="/dashboard/draws">View Draw History</Link>
                     </Button>
                   </Card>
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
 
