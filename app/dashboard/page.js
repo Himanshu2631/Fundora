@@ -15,8 +15,11 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useScores } from "@/hooks/useScores";
+import { useCharities } from "@/hooks/useCharities";
 import SubscriptionWidget from "@/features/subscriptions/SubscriptionWidget";
 import {
   Trophy,
@@ -28,6 +31,10 @@ import {
   Inbox,
   TrendingUp,
   Ticket,
+  Heart,
+  Loader2,
+  Calendar,
+  AlertTriangle,
 } from "lucide-react";
 
 const PLAN_PRICES = { scout: 10, advocate: 25, builder: 100 };
@@ -48,8 +55,32 @@ export default function DashboardOverview() {
   const { user: authUser, profile } = useAuth();
   const { subscription, status } = useSubscription();
 
+  // Day 3 Real Data integration via custom hooks
+  const { scores, loading: scoresLoading, error: scoresError } = useScores();
+  const { allocations, loading: charitiesLoading, error: charitiesError } = useCharities();
+
   const monthlyContribution = PLAN_PRICES[subscription?.plan_type] ?? 0;
   const hasActivePlan = status === "active" || status === "cancelled";
+
+  // Calculate user performance score from recorded golf scores in Supabase
+  const totalScorePoints = scores ? scores.reduce((sum, s) => sum + s.score, 0) : 0;
+  const averageScoreVal = scores && scores.length > 0 ? (totalScorePoints / scores.length).toFixed(1) : "0.0";
+
+  // Giving score composite calculations
+  const tierBasePoints = subscription?.plan_type === "scout" 
+    ? 100 
+    : subscription?.plan_type === "advocate" 
+      ? 250 
+      : subscription?.plan_type === "builder" 
+        ? 1000 
+        : 0;
+  
+  const streakMultiplier = 5; // static streak tracking
+  const streakBonus = streakMultiplier * 5; // 25 bonus points
+  const dynamicGivingScore = tierBasePoints + totalScorePoints + streakBonus;
+
+  // Active allocations summary
+  const totalAllocatedVal = allocations ? allocations.reduce((sum, item) => sum + item.contribution_percentage, 0) : 0;
 
   const displayUser = {
     name: profile?.full_name || authUser?.email?.split("@")[0] || "Member",
@@ -60,8 +91,8 @@ export default function DashboardOverview() {
     joinedDate: authUser?.created_at
       ? `Joined ${new Date(authUser.created_at).toLocaleDateString(undefined, { month: "short", year: "numeric" })}`
       : "Joined Jun 2026",
-    score: 145,
-    streak: 5,
+    score: dynamicGivingScore,
+    streak: streakMultiplier,
     rank: "#284",
     monthlyContribution,
   };
@@ -74,6 +105,8 @@ export default function DashboardOverview() {
     { id: "TXN-4019", date: "Feb 15, 2026", amount: "$25.00", charity: "Empower Global Edu", status: "Audited", docUrl: "#" },
   ];
 
+  // FUTURE ARCHITECTURE PLACEHOLDER: Future Draw entries and rewards modules will leverage hook-based state
+  // from useDraws() / useRewards() here instead of the statically simulated registries.
   const currentDrawEntries = [
     { ticketNumber: "FND-884-29A", drawName: "Patagonia Eco-Retreat", date: "Jun 24, 2026", status: "Active" },
     { ticketNumber: "FND-884-29B", drawName: "Patagonia Eco-Retreat", date: "Jun 24, 2026", status: "Active" },
@@ -102,17 +135,17 @@ export default function DashboardOverview() {
           </div>
           <div className="flex items-center gap-3">
             {/* Score pill */}
-            <div className="flex items-center gap-2 bg-card border border-border px-4 py-2 rounded-sm">
-              <Trophy className="w-3.5 h-3.5 text-accent" />
+            <div className="flex items-center gap-2 bg-card border border-border px-4 py-2 rounded-sm shadow-sm">
+              <Trophy className="w-3.5 h-3.5 text-accent animate-pulse" />
               <div>
                 <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground block leading-none">
-                  Score
+                  Giving Score
                 </span>
                 <span className="text-sm font-bold text-foreground">{displayUser.score} pts</span>
               </div>
             </div>
             {/* Streak pill */}
-            <div className="flex items-center gap-2 bg-card border border-border px-4 py-2 rounded-sm">
+            <div className="flex items-center gap-2 bg-card border border-border px-4 py-2 rounded-sm shadow-sm">
               <Flame className="w-3.5 h-3.5 text-orange-500" />
               <div>
                 <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground block leading-none">
@@ -159,7 +192,7 @@ export default function DashboardOverview() {
               accent: false,
             },
           ].map((stat, i) => (
-            <Card key={i} className="p-5 hover:border-accent/30 transition-colors group">
+            <Card key={i} className="p-5 hover:border-accent/30 transition-colors group bg-card">
               <div className="flex items-start justify-between mb-3">
                 <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
                   {stat.label}
@@ -211,9 +244,170 @@ export default function DashboardOverview() {
               animate={{ opacity: 1 }}
               className="space-y-8"
             >
+              {/* Responsive widget grid layout */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Subscription Widget */}
                 <SubscriptionWidget />
+
+                {/* Charity Allocations Widget */}
+                <Card className="p-6 flex flex-col justify-between border-border bg-card">
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="font-heading font-bold text-base text-foreground flex items-center gap-2">
+                        <Heart className="w-4 h-4 text-accent animate-pulse" />
+                        Charity Allocations
+                      </h3>
+                      {!charitiesLoading && !charitiesError && allocations.length > 0 && (
+                        <Badge variant={totalAllocatedVal === 100 ? "success" : "warning"}>
+                          {totalAllocatedVal}% Allocated
+                        </Badge>
+                      )}
+                    </div>
+
+                    {charitiesLoading ? (
+                      <div className="py-8 flex flex-col items-center justify-center gap-2">
+                        <Loader2 className="w-6 h-6 text-accent animate-spin" />
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Loading selections...</span>
+                      </div>
+                    ) : charitiesError ? (
+                      <Alert variant="destructive" className="py-2.5 px-3">
+                        <AlertTriangle className="w-4 h-4" />
+                        <AlertDescription className="text-xs">{charitiesError}</AlertDescription>
+                      </Alert>
+                    ) : allocations.length === 0 ? (
+                      <div className="text-center py-6 border border-dashed border-border/60 rounded-sm bg-secondary/5">
+                        <Heart className="w-7 h-7 text-muted-foreground/35 mx-auto mb-2" />
+                        <p className="text-xs font-semibold text-foreground/80">No Vetted Causes Selected</p>
+                        <p className="text-[10.5px] text-muted-foreground mt-1 mb-4">
+                          Select a partner cause to distribute your monthly subscription contribution.
+                        </p>
+                        <Button asChild variant="accent" size="sm" className="h-8 text-xs font-bold uppercase tracking-wider">
+                          <Link href="/dashboard/charity">Configure Selections</Link>
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {/* Dynamic List */}
+                        <div className="space-y-2.5 max-h-[170px] overflow-y-auto pr-1">
+                          {allocations.map((item) => (
+                            <div key={item.id} className="p-3 bg-secondary/15 rounded-sm border border-border/40 space-y-1 hover:border-accent/15 transition-all">
+                              <div className="flex justify-between items-start">
+                                <span className="text-xs font-bold text-foreground line-clamp-1">{item.charity_name}</span>
+                                <Badge variant="accent" className="text-[8px] py-0 px-1">{item.contribution_percentage}%</Badge>
+                              </div>
+                              <p className="text-[10px] text-muted-foreground line-clamp-1 leading-relaxed">
+                                {item.charity_description || item.charity_impact}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Total Progress split indicators */}
+                        <div className="space-y-1.5 pt-1">
+                          <div className="flex justify-between text-[10px] font-semibold text-muted-foreground">
+                            <span>Fund Split Distribution</span>
+                            <span>{totalAllocatedVal}% / 100%</span>
+                          </div>
+                          <div className="h-2 w-full bg-secondary/55 rounded-full overflow-hidden flex border border-border/30">
+                            {allocations.map((item, idx) => {
+                              const colors = ["bg-emerald-600", "bg-accent", "bg-[#C4A054]/60", "bg-indigo-600"];
+                              return (
+                                <div
+                                  key={item.id}
+                                  className={`${colors[idx % colors.length]} h-full`}
+                                  style={{ width: `${item.contribution_percentage}%` }}
+                                />
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        <Button asChild variant="outline" className="w-full mt-2 h-9 text-xs font-bold uppercase tracking-wider">
+                          <Link href="/dashboard/charity">Manage Allocations</Link>
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+
+                {/* Scores Widget */}
+                <Card className="p-6 flex flex-col justify-between border-border bg-card">
+                  <div>
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="font-heading font-bold text-base text-foreground flex items-center gap-2">
+                        <Trophy className="w-4 h-4 text-accent" />
+                        Golf Scores Overview
+                      </h3>
+                      {!scoresLoading && !scoresError && scores.length > 0 && (
+                        <Badge variant="outline" className="text-[9px]">
+                          {scores.length} / 5 Logged
+                        </Badge>
+                      )}
+                    </div>
+
+                    {scoresLoading ? (
+                      <div className="py-8 flex flex-col items-center justify-center gap-2">
+                        <Loader2 className="w-6 h-6 text-accent animate-spin" />
+                        <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Loading scores...</span>
+                      </div>
+                    ) : scoresError ? (
+                      <Alert variant="destructive" className="py-2.5 px-3">
+                        <AlertTriangle className="w-4 h-4" />
+                        <AlertDescription className="text-xs">{scoresError}</AlertDescription>
+                      </Alert>
+                    ) : scores.length === 0 ? (
+                      <div className="text-center py-6 border border-dashed border-border/60 rounded-sm bg-secondary/5">
+                        <Trophy className="w-7 h-7 text-muted-foreground/35 mx-auto mb-2" />
+                        <p className="text-xs font-semibold text-foreground/80">No Scores Registered</p>
+                        <p className="text-[10.5px] text-muted-foreground mt-1 mb-4">
+                          Log up to 5 scores to calculate performance statistics and boost your profile.
+                        </p>
+                        <Button asChild variant="accent" size="sm" className="h-8 text-xs font-bold uppercase tracking-wider">
+                          <Link href="/dashboard/scores">Log a Score</Link>
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {/* Latest Scores Timeline */}
+                        <div className="space-y-2 max-h-[170px] overflow-y-auto pr-1">
+                          {scores.slice(0, 3).map((item) => (
+                            <div key={item.id} className="flex justify-between items-center p-2.5 bg-secondary/15 rounded-sm border border-border/30 hover:border-accent/15 transition-all">
+                              <div className="flex items-center gap-2">
+                                <Calendar className="w-3.5 h-3.5 text-accent" />
+                                <span className="text-xs font-medium text-foreground">
+                                  {new Date(item.score_date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </span>
+                              </div>
+                              <span className="text-xs font-bold text-foreground bg-accent/10 px-2 py-0.5 rounded-sm border border-accent/25">
+                                {item.score} pts
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Performance metrics grid */}
+                        <div className="grid grid-cols-2 gap-2 text-center text-xs pt-1">
+                          <div className="p-2 bg-secondary/10 border border-border/30 rounded-sm">
+                            <span className="text-[9px] uppercase font-bold text-muted-foreground block">Average Score</span>
+                            <span className="text-sm font-bold text-foreground">
+                              {averageScoreVal}
+                            </span>
+                          </div>
+                          <div className="p-2 bg-secondary/10 border border-border/30 rounded-sm">
+                            <span className="text-[9px] uppercase font-bold text-muted-foreground block">Active Scores</span>
+                            <span className="text-sm font-bold text-foreground">
+                              {scores.length} / 5
+                            </span>
+                          </div>
+                        </div>
+
+                        <Button asChild variant="outline" className="w-full mt-2 h-9 text-xs font-bold uppercase tracking-wider">
+                          <Link href="/dashboard/scores">Manage Scores</Link>
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                </Card>
 
                 {/* Real-World Outcomes */}
                 <Card className="p-6">
@@ -222,9 +416,9 @@ export default function DashboardOverview() {
                   </h3>
                   <ul className="space-y-4 text-xs">
                     {[
-                      { label: "Reforestation contribution:", value: "1.2 hectares protected" },
-                      { label: "Clean water filtration:", value: "240 L daily capacity funded" },
-                      { label: "STEM education credits:", value: "4.5 module hrs sponsored" },
+                      { label: "Reforestation contribution:", value: `${(totalAllocatedVal * 0.012).toFixed(2)} hectares protected` },
+                      { label: "Clean water filtration:", value: `${(totalAllocatedVal * 2.4).toFixed(0)} L daily capacity funded` },
+                      { label: "STEM education credits:", value: `${(totalAllocatedVal * 0.045).toFixed(2)} module hrs sponsored` },
                     ].map((row, i) => (
                       <li key={i} className="flex justify-between items-start gap-4">
                         <span className="text-muted-foreground font-semibold">{row.label}</span>
