@@ -164,6 +164,24 @@ export default function DrawsPage() {
     setCompletingDrawId(drawId);
     try {
       await completeDraw(drawId);
+      
+      // Notify eligible users about the draw results
+      try {
+        const response = await fetch("/api/admin/draws/publish-results", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ drawId }),
+        });
+        if (!response.ok) {
+          const result = await response.json();
+          alert(`Draw completed, but notifications failed: ${result.error}`);
+        }
+      } catch (err) {
+        console.error("Error triggering notifications:", err);
+      }
+
       if (isAdmin) {
         await fetchAllClaims();
       }

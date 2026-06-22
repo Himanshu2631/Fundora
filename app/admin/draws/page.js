@@ -274,6 +274,28 @@ export default function AdminDrawsPage() {
       setSuccessMsg(`Draw "${title}" completed successfully. Winning numbers generated!`);
       const list = await getWinners(drawId);
       setWinnersByDraw(prev => ({ ...prev, [drawId]: list }));
+      
+      // Notify eligible users about the draw results
+      try {
+        const response = await fetch("/api/admin/draws/publish-results", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ drawId }),
+        });
+        const result = await response.json();
+        if (!response.ok) {
+          console.error("Failed to dispatch notifications:", result.error);
+          setErrorMsg(`Draw completed, but email dispatch failed: ${result.error}`);
+        } else {
+          setSuccessMsg(`Draw "${title}" completed successfully and notifications sent to ${result.notifiedCount} participants.`);
+        }
+      } catch (notifyErr) {
+        console.error("Error triggering notifications:", notifyErr);
+        setErrorMsg(`Draw completed, but notifications failed: ${notifyErr.message}`);
+      }
+
       refreshDraws();
     } catch (err) {
       setErrorMsg(err.message || "Failed to complete draw.");
