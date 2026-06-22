@@ -8,6 +8,7 @@ import {
   ShieldAlert,
   AlertCircle,
   Sparkles,
+  Loader2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -198,6 +199,7 @@ export default function AdminLogin() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="admin@fundora.com"
                     id="admin-email"
+                    className="focus:border-red-500 focus:ring-1 focus:ring-red-500/20"
                   />
 
                   <div className="space-y-1.5">
@@ -213,15 +215,23 @@ export default function AdminLogin() {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
                       id="admin-password"
+                      className="focus:border-red-500 focus:ring-1 focus:ring-red-500/20"
                     />
                   </div>
 
                   <Button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full h-11 font-extrabold uppercase tracking-wider text-xs mt-2 bg-red-600 hover:bg-red-500 text-white border-0 transition-all duration-300"
+                    className="w-full h-11 font-extrabold uppercase tracking-wider text-xs mt-2 bg-red-600 hover:bg-red-500 text-white border-0 hover:shadow-red-500/10 hover:shadow-lg transition-all duration-300"
                   >
-                    {isLoading ? "Authenticating..." : "Access Admin Console"}
+                    {isLoading ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Authenticating...
+                      </span>
+                    ) : (
+                      "Access Admin Console"
+                    )}
                   </Button>
                 </form>
 

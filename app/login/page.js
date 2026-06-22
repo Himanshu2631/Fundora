@@ -20,6 +20,7 @@ import {
   AlertCircle,
   Sparkles,
   Check,
+  Loader2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -176,7 +177,7 @@ export default function Login() {
   const { signIn } = useAuth();
 
   const activeRole = ROLES.find((r) => r.id === selectedRole);
-  const showForm = selectedRole === "subscriber" || selectedRole === "admin";
+  const showForm = selectedRole === "subscriber";
 
   const handleSignIn = async (e) => {
     e?.preventDefault();
@@ -257,7 +258,7 @@ export default function Login() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="w-full space-y-16"
+          className="w-full space-y-10 sm:space-y-16"
         >
           {/* ── Premium Hero Introduction Section ── */}
           <motion.div variants={itemVariants} className="text-center space-y-6 max-w-4xl mx-auto">
@@ -407,21 +408,9 @@ export default function Login() {
                 className="w-full max-w-md mx-auto"
               >
                 {/* Form Card */}
-                <div
-                  className={`relative rounded-2xl border bg-[#0A1C16]/60 backdrop-blur-sm overflow-hidden ${
-                    selectedRole === "admin"
-                      ? "border-red-500/25"
-                      : "border-[#C4A054]/25"
-                  }`}
-                >
+                <div className="relative rounded-2xl border border-[#C4A054]/25 bg-[#0A1C16]/60 backdrop-blur-sm overflow-hidden shadow-[0_0_50px_rgba(196,160,84,0.06)]">
                   {/* Top accent line */}
-                  <div
-                    className={`absolute top-0 left-0 w-full h-[2px] ${
-                      selectedRole === "admin"
-                        ? "bg-gradient-to-r from-transparent via-red-500/60 to-transparent"
-                        : "bg-gradient-to-r from-transparent via-[#C4A054]/60 to-transparent"
-                    }`}
-                  />
+                  <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#C4A054]/60 to-transparent" />
 
                   <div className="p-7 pt-8">
                     {/* Form header */}
@@ -450,10 +439,10 @@ export default function Login() {
                           exit={{ opacity: 0 }}
                           className="mb-5"
                         >
-                          <Alert variant="destructive">
-                            <AlertCircle className="w-4 h-4" />
-                            <AlertTitle>Sign In Error</AlertTitle>
-                            <AlertDescription>{errorMsg}</AlertDescription>
+                          <Alert variant="destructive" className="border-red-500/30 bg-red-950/20">
+                            <AlertCircle className="w-4 h-4 text-red-400" />
+                            <AlertTitle className="text-red-400">Sign In Error</AlertTitle>
+                            <AlertDescription className="text-red-400/90">{errorMsg}</AlertDescription>
                           </Alert>
                         </motion.div>
                       )}
@@ -469,6 +458,7 @@ export default function Login() {
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="name@company.com"
                         id={`email-${selectedRole}`}
+                        className="focus:ring-1 focus:ring-[#C4A054]/20"
                       />
 
                       <div className="space-y-1.5">
@@ -490,23 +480,23 @@ export default function Login() {
                           onChange={(e) => setPassword(e.target.value)}
                           placeholder="••••••••"
                           id={`password-${selectedRole}`}
+                          className="focus:ring-1 focus:ring-[#C4A054]/20"
                         />
                       </div>
 
                       <Button
                         type="submit"
                         disabled={isLoading}
-                        className={`w-full h-11 font-extrabold uppercase tracking-wider text-xs mt-2 ${
-                          selectedRole === "admin"
-                            ? "bg-red-600 hover:bg-red-500 text-white border-0"
-                            : "bg-[#C4A054] hover:bg-[#C4A054]/90 text-[#060C0A] border-0"
-                        }`}
+                        className="w-full h-11 font-extrabold uppercase tracking-wider text-xs mt-2 bg-[#C4A054] hover:bg-[#C4A054]/90 text-[#060C0A] border-0 hover:shadow-[#C4A054]/10 hover:shadow-lg transition-all duration-300"
                       >
-                        {isLoading
-                          ? "Authenticating..."
-                          : selectedRole === "admin"
-                          ? "Access Admin Console"
-                          : "Sign In to Fundora"}
+                        {isLoading ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Authenticating...
+                          </span>
+                        ) : (
+                          "Sign In to Fundora"
+                        )}
                       </Button>
                     </form>
 
@@ -515,41 +505,29 @@ export default function Login() {
                       <div className="flex items-center gap-1.5 mb-3">
                         <Sparkles className="w-3 h-3 text-[#C4A054] animate-pulse" />
                         <span className="text-[9px] uppercase font-bold tracking-widest text-[#8A9690]">
-                          Demo Console Access
+                          Demo Access
                         </span>
                       </div>
-                      <div className="grid grid-cols-2 gap-2.5">
-                        <button
-                          type="button"
-                          onClick={() => handleQuickLogin("admin@fundora.com", "admin")}
-                          disabled={isLoading}
-                          className="h-9 rounded-xl border border-red-500/20 bg-red-500/5 text-red-400 text-[9px] font-extrabold uppercase tracking-wider hover:bg-red-500/10 hover:border-red-500/40 transition-all duration-200"
-                        >
-                          Admin Portal
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleQuickLogin("user@fundora.com", "user")}
-                          disabled={isLoading}
-                          className="h-9 rounded-xl border border-white/10 bg-white/[0.02] text-[#8A9690] text-[9px] font-extrabold uppercase tracking-wider hover:bg-white/[0.04] hover:border-white/20 hover:text-white transition-all duration-200"
-                        >
-                          Regular User
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleQuickLogin("user@fundora.com", "user")}
+                        disabled={isLoading}
+                        className="w-full h-9 rounded-xl border border-white/10 bg-white/[0.02] text-[#8A9690] text-[9px] font-extrabold uppercase tracking-wider hover:bg-[#C4A054]/10 hover:border-[#C4A054]/30 hover:text-[#C4A054] transition-all duration-200"
+                      >
+                        Quick-Login: Regular Member Account
+                      </button>
                       <p className="text-[9px] text-center text-[#8A9690]/50 mt-2.5 leading-relaxed">
-                        One-click demo login via local mock database.
+                        One-click local authentication via simulated directory.
                       </p>
                     </div>
 
                     {/* Sign up link (subscribers only) */}
-                    {selectedRole === "subscriber" && (
-                      <p className="text-xs text-center text-[#8A9690] mt-5">
-                        New to Fundora?{" "}
-                        <Link href="/signup" className="text-[#C4A054] hover:underline font-bold">
-                          Create an account
-                        </Link>
-                      </p>
-                    )}
+                    <p className="text-xs text-center text-[#8A9690] mt-5">
+                      New to Fundora?{" "}
+                      <Link href="/signup" className="text-[#C4A054] hover:underline font-bold">
+                        Create an account
+                      </Link>
+                    </p>
                   </div>
                 </div>
               </motion.div>
