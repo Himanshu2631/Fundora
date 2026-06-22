@@ -38,6 +38,9 @@ import {
   Calendar,
   AlertTriangle,
   Sparkles,
+  Droplet,
+  Trees,
+  GraduationCap,
 } from "lucide-react";
 
 const PLAN_PRICES = { scout: 10, advocate: 25, builder: 100 };
@@ -897,15 +900,42 @@ export default function DashboardOverview() {
                             <AlertDescription className="text-xs">{charitiesError}</AlertDescription>
                           </Alert>
                         ) : allocations.length === 0 ? (
-                          <div className="text-center py-6 border border-dashed border-border/60 rounded-xl bg-secondary/5">
-                            <Heart className="w-7 h-7 text-muted-foreground/35 mx-auto mb-2" />
-                            <p className="text-xs font-semibold text-foreground/80">No Vetted Causes Selected</p>
-                            <p className="text-[10.5px] text-muted-foreground mt-1 mb-4">
-                              Select a partner cause to distribute your monthly subscription contribution.
-                            </p>
-                            <Button asChild variant="accent" size="sm" className="h-8 text-xs font-bold uppercase tracking-wider">
-                              <Link href="/dashboard/charity">Configure Selections</Link>
+                          <div className="space-y-5 text-center py-2">
+                            <div className="space-y-1.5 max-w-sm mx-auto">
+                              <Heart className="w-7 h-7 text-accent mx-auto animate-pulse" />
+                              <h4 className="font-heading font-extrabold text-xs text-white leading-snug">
+                                Choose where your contribution creates impact.
+                              </h4>
+                              <p className="text-[10px] text-muted-foreground leading-normal">
+                                Your membership contribution can be routed to verified causes.
+                              </p>
+                            </div>
+                            
+                            <Button asChild variant="accent" size="sm" className="h-8 px-6 text-[10px] font-extrabold uppercase tracking-wider">
+                              <Link href="/dashboard/charity">Select Charities</Link>
                             </Button>
+                            
+                            {/* 3 Featured Causes compact preview cards */}
+                            <div className="grid grid-cols-3 gap-2.5 pt-2 text-left">
+                              {[
+                                { title: "Clean Water", desc: "Apex Water Initiative", icon: Droplet, color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/15" },
+                                { title: "Reforestation", desc: "Acres of Green", icon: Trees, color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/15" },
+                                { title: "STEM Education", desc: "Empower Global Edu", icon: GraduationCap, color: "text-purple-400", bg: "bg-purple-500/10 border-purple-500/15" }
+                              ].map((cause, i) => {
+                                const CauseIcon = cause.icon;
+                                return (
+                                  <div key={i} className={`p-2.5 rounded-xl border ${cause.bg} flex flex-col justify-between space-y-1.5 hover:scale-[1.02] transition-all`}>
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-[8.5px] font-extrabold uppercase tracking-wide text-foreground">{cause.title}</span>
+                                      <CauseIcon className={`w-3.5 h-3.5 ${cause.color}`} />
+                                    </div>
+                                    <p className="text-[8.5px] text-muted-foreground leading-snug line-clamp-2">
+                                      {cause.desc}
+                                    </p>
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </div>
                         ) : (
                           <div className="space-y-4">
