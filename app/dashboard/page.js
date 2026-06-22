@@ -18,7 +18,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Modal } from "@/components/ui/modal";
 import { useAuth } from "@/hooks/useAuth";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription, PLAN_LABELS } from "@/hooks/useSubscription";
 import { useScores } from "@/hooks/useScores";
 import { useCharities } from "@/hooks/useCharities";
 import { useDraws } from "@/hooks/useDraws";
@@ -41,7 +41,6 @@ import {
 } from "lucide-react";
 
 const PLAN_PRICES = { scout: 10, advocate: 25, builder: 100 };
-const PLAN_LABELS = { scout: "Eco Scout", advocate: "Global Advocate", builder: "Legacy Builder" };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 16 },

@@ -6,7 +6,7 @@ import { Suspense, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription, PLAN_LABELS } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { 
   CheckCircle2, 
@@ -16,12 +16,6 @@ import {
   Sparkles,
   AlertTriangle
 } from "lucide-react";
-
-const PLAN_LABELS = {
-  scout: "Eco Scout",
-  advocate: "Global Advocate",
-  builder: "Legacy Builder",
-};
 
 function SuccessContent() {
   const searchParams = useSearchParams();

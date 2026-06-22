@@ -1,6 +1,6 @@
 "use client";
 
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription, PLAN_DETAILS as plans } from "@/hooks/useSubscription";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,27 +36,6 @@ export default function SubscriptionWidget() {
   const setIsUpgradeModalOpen = (val) => {
     if (val) _setIsCancelModalOpen(false);
     _setIsUpgradeModalOpen(val);
-  };
-
-  const plans = {
-    scout: { 
-      name: "Eco Scout", 
-      price: 10, 
-      description: "Automate contributions targeting forest preservation.",
-      perks: ["1× draw entry", "+10 score/mo", "Audit receipts"]
-    },
-    advocate: { 
-      name: "Global Advocate", 
-      price: 25, 
-      description: "Allocation to verified clean water & basic healthcare.",
-      perks: ["3× draw multiplier", "+30 score/mo", "Priority draws", "Cause rotation"]
-    },
-    builder: { 
-      name: "Legacy Builder", 
-      price: 100, 
-      description: "Sponsor advanced STEM fellowships and emergency grids.",
-      perks: ["10× draw multiplier", "+150 score/mo", "On-chain receipts", "NGO access"]
-    }
   };
 
   const getMembershipDuration = (createdAt) => {

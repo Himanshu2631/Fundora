@@ -20,7 +20,7 @@ import {
   Receipt,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription, PLAN_LABELS } from "@/hooks/useSubscription";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -48,12 +48,6 @@ const BASE_NAV_SECTIONS = [
     ],
   },
 ];
-
-const PLAN_LABELS = {
-  scout: "Eco Scout",
-  advocate: "Global Advocate",
-  builder: "Legacy Builder",
-};
 
 export default function DashboardSidebar({ collapsed, onToggle }) {
   const pathname = usePathname();
