@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createServer } from "@/lib/supabase-server";
 import { syncStripeSubscriptionToDatabase } from "@/services/subscriptionService";
+import { sendSystemUpdateEmail } from "@/lib/email";
 
 // Next.js Route Handler configuration to disable body parsing, as Stripe webhooks require the raw body.
 export const dynamic = "force-dynamic";
@@ -109,6 +110,16 @@ export async function POST(req) {
 
         // 2. Sync subscription details to database
         await syncStripeSubscriptionToDatabase(userId, stripeSubscriptionId, priceId, status, renewalDate, supabase, cardBrand, cardLast4, stripeCustomerId);
+        
+        // Trigger subscription purchase email
+        const planNameStr = priceId.includes("scout") ? "Eco Scout" : priceId.includes("advocate") ? "Global Advocate" : priceId.includes("builder") ? "Legacy Builder" : "Giving Plan";
+        const timestampStr = new Date().toLocaleString("en-US", { timeZone: "UTC" }) + " UTC";
+        sendSystemUpdateEmail(userEmail, {
+          userName: profile?.full_name || userEmail.split("@")[0],
+          updateTitle: "Subscription Activated",
+          updateDetails: `Thank you for starting your active giving journey on Fundora!<br/><br/>Your membership plan <strong>${planNameStr}</strong> has been activated at ${timestampStr}.<br/><br/>Your monthly contributions are now active. Head over to your dashboard to configure which vetted local charities receive your allocations.`,
+        }).catch(err => console.error("Error sending purchase email:", err));
+
         console.log(`[Stripe Webhook] Handled checkout.session.completed successfully for user ${userId}`);
         break;
       }
@@ -159,10 +170,10 @@ export async function POST(req) {
           }
         }
 
-        // Fetch user email from profile for logging
+        // Fetch user details from profile
         const { data: profile } = await supabase
           .from("profiles")
-          .select("email")
+          .select("email, full_name")
           .eq("id", userId)
           .maybeSingle();
         const userEmail = profile?.email || "Unknown Email";
@@ -180,7 +191,47 @@ export async function POST(req) {
           .update({ stripe_customer_id: stripeCustomerId })
           .eq("id", userId);
 
+        // Fetch existing subscription to check if this is an upgrade/downgrade
+        const { data: oldSub } = await supabase
+          .from("subscriptions")
+          .select("*")
+          .eq("user_id", userId)
+          .maybeSingle();
+
         await syncStripeSubscriptionToDatabase(userId, stripeSubscriptionId, priceId, status, renewalDate, supabase, cardBrand, cardLast4, stripeCustomerId);
+        
+        // If they had an active subscription, and the price plan changed, send upgrade/downgrade email
+        if (oldSub && (oldSub.status === "active" || oldSub.status === "trialing") && oldSub.stripe_price_id && oldSub.stripe_price_id !== priceId) {
+          const planLevels = { scout: 1, advocate: 2, builder: 3 };
+          const getPlanType = (pId) => {
+            if (pId.includes("scout")) return "scout";
+            if (pId.includes("advocate")) return "advocate";
+            if (pId.includes("builder")) return "builder";
+            return "scout";
+          };
+          const oldType = getPlanType(oldSub.stripe_price_id);
+          const newType = getPlanType(priceId);
+          
+          const isUpgrade = planLevels[newType] > planLevels[oldType];
+          const newPlanName = priceId.includes("scout") ? "Eco Scout" : priceId.includes("advocate") ? "Global Advocate" : priceId.includes("builder") ? "Legacy Builder" : "Giving Plan";
+          const timestampStr = new Date().toLocaleString("en-US", { timeZone: "UTC" }) + " UTC";
+          const userNameVal = profile?.full_name || userEmail.split("@")[0];
+
+          if (isUpgrade) {
+            sendSystemUpdateEmail(userEmail, {
+              userName: userNameVal,
+              updateTitle: "Membership Upgraded!",
+              updateDetails: `Congratulations! Your membership was upgraded to <strong>${newPlanName}</strong> at ${timestampStr}.<br/><br/>Your new entries multiplier has been applied, and your future contributions will be scaled to create larger environmental and educational impacts.`,
+            }).catch(err => console.error("Error sending upgrade email:", err));
+          } else {
+            sendSystemUpdateEmail(userEmail, {
+              userName: userNameVal,
+              updateTitle: "Membership Downgraded",
+              updateDetails: `Your membership tier was adjusted to <strong>${newPlanName}</strong> at ${timestampStr}.<br/><br/>Your contribution amounts and draw entries multiplier have been scaled to match this new tier.`,
+            }).catch(err => console.error("Error sending downgrade email:", err));
+          }
+        }
+
         console.log(`[Stripe Webhook] Handled customer.subscription.updated successfully for user ${userId}`);
         break;
       }
@@ -206,6 +257,23 @@ export async function POST(req) {
               renewal_date: endedAt
             })
             .eq("user_id", dbSub.user_id);
+
+          // Trigger cancellation email
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("email, full_name")
+            .eq("id", dbSub.user_id)
+            .maybeSingle();
+
+          if (profile) {
+            const timestampStr = new Date().toLocaleString("en-US", { timeZone: "UTC" }) + " UTC";
+            sendSystemUpdateEmail(profile.email, {
+              userName: profile.full_name || profile.email.split("@")[0],
+              updateTitle: "Subscription Cancelled",
+              updateDetails: `Your subscription has been cancelled at ${timestampStr}.<br/><br/>You will retain access to your membership benefits and active entries until the end of your billing cycle. We are sad to see you go, but your contributions so far have created a verified impact!`,
+            }).catch(err => console.error("Error sending cancellation email:", err));
+          }
+
           console.log(`[Stripe Webhook] Handled customer.subscription.deleted, marked canceled & ended at ${endedAt} for user ${dbSub.user_id}`);
         } else {
           console.warn(`[Stripe Webhook] Deleted Stripe subscription ${stripeSubscriptionId} not found in database`);
@@ -257,10 +325,10 @@ export async function POST(req) {
             created_at: new Date().toISOString()
           });
 
-          // Retrieve extra details for logging
+          // Retrieve extra details for logging and notifications
           const { data: profile } = await supabase
             .from("profiles")
-            .select("email")
+            .select("email, full_name")
             .eq("id", userId)
             .maybeSingle();
           const userEmail = profile?.email || invoice.customer_email || "Unknown Email";
@@ -321,6 +389,16 @@ export async function POST(req) {
           console.log(`- Webhook Status: ${subStatus}`);
 
           console.log(`[Stripe Webhook] Logged successful payment of $${amount} for user ${userId}`);
+
+          // Trigger renewal email if billing reason is a subscription cycle renewal
+          if (invoice.billing_reason === "subscription_cycle") {
+            const timestampStr = new Date().toLocaleString("en-US", { timeZone: "UTC" }) + " UTC";
+            sendSystemUpdateEmail(userEmail, {
+              userName: profile?.full_name || userEmail.split("@")[0],
+              updateTitle: "Subscription Renewed",
+              updateDetails: `Your Fundora subscription was successfully renewed at ${timestampStr}.<br/><br/>Amount charged: <strong>$${amount.toFixed(2)}</strong>.<br/>Thank you for your continued support in backing verified environmental and education initiatives.`,
+            }).catch(err => console.error("Error sending renewal email:", err));
+          }
         }
         break;
       }

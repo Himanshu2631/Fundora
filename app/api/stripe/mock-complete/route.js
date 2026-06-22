@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createServer } from "@/lib/supabase-server";
 import { syncStripeSubscriptionToDatabase } from "@/services/subscriptionService";
+import { sendSystemUpdateEmail } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -80,6 +81,57 @@ export async function POST(req) {
         created_at: new Date().toISOString()
       });
 
+      // Send appropriate email notification
+      const oldPlan = currentSub?.stripe_price_id;
+      const hasActiveSub = currentSub && (currentSub.status === "active" || currentSub.status === "trialing");
+      
+      const newPlanName = priceId.includes("scout") 
+        ? "Eco Scout" 
+        : priceId.includes("advocate") 
+          ? "Global Advocate" 
+          : priceId.includes("builder") 
+            ? "Legacy Builder" 
+            : "Giving Plan";
+
+      const timestamp = new Date().toLocaleString("en-US", { timeZone: "UTC" }) + " UTC";
+      const userName = user.user_metadata?.full_name || "Member";
+
+      if (hasActiveSub && oldPlan && oldPlan !== priceId) {
+        // Upgrade or Downgrade
+        const planLevels = { scout: 1, advocate: 2, builder: 3 };
+        const getPlanType = (pId) => {
+          if (pId.includes("scout")) return "scout";
+          if (pId.includes("advocate")) return "advocate";
+          if (pId.includes("builder")) return "builder";
+          return "scout";
+        };
+        const oldType = getPlanType(oldPlan);
+        const newType = getPlanType(priceId);
+        
+        const isUpgrade = planLevels[newType] > planLevels[oldType];
+        
+        if (isUpgrade) {
+          sendSystemUpdateEmail(user.email, {
+            userName,
+            updateTitle: "Membership Upgraded!",
+            updateDetails: `Congratulations! Your membership was upgraded to <strong>${newPlanName}</strong> at ${timestamp}.<br/><br/>Your new entries multiplier has been applied, and your future contributions will be scaled to create larger environmental and educational impacts.`,
+          }).catch(err => console.error("Error sending upgrade email:", err));
+        } else {
+          sendSystemUpdateEmail(user.email, {
+            userName,
+            updateTitle: "Membership Downgraded",
+            updateDetails: `Your membership tier was adjusted to <strong>${newPlanName}</strong> at ${timestamp}.<br/><br/>Your contribution amounts and draw entries multiplier have been scaled to match this new tier.`,
+          }).catch(err => console.error("Error sending downgrade email:", err));
+        }
+      } else {
+        // New Purchase / Reactivation
+        sendSystemUpdateEmail(user.email, {
+          userName,
+          updateTitle: "Subscription Activated",
+          updateDetails: `Thank you for starting your active giving journey on Fundora!<br/><br/>Your membership plan <strong>${newPlanName}</strong> has been activated at ${timestamp}.<br/><br/>Your monthly contributions are now active. Head over to your dashboard to configure which vetted local charities receive your allocations.`,
+        }).catch(err => console.error("Error sending purchase email:", err));
+      }
+
       return NextResponse.json({ success: true, action: "checkout" });
     }
 
@@ -147,6 +199,15 @@ export async function POST(req) {
         .eq("user_id", user.id);
 
       console.log(`[Stripe Mock webhook simulator] Processed successful renewal payment for user ${user.id}. Renewal extended to ${newRenewal.toISOString()}`);
+      
+      const timestamp = new Date().toLocaleString("en-US", { timeZone: "UTC" }) + " UTC";
+      const userName = user.user_metadata?.full_name || "Member";
+      sendSystemUpdateEmail(user.email, {
+        userName,
+        updateTitle: "Subscription Renewed",
+        updateDetails: `Your Fundora subscription was successfully renewed at ${timestamp}.<br/><br/>Amount charged: <strong>$${amount.toFixed(2)}</strong>.<br/>Thank you for your continued support in backing verified environmental and education initiatives.`,
+      }).catch(err => console.error("Error sending renewal email:", err));
+
       return NextResponse.json({ success: true, action: "payment_succeeded" });
     }
 
@@ -197,6 +258,15 @@ export async function POST(req) {
         .eq("user_id", user.id);
 
       console.log(`[Stripe Mock webhook simulator] Processed immediate subscription deletion for user ${user.id}.`);
+      
+      const timestamp = new Date().toLocaleString("en-US", { timeZone: "UTC" }) + " UTC";
+      const userName = user.user_metadata?.full_name || "Member";
+      sendSystemUpdateEmail(user.email, {
+        userName,
+        updateTitle: "Subscription Cancelled",
+        updateDetails: `Your subscription has been cancelled at ${timestamp}.<br/><br/>You will retain access to your membership benefits and active entries until the end of your billing cycle. We are sad to see you go, but your contributions so far have created a verified impact!`,
+      }).catch(err => console.error("Error sending cancellation email:", err));
+
       return NextResponse.json({ success: true, action: "delete" });
     }
 

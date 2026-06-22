@@ -109,6 +109,18 @@ export function AuthProvider({ children }) {
         throw error;
       }
       console.log("✅ [AuthProvider] signUp succeeded, user:", data.user?.email);
+
+      // Trigger Welcome Registration email notification asynchronously
+      fetch("/api/notify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventType: "registration",
+          email,
+          userName: name,
+        }),
+      }).catch((err) => console.error("❌ [AuthProvider] Failed to send registration email:", err));
+
       return data;
     } catch (err) {
       console.error("❌ [AuthProvider] signUp catch block:", err);

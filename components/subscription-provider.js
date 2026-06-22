@@ -23,7 +23,7 @@ export const SubscriptionContext = createContext({
 });
 
 export function SubscriptionProvider({ children }) {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -151,6 +151,17 @@ export function SubscriptionProvider({ children }) {
           .from("subscriptions")
           .update({ status: "canceled" })
           .eq("user_id", user.id);
+
+        // Trigger Cancellation email notification asynchronously
+        fetch("/api/notify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            eventType: "cancel",
+            email: user.email,
+            userName: profile?.full_name || user.email?.split("@")[0] || "Member",
+          }),
+        }).catch((err) => console.error("❌ [SubscriptionProvider] Failed to send cancellation email:", err));
 
         await fetchSubscription();
         return { success: true };
