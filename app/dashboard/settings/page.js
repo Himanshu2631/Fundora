@@ -68,16 +68,21 @@ export default function SettingsPage() {
   const [showConfirm, setShowConfirm] = useState(false);
 
   // Notification Preferences States
-  const [notifEmail, setNotifEmail] = useState(true);
-  const [notifDraw, setNotifDraw] = useState(true);
-  const [notifImpact, setNotifImpact] = useState(false);
+  const [prefSystemUpdates, setPrefSystemUpdates] = useState(true);
+  const [prefDrawResults, setPrefDrawResults] = useState(true);
+  const [prefWinnerAlerts, setPrefWinnerAlerts] = useState(true);
   const [notifLoading, setNotifLoading] = useState(false);
   const [notifSuccess, setNotifSuccess] = useState(false);
 
   // Sync profile details when loaded
   useEffect(() => {
-    if (profile?.full_name) {
-      setName(profile.full_name);
+    if (profile) {
+      if (profile.full_name) {
+        setName(profile.full_name);
+      }
+      setPrefSystemUpdates(profile.pref_system_updates !== false);
+      setPrefDrawResults(profile.pref_draw_results !== false);
+      setPrefWinnerAlerts(profile.pref_winner_alerts !== false);
     }
   }, [profile]);
 
@@ -162,11 +167,20 @@ export default function SettingsPage() {
   const handleNotificationSave = async () => {
     setNotifSuccess(false);
     setNotifLoading(true);
-    // Simulate API update call
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    setNotifLoading(false);
-    setNotifSuccess(true);
-    setTimeout(() => setNotifSuccess(false), 4000);
+    try {
+      await updateProfile({
+        pref_system_updates: prefSystemUpdates,
+        pref_draw_results: prefDrawResults,
+        pref_winner_alerts: prefWinnerAlerts
+      });
+      setNotifSuccess(true);
+      setTimeout(() => setNotifSuccess(false), 4000);
+    } catch (err) {
+      console.error("Failed to update notification settings:", err);
+    } finally {
+      notifLoading && setNotifLoading(false);
+      setNotifLoading(false);
+    }
   };
 
   const formattedDate = (dateStr) => {
@@ -375,25 +389,25 @@ export default function SettingsPage() {
                   <div className="space-y-4">
                     {[
                       {
-                        id: "email",
-                        label: "Email Notifications",
-                        desc: "Monthly impact digests, receipts, and subscription cycle alerts.",
-                        value: notifEmail,
-                        onChange: setNotifEmail,
+                        id: "system_updates",
+                        label: "System Updates",
+                        desc: "Get confirmations for registrations, subscription activations, renewals, upgrades, and cancellations.",
+                        value: prefSystemUpdates,
+                        onChange: setPrefSystemUpdates,
                       },
                       {
-                        id: "draw",
-                        label: "Draw Alerts",
-                        desc: "Get notified as soon as prize draws open and when results are published.",
-                        value: notifDraw,
-                        onChange: setNotifDraw,
+                        id: "draw_results",
+                        label: "Draw Results",
+                        desc: "Get notified when monthly prize draws are completed and outcomes are live.",
+                        value: prefDrawResults,
+                        onChange: setPrefDrawResults,
                       },
                       {
-                        id: "impact",
-                        label: "Impact Reports",
-                        desc: "Quarterly detailed audits of partner NGOs and routing outcomes.",
-                        value: notifImpact,
-                        onChange: setNotifImpact,
+                        id: "winner_alerts",
+                        label: "Winner Alerts",
+                        desc: "Immediate email notification with next steps when your winning claim is verified and approved.",
+                        value: prefWinnerAlerts,
+                        onChange: setPrefWinnerAlerts,
                       },
                     ].map((pref) => (
                       <div key={pref.id} className="flex items-center justify-between gap-4 py-3 border-b border-border/30 last:border-0">
