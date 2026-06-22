@@ -190,7 +190,18 @@ export function useDraws() {
     setLoading(true);
     setError(null);
     try {
-      const updatedClaim = await reviewWinnerClaim(claimId, status, notes);
+      const response = await fetch("/api/admin/claims/review", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ claimId, status, notes }),
+      });
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to review claim.");
+      }
+      const updatedClaim = result.claim;
       setClaims(prev => prev.map(c => c.id === claimId ? updatedClaim : c));
       return updatedClaim;
     } catch (err) {
