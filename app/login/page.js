@@ -1,33 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
-  Eye,
   Globe,
   User,
   ShieldAlert,
-  Trophy,
-  Heart,
-  Ticket,
-  Users,
-  BarChart3,
-  Settings,
-  LogIn,
-  AlertCircle,
   Sparkles,
-  Check,
-  Loader2,
 } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { useAuth } from "@/hooks/useAuth";
-import { createClient } from "@/lib/supabase";
 
 // ─── Role definitions ─────────────────────────────────────────────────────────
 const ROLES = [
@@ -71,8 +53,8 @@ const ROLES = [
       "Track rewards",
     ],
     cta: "Sign In",
-    ctaHref: null,
-    isLink: false,
+    ctaHref: "/register-subscriber/login",
+    isLink: true,
     gradient: "from-[#C4A054]/[0.03] to-[#C4A054]/[0.08]",
     border: "border-[#C4A054]/15 hover:border-[#C4A054]/45 hover:shadow-[0_0_30px_rgba(196,160,84,0.08)] hover:bg-[#C4A054]/[0.06]",
     activeBorder: "border-[#C4A054]/70",
@@ -128,104 +110,24 @@ const formVariants = {
 };
 
 // ─── Card Wrapper for HTML Semantics and Equal Heights ──────────────────────
-function CardWrapper({ role, isSelected, setSelectedRole, setErrorMsg, setEmail, setPassword, children }) {
-  const cardClassName = `relative w-full h-full text-left p-6 rounded-2xl border bg-[#0A1C16]/40 backdrop-blur-sm bg-gradient-to-br ${role.gradient} transition-[border-color,background-color,box-shadow] duration-300 cursor-pointer group overflow-hidden shadow-xl flex flex-col justify-between ${
-    isSelected
-      ? `${role.activeBorder} ${role.glow}`
-      : role.border
-  }`;
-
-  if (role.isLink) {
-    return (
-      <Link href={role.ctaHref} className="block h-full w-full">
-        <motion.div
-          whileHover={{ y: -6 }}
-          whileTap={{ scale: 0.98 }}
-          className={cardClassName}
-        >
-          {children}
-        </motion.div>
-      </Link>
-    );
-  }
+function CardWrapper({ role, children }) {
+  const cardClassName = `relative w-full h-full text-left p-6 rounded-2xl border bg-[#0A1C16]/40 backdrop-blur-sm bg-gradient-to-br ${role.gradient} transition-[border-color,background-color,box-shadow] duration-300 cursor-pointer group overflow-hidden shadow-xl flex flex-col justify-between ${role.border}`;
 
   return (
-    <motion.button
-      type="button"
-      onClick={() => {
-        setSelectedRole(isSelected ? null : role.id);
-        setErrorMsg("");
-        setEmail("");
-        setPassword("");
-      }}
-      whileHover={{ y: -6 }}
-      whileTap={{ scale: 0.98 }}
-      className={cardClassName}
-    >
-      {children}
-    </motion.button>
+    <Link href={role.ctaHref} className="block h-full w-full">
+      <motion.div
+        whileHover={{ y: -6 }}
+        whileTap={{ scale: 0.98 }}
+        className={cardClassName}
+      >
+        {children}
+      </motion.div>
+    </Link>
   );
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function Login() {
-  const [selectedRole, setSelectedRole] = useState(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-  const { signIn } = useAuth();
-
-  const activeRole = ROLES.find((r) => r.id === selectedRole);
-  const showForm = selectedRole === "subscriber";
-
-  const handleSignIn = async (e) => {
-    e?.preventDefault();
-    setIsLoading(true);
-    setErrorMsg("");
-    try {
-      const data = await signIn(email, password);
-      const supabase = createClient();
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", data.user.id)
-        .single();
-
-      if (profile?.role === "admin") {
-        window.location.href = "/admin/dashboard";
-      } else {
-        window.location.href = "/dashboard";
-      }
-    } catch (err) {
-      setErrorMsg(err.message || "Failed to sign in. Please verify credentials.");
-      setIsLoading(false);
-    }
-  };
-
-  const handleQuickLogin = async (demoEmail, demoPassword) => {
-    setIsLoading(true);
-    setErrorMsg("");
-    try {
-      const data = await signIn(demoEmail, demoPassword);
-      const supabase = createClient();
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", data.user.id)
-        .single();
-
-      if (profile?.role === "admin") {
-        window.location.href = "/admin/dashboard";
-      } else {
-        window.location.href = "/dashboard";
-      }
-    } catch (err) {
-      setErrorMsg(err.message || "Failed to sign in. Please verify credentials.");
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#060C0A] flex flex-col relative overflow-hidden">
       {/* Background glow effects */}
@@ -288,57 +190,18 @@ export default function Login() {
 
           {/* ── Portal Area / Role Cards Section ── */}
           <div className="space-y-12">
-            <motion.div variants={itemVariants} className="text-center">
-              <h2 className="font-heading text-xl sm:text-2xl font-extrabold text-white tracking-tight mb-2">
-                Access Portals
-              </h2>
-              <p className="text-xs text-[#8A9690] max-w-md mx-auto">
-                Select your relationship with Fundora below to view public information or sign into your secure account.
-              </p>
-            </motion.div>
-
-            {/* ── Role Cards Grid ── */}
             <motion.div
               variants={itemVariants}
               className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto items-stretch"
             >
               {ROLES.map((role) => {
                 const Icon = role.icon;
-                const isSelected = selectedRole === role.id;
 
                 return (
                   <CardWrapper
                     key={role.id}
                     role={role}
-                    isSelected={isSelected}
-                    setSelectedRole={setSelectedRole}
-                    setErrorMsg={setErrorMsg}
-                    setEmail={setEmail}
-                    setPassword={setPassword}
                   >
-                    {/* Ambient glow on select */}
-                    {isSelected && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none"
-                      />
-                    )}
-
-                    {/* Selected checkmark */}
-                    <AnimatePresence>
-                      {isSelected && (
-                        <motion.div
-                          initial={{ scale: 0, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          exit={{ scale: 0, opacity: 0 }}
-                          className="absolute top-4 right-4 w-5 h-5 rounded-full bg-white/10 border border-white/20 flex items-center justify-center z-20"
-                        >
-                          <Check className="w-2.5 h-2.5 text-white" />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
                     {/* Content Top */}
                     <div className="flex-1 flex flex-col w-full">
                       {/* Icon & Badge */}
@@ -372,23 +235,12 @@ export default function Login() {
 
                     {/* CTA */}
                     <div className="mt-auto w-full">
-                      {role.isLink ? (
-                        <div
-                          className={`w-full inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl border text-[11px] font-extrabold uppercase tracking-wider transition-all duration-200 ${role.ctaStyle}`}
-                        >
-                          {role.cta}
-                          <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform duration-200" />
-                        </div>
-                      ) : (
-                        <div
-                          className={`w-full inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl border text-[11px] font-extrabold uppercase tracking-wider transition-all duration-200 ${role.ctaStyle} ${
-                            isSelected ? "ring-1 ring-white/10" : ""
-                          }`}
-                        >
-                          {role.cta}
-                          <LogIn className="w-3 h-3 group-hover:translate-x-1 transition-transform duration-200" />
-                        </div>
-                      )}
+                      <div
+                        className={`w-full inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl border text-[11px] font-extrabold uppercase tracking-wider transition-all duration-200 ${role.ctaStyle}`}
+                      >
+                        {role.cta}
+                        <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform duration-200" />
+                      </div>
                     </div>
                   </CardWrapper>
                 );
@@ -396,145 +248,7 @@ export default function Login() {
             </motion.div>
           </div>
 
-          {/* ── Auth Form ── */}
-          <AnimatePresence mode="wait">
-            {showForm && activeRole && (
-              <motion.div
-                key={selectedRole}
-                variants={formVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="w-full max-w-md mx-auto"
-              >
-                {/* Form Card */}
-                <div className="relative rounded-2xl border border-[#C4A054]/25 bg-[#0A1C16]/60 backdrop-blur-sm overflow-hidden shadow-[0_0_50px_rgba(196,160,84,0.06)]">
-                  {/* Top accent line */}
-                  <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#C4A054]/60 to-transparent" />
-
-                  <div className="p-7 pt-8">
-                    {/* Form header */}
-                    <div className="flex items-center gap-3 mb-6">
-                      <div
-                        className={`w-9 h-9 rounded-xl flex items-center justify-center ${activeRole.iconBg}`}
-                      >
-                        <activeRole.icon className={`w-4.5 h-4.5 ${activeRole.iconColor}`} />
-                      </div>
-                      <div>
-                        <p className={`text-[9px] font-extrabold uppercase tracking-widest ${activeRole.iconColor}`}>
-                          {activeRole.label}
-                        </p>
-                        <h2 className="font-heading text-lg font-extrabold text-white leading-tight">
-                          {activeRole.headline}
-                        </h2>
-                      </div>
-                    </div>
-
-                    {/* Error */}
-                    <AnimatePresence>
-                      {errorMsg && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0 }}
-                          className="mb-5"
-                        >
-                          <Alert variant="destructive" className="border-red-500/30 bg-red-950/20">
-                            <AlertCircle className="w-4 h-4 text-red-400" />
-                            <AlertTitle className="text-red-400">Sign In Error</AlertTitle>
-                            <AlertDescription className="text-red-400/90">{errorMsg}</AlertDescription>
-                          </Alert>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-
-                    {/* Form */}
-                    <form onSubmit={handleSignIn} className="space-y-4">
-                      <Input
-                        required
-                        type="email"
-                        label="Email Address"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="name@company.com"
-                        id={`email-${selectedRole}`}
-                        className="focus:ring-1 focus:ring-[#C4A054]/20"
-                      />
-
-                      <div className="space-y-1.5">
-                        <div className="flex justify-between items-center">
-                          <label className="text-[10px] font-bold uppercase tracking-wider text-white/80">
-                            Password
-                          </label>
-                          <Link
-                            href="/forgot"
-                            className={`text-xs font-semibold hover:underline ${activeRole.iconColor}`}
-                          >
-                            Forgot?
-                          </Link>
-                        </div>
-                        <Input
-                          required
-                          type="password"
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          placeholder="••••••••"
-                          id={`password-${selectedRole}`}
-                          className="focus:ring-1 focus:ring-[#C4A054]/20"
-                        />
-                      </div>
-
-                      <Button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full h-11 font-extrabold uppercase tracking-wider text-xs mt-2 bg-[#C4A054] hover:bg-[#C4A054]/90 text-[#060C0A] border-0 hover:shadow-[#C4A054]/10 hover:shadow-lg transition-all duration-300"
-                      >
-                        {isLoading ? (
-                          <span className="flex items-center justify-center gap-2">
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                            Authenticating...
-                          </span>
-                        ) : (
-                          "Sign In to Fundora"
-                        )}
-                      </Button>
-                    </form>
-
-                    {/* Demo access */}
-                    <div className="mt-6 pt-5 border-t border-white/[0.06]">
-                      <div className="flex items-center gap-1.5 mb-3">
-                        <Sparkles className="w-3 h-3 text-[#C4A054] animate-pulse" />
-                        <span className="text-[9px] uppercase font-bold tracking-widest text-[#8A9690]">
-                          Demo Access
-                        </span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => handleQuickLogin("user@fundora.com", "user")}
-                        disabled={isLoading}
-                        className="w-full h-9 rounded-xl border border-white/10 bg-white/[0.02] text-[#8A9690] text-[9px] font-extrabold uppercase tracking-wider hover:bg-[#C4A054]/10 hover:border-[#C4A054]/30 hover:text-[#C4A054] transition-all duration-200"
-                      >
-                        Quick-Login: Regular Member Account
-                      </button>
-                      <p className="text-[9px] text-center text-[#8A9690]/50 mt-2.5 leading-relaxed">
-                        One-click local authentication via simulated directory.
-                      </p>
-                    </div>
-
-                    {/* Sign up link (subscribers only) */}
-                    <p className="text-xs text-center text-[#8A9690] mt-5">
-                      New to Fundora?{" "}
-                      <Link href="/signup" className="text-[#C4A054] hover:underline font-bold">
-                        Create an account
-                      </Link>
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* ── Footer note ── */}
+          {/* Footer note */}
           <motion.p
             variants={itemVariants}
             className="text-center text-[10px] text-[#8A9690]/50 mt-12"
