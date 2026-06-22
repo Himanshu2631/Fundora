@@ -94,53 +94,10 @@ export default function DashboardSidebar({ collapsed, onToggle }) {
       className="relative flex flex-col h-full bg-card rounded-[32px] border border-white/[0.08] shadow-2xl shadow-black/20 overflow-hidden shrink-0"
       whileHover={{ boxShadow: "0 25px 60px -12px rgba(0, 0, 0, 0.35)" }}
     >
-      {/* ── Logo ── */}
-      <div
-        className={cn(
-          "flex items-center h-16 border-b border-white/[0.06] px-4 shrink-0",
-          collapsed ? "justify-center" : "justify-between"
-        )}
-      >
-        <Link href="/" className="flex items-center gap-2.5 group min-w-0">
-          <div className="w-7 h-7 rounded-xl bg-accent flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-sm shrink-0">
-            F
-          </div>
-          <AnimatePresence>
-            {!collapsed && (
-              <motion.span
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -8 }}
-                transition={{ duration: 0.18 }}
-                className="font-heading font-extrabold tracking-wider text-base text-foreground group-hover:text-accent transition-colors whitespace-nowrap"
-              >
-                FUNDORA
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </Link>
-
-        {/* Collapse toggle */}
-        <button
-          onClick={onToggle}
-          className={cn(
-            "w-7 h-7 rounded-full border border-white/[0.08] flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-accent/40 hover:scale-[1.05] active:scale-[0.95] transition-all duration-200 shrink-0",
-            collapsed && "absolute -right-3.5 top-6 bg-card z-10 shadow-lg shadow-black/20"
-          )}
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {collapsed ? (
-            <ChevronRight className="w-3.5 h-3.5" />
-          ) : (
-            <ChevronLeft className="w-3.5 h-3.5" />
-          )}
-        </button>
-      </div>
-
       {/* ── User Profile Card ── */}
       <div
         className={cn(
-          "px-3 py-4 border-b border-white/[0.06] shrink-0",
+          "px-4 pt-6 pb-5 border-b border-white/[0.06] shrink-0",
           collapsed ? "flex justify-center" : ""
         )}
       >
