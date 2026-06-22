@@ -15,46 +15,35 @@ import { ShieldAlert } from "lucide-react";
 // ─── Per-route metadata ───────────────────────────────────────────────────────
 const ROUTE_META = {
   "/admin": {
-    title: "Executive Dashboard",
-    sub: "Platform overview, KPIs, and system health.",
+    title: "Admin Dashboard",
+    sub: "Platform overview, KPIs, and operational summary.",
   },
   "/admin/dashboard": {
-    title: "Executive Dashboard",
-    sub: "Platform overview, KPIs, and system health.",
+    title: "Admin Dashboard",
+    sub: "Platform overview, KPIs, and operational summary.",
   },
   "/admin/users": {
     title: "User Management",
-    sub: "View and manage all registered platform users.",
-  },
-  "/admin/subscriptions": {
-    title: "Subscriptions",
-    sub: "Tier analytics, revenue breakdown, and billing events.",
-  },
-  "/admin/payments": {
-    title: "Payment Transactions",
-    sub: "Monitor, inspect, and reconcile user financial charges.",
+    sub: "View and manage all registered platform users and subscriptions.",
   },
   "/admin/charities": {
     title: "Charity Management",
-    sub: "Onboard, vet, and manage partner charities.",
+    sub: "Add, edit, and manage partner charities and content.",
   },
   "/admin/draws": {
     title: "Draw Management",
-    sub: "Create, trigger, and manage monthly prize draws.",
+    sub: "Configure draw logic, run simulations, and publish results.",
   },
   "/admin/winners": {
-    title: "Winner Claims",
-    sub: "Review, approve, and manage winner claim submissions.",
+    title: "Winners Management",
+    sub: "View winners, verify submissions, and mark payouts as completed.",
   },
   "/admin/analytics": {
-    title: "Platform Analytics",
-    sub: "Revenue, growth, engagement, and impact metrics.",
-  },
-  "/admin/settings": {
-    title: "System Settings",
-    sub: "Configure global parameters, security settings, and API integrations.",
+    title: "Reports & Analytics",
+    sub: "Total users, prize pool, charity contributions, and draw statistics.",
   },
 };
+
 
 export default function AdminLayout({ children }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);

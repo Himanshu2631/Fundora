@@ -6,19 +6,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
   Users,
-  CreditCard,
   Heart,
   Ticket,
   Trophy,
   BarChart3,
   ChevronLeft,
   ChevronRight,
-  ArrowLeft,
   ShieldAlert,
-  User,
-  Settings,
-  DollarSign,
 } from "lucide-react";
+
 import { useAuth } from "@/hooks/useAuth";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -27,43 +23,26 @@ const NAV_SECTIONS = [
   {
     label: "Overview",
     items: [
-      { name: "Executive Dashboard", href: "/admin/dashboard", icon: LayoutDashboard, exact: true },
+      { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard, exact: true },
     ],
   },
   {
-    label: "Operations",
+    label: "Management",
     items: [
-      { name: "Users", href: "/admin/users", icon: Users },
-      { name: "Subscriptions", href: "/admin/subscriptions", icon: CreditCard },
-      { name: "Payments", href: "/admin/payments", icon: DollarSign },
+      { name: "User Management", href: "/admin/users", icon: Users },
+      { name: "Draw Management", href: "/admin/draws", icon: Ticket },
+      { name: "Charity Management", href: "/admin/charities", icon: Heart },
+      { name: "Winners Management", href: "/admin/winners", icon: Trophy },
     ],
   },
   {
-    label: "Draw Management",
+    label: "Analytics",
     items: [
-      { name: "Draws", href: "/admin/draws", icon: Ticket },
-      { name: "Winners", href: "/admin/winners", icon: Trophy },
-    ],
-  },
-  {
-    label: "Charity Management",
-    items: [
-      { name: "Charities", href: "/admin/charities", icon: Heart },
-    ],
-  },
-  {
-    label: "Insights",
-    items: [
-      { name: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-    ],
-  },
-  {
-    label: "System",
-    items: [
-      { name: "Settings", href: "/admin/settings", icon: Settings },
+      { name: "Reports & Analytics", href: "/admin/analytics", icon: BarChart3 },
     ],
   },
 ];
+
 
 export default function AdminSidebar({ collapsed, onToggle }) {
   const pathname = usePathname();
