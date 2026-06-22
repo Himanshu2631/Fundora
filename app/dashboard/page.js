@@ -1080,19 +1080,6 @@ export default function DashboardOverview() {
                             );
                           })}
                         </div>
-                        
-                        {/* Trust Indicators inside Impact Widget */}
-                        <div className="h-[1px] bg-border/40 my-5" />
-                        <div className="space-y-2 text-[10px] text-muted-foreground/90">
-                          <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-accent text-[9px]">
-                            <ShieldCheck className="w-3.5 h-3.5" /> Trust & Audit Report
-                          </div>
-                          <p className="leading-relaxed">
-                            • <strong>Verified Charities:</strong> 100% of causes vetted & signed.<br />
-                            • <strong>Funds Audited:</strong> Third-party verified receipts ledger.<br />
-                            • <strong>Platform Total:</strong> 145,000+ trees & 1.2M L water filtered.
-                          </p>
-                        </div>
                       </div>
                     </Card>
                   </motion.div>
@@ -1118,6 +1105,114 @@ export default function DashboardOverview() {
                     </Card>
                   </motion.div>
                 </div>
+
+                {/* Trust & Transparency Feature Card */}
+                <motion.div
+                  whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }}
+                  className="transition-all duration-300"
+                >
+                  <Card className="p-6 md:p-8 border-accent/20 bg-gradient-to-br from-[#061511] via-[#0A1C16] to-[#040D09] shadow-lg relative overflow-hidden rounded-3xl">
+                    {/* Glowing background highlights */}
+                    <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-accent/5 blur-[80px] rounded-full pointer-events-none -z-10" />
+                    <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-emerald-800/5 blur-[60px] rounded-full pointer-events-none -z-10" />
+                    
+                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-white/[0.06] pb-6 mb-6">
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-extrabold uppercase tracking-widest text-accent bg-accent/10 px-2.5 py-1 rounded-full border border-accent/20">
+                            🛡️ Cryptographic Trust & Verification
+                          </span>
+                        </div>
+                        <h3 className="font-heading font-black text-xl sm:text-2xl text-white leading-tight">
+                          Verified Giving & Audited Transparency Hub
+                        </h3>
+                        <p className="text-xs text-muted-foreground max-w-3xl leading-relaxed">
+                          Fundora operates with absolute financial accountability. Every giving transaction is signed, recorded, and audited to guarantee your donations directly reach vetted local charities.
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-3 shrink-0">
+                        <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-2 rounded-2xl">
+                          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                          <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400">
+                            System Fully Audited
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 4 Pillars Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                      {[
+                        {
+                          title: "Verified Charities",
+                          value: "100% Vetted Causes",
+                          desc: "Every cause is legally vetted, background-checked, and signed to guarantee strict regulatory compliance and escrow safety.",
+                          icon: ShieldCheck,
+                          color: "text-emerald-400 bg-emerald-500/5 border-emerald-500/10",
+                          badge: "Compliance Certified"
+                        },
+                        {
+                          title: "Funds Audited",
+                          value: "3rd-Party Verified Ledger",
+                          desc: "Monthly billing receipts and donation matching distributions are verified by independent third-party audit ledger audits.",
+                          icon: TrendingUp,
+                          color: "text-accent bg-accent/5 border-accent/10",
+                          badge: "Independent Audit Log"
+                        },
+                        {
+                          title: "Draws Verified",
+                          value: "Provably Fair Sweepstakes",
+                          desc: "Drawing prize awards and ticket logs are processed securely using randomized verification boards to ensure fairness.",
+                          icon: Ticket,
+                          color: "text-blue-400 bg-blue-500/5 border-blue-500/10",
+                          badge: "Fairness Audited"
+                        },
+                        {
+                          title: "Contribution Tracking",
+                          value: "Cryptographic Receipt Escrow",
+                          desc: "Track every single dollar contributed to your selected charities with digital proof receipts downloadable for tax exemption.",
+                          icon: Check,
+                          color: "text-rose-400 bg-rose-500/5 border-rose-500/10",
+                          badge: "Real-time Auditing"
+                        }
+                      ].map((pillar, idx) => {
+                        const Icon = pillar.icon;
+                        return (
+                          <div
+                            key={idx}
+                            className="p-5 bg-secondary/5 border border-border/10 rounded-2xl flex flex-col justify-between hover:border-accent/30 hover:bg-[#071611]/50 transition-all duration-300 group"
+                          >
+                            <div>
+                              <div className="flex justify-between items-start mb-4">
+                                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#8a9690]">
+                                  {pillar.title}
+                                </span>
+                                <div className={`p-2 rounded-xl bg-black/40 border border-white/[0.04] ${pillar.color} group-hover:scale-105 transition-transform`}>
+                                  <Icon className="w-5 h-5" />
+                                </div>
+                              </div>
+                              <h4 className="text-sm font-extrabold text-white leading-snug font-heading block mb-2 group-hover:text-accent transition-colors">
+                                {pillar.value}
+                              </h4>
+                              <p className="text-[10.5px] text-muted-foreground leading-relaxed">
+                                {pillar.desc}
+                              </p>
+                            </div>
+                            <div className="mt-5 pt-3 border-t border-white/[0.04] flex items-center justify-between">
+                              <span className="text-[9px] font-bold text-accent uppercase tracking-wider">
+                                {pillar.badge}
+                              </span>
+                              <span className="text-[9px] text-emerald-400 font-extrabold flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Active Verified
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </Card>
+                </motion.div>
               </div>
 
               {/* Quick Audit Trail */}
