@@ -18,6 +18,10 @@ const ROUTE_META = {
     title: "Executive Dashboard",
     sub: "Platform overview, KPIs, and system health.",
   },
+  "/admin/dashboard": {
+    title: "Executive Dashboard",
+    sub: "Platform overview, KPIs, and system health.",
+  },
   "/admin/users": {
     title: "User Management",
     sub: "View and manage all registered platform users.",
@@ -67,7 +71,7 @@ export default function AdminLayout({ children }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const routeMeta = ROUTE_META[currentPath] || ROUTE_META["/admin"];
+  const routeMeta = ROUTE_META[currentPath] || ROUTE_META["/admin/dashboard"];
 
   // Auth loading state
   if (authLoading) {
@@ -78,8 +82,18 @@ export default function AdminLayout({ children }) {
     );
   }
 
+  // Profile not yet resolved — hold loading instead of flashing "Access Restricted"
+  // This covers the brief window after auth completes but before the profile fetch resolves
+  if (!profile) {
+    return (
+      <div className="flex min-h-screen bg-[#060C0A] items-center justify-center">
+        <LoadingState message="Loading admin profile..." />
+      </div>
+    );
+  }
+
   // Client-side role guard (defense-in-depth — middleware handles server-side)
-  if (profile?.role !== "admin") {
+  if (profile.role !== "admin") {
     return (
       <div className="flex min-h-screen bg-[#060C0A] items-center justify-center p-6">
         <Card className="p-8 max-w-md mx-auto bg-[#0A1C16] border-[#162520] text-center">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import DashboardSidebar from "@/components/dashboard/DashboardSidebar";
 import DashboardTopbar from "@/components/dashboard/DashboardTopbar";
@@ -44,7 +44,17 @@ export default function DashboardLayout({ children }) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const currentPath = usePathname();
-  const { loading: authLoading } = useAuth();
+  const router = useRouter();
+  const { loading: authLoading, profile } = useAuth();
+
+  // ── Admin redirect guard (client-side defence-in-depth) ──
+  // Middleware handles the server-side redirect, but this catches
+  // any client-side navigation that may bypass it.
+  useEffect(() => {
+    if (!authLoading && profile?.role === "admin") {
+      router.replace("/admin/dashboard");
+    }
+  }, [authLoading, profile, router]);
 
   // Close mobile menu on resize to desktop
   useEffect(() => {
@@ -61,6 +71,15 @@ export default function DashboardLayout({ children }) {
     return (
       <div className="flex min-h-screen bg-background items-center justify-center">
         <LoadingState message="Authenticating session..." />
+      </div>
+    );
+  }
+
+  // Show loading while an admin is being redirected
+  if (profile?.role === "admin") {
+    return (
+      <div className="flex min-h-screen bg-background items-center justify-center">
+        <LoadingState message="Redirecting to Admin Panel..." />
       </div>
     );
   }

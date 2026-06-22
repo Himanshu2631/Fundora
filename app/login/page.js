@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/hooks/useAuth";
+import { createClient } from "@/lib/supabase";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -22,8 +23,19 @@ export default function Login() {
     setIsLoading(true);
     setErrorMsg("");
     try {
-      await signIn(email, password);
-      window.location.href = "/dashboard";
+      const data = await signIn(email, password);
+      const supabase = createClient();
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", data.user.id)
+        .single();
+
+      if (profile?.role === "admin") {
+        window.location.href = "/admin/dashboard";
+      } else {
+        window.location.href = "/dashboard";
+      }
     } catch (err) {
       setErrorMsg(err.message || "Failed to sign in. Please verify credentials.");
       setIsLoading(false);
@@ -34,8 +46,19 @@ export default function Login() {
     setIsLoading(true);
     setErrorMsg("");
     try {
-      await signIn(demoEmail, demoPassword);
-      window.location.href = "/dashboard";
+      const data = await signIn(demoEmail, demoPassword);
+      const supabase = createClient();
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", data.user.id)
+        .single();
+
+      if (profile?.role === "admin") {
+        window.location.href = "/admin/dashboard";
+      } else {
+        window.location.href = "/dashboard";
+      }
     } catch (err) {
       setErrorMsg(err.message || "Failed to sign in. Please verify credentials.");
       setIsLoading(false);

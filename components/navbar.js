@@ -45,21 +45,12 @@ export default function Navbar() {
           {user && (
             <>
               <Link
-                href="/dashboard"
+                href={profile?.role === "admin" ? "/admin/dashboard" : "/dashboard"}
                 className="relative text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-200 py-2 group"
               >
-                Dashboard
+                {profile?.role === "admin" ? "Admin Panel" : "Dashboard"}
                 <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-accent transition-all duration-300 group-hover:w-full" />
               </Link>
-              {profile?.role === "admin" && (
-                <Link
-                  href="/admin"
-                  className="relative text-xs font-semibold uppercase tracking-wider text-accent hover:text-accent/80 transition-colors duration-200 py-2 group"
-                >
-                  Admin Console
-                  <span className="absolute bottom-0 left-0 w-0 h-[1.5px] bg-accent transition-all duration-300 group-hover:w-full" />
-                </Link>
-              )}
             </>
           )}
         </nav>
@@ -136,21 +127,12 @@ export default function Navbar() {
             {user && (
               <>
                 <Link
-                  href="/dashboard"
+                  href={profile?.role === "admin" ? "/admin/dashboard" : "/dashboard"}
                   onClick={() => setIsOpen(false)}
                   className="text-sm font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground"
                 >
-                  Dashboard
+                  {profile?.role === "admin" ? "Admin Panel" : "Dashboard"}
                 </Link>
-                {profile?.role === "admin" && (
-                  <Link
-                    href="/admin"
-                    onClick={() => setIsOpen(false)}
-                    className="text-sm font-semibold uppercase tracking-wider text-accent hover:text-accent/80"
-                  >
-                    Admin Console
-                  </Link>
-                )}
               </>
             )}
           </div>

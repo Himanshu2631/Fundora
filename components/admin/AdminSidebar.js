@@ -27,7 +27,7 @@ const NAV_SECTIONS = [
   {
     label: "Overview",
     items: [
-      { name: "Executive Dashboard", href: "/admin", icon: LayoutDashboard, exact: true },
+      { name: "Executive Dashboard", href: "/admin/dashboard", icon: LayoutDashboard, exact: true },
     ],
   },
   {
@@ -90,7 +90,7 @@ export default function AdminSidebar({ collapsed, onToggle }) {
           collapsed ? "justify-center" : "justify-between"
         )}
       >
-        <Link href="/admin" className="flex items-center gap-2.5 group min-w-0">
+        <Link href="/admin/dashboard" className="flex items-center gap-2.5 group min-w-0">
           <div className="w-7 h-7 rounded-xl bg-red-600 flex items-center justify-center shrink-0">
             <ShieldAlert className="w-3.5 h-3.5 text-white" />
           </div>

@@ -71,7 +71,7 @@ export default function DashboardSidebar({ collapsed, onToggle }) {
       return {
         ...section,
         items: [
-          { name: "Admin Console", href: "/admin", icon: Shield },
+          { name: "Admin Panel", href: "/admin/dashboard", icon: Shield },
           ...section.items,
         ],
       };
