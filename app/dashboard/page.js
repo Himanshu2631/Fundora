@@ -376,6 +376,63 @@ export default function DashboardOverview() {
     };
   });
 
+  const hasAllocations = allocations && allocations.length > 0;
+
+  const impactMetrics = [
+    {
+      label: "Membership Tier",
+      value: displayUser.tier,
+      desc: hasActivePlan
+        ? `${subscription?.plan_type === "builder" ? "10x" : subscription?.plan_type === "advocate" ? "3x" : "Base"} multiplier active`
+        : "No active giving plan",
+      icon: ShieldCheck,
+      color: "text-accent",
+    },
+    {
+      label: "Active Draw Entries",
+      value: hasAllocations
+        ? (activeTicketsCount > 0 ? `${activeTicketsCount} Entries` : "No active entries")
+        : (hasActivePlan ? "Awaiting charity selection" : "Awaiting subscription"),
+      desc: hasAllocations && activeTicketsCount > 0 ? "Registered in active pools" : "Select cause & subscribe to activate",
+      icon: Ticket,
+      color: "text-emerald-400",
+    },
+    {
+      label: "Contribution Amount",
+      value: hasActivePlan ? `$${monthlyContribution}.00` : "Awaiting subscription",
+      desc: hasActivePlan ? "Routed to selected causes" : "Select a plan to start giving",
+      icon: Heart,
+      color: "text-rose-400",
+    },
+    {
+      label: "Supported Causes",
+      value: hasAllocations
+        ? allocations.map(a => a.charity_name).join(", ")
+        : "Not configured yet",
+      desc: hasAllocations ? `${allocations.length} cause(s) supported` : "Cause routing inactive",
+      icon: Heart,
+      color: "text-purple-400",
+    },
+    ...(hasAllocations ? [] : [
+      {
+        label: "Impact Status",
+        value: "Awaiting charity selection",
+        desc: "Allocations required to process impact",
+        icon: AlertTriangle,
+        color: "text-amber-400 animate-pulse",
+      }
+    ]),
+    {
+      label: "Current Giving Score",
+      value: hasAllocations
+        ? `${dynamicGivingScore} pts`
+        : "Awaiting charity selection",
+      desc: hasAllocations ? `Rank ${displayUser.rank} overall` : "Score generation pending",
+      icon: Trophy,
+      color: "text-accent",
+    }
+  ];
+
   return (
     <div className="p-6 md:p-8 space-y-8">
       {/* ── Welcome Banner ── */}
@@ -995,47 +1052,33 @@ export default function DashboardOverview() {
                           <TrendingUp className="w-4 h-4 text-accent" />
                           Your Impact This Month
                         </h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          {[
-                            { 
-                              label: "Carbon Offset", 
-                              value: `${(totalAllocatedVal * 1.8).toFixed(1)} kg`, 
-                              desc: "CO2 capture capacity sponsored",
-                              color: "bg-emerald-500"
-                            },
-                            { 
-                              label: "Clean Water Purified", 
-                              value: `${(totalAllocatedVal * 24).toFixed(0)} L`, 
-                              desc: "Daily village filtration capacity",
-                              color: "bg-blue-500"
-                            },
-                            { 
-                              label: "STEM Education Credits", 
-                              value: `${(totalAllocatedVal * 0.45).toFixed(1)} hrs`, 
-                              desc: "Teaching fellowships funded",
-                              color: "bg-accent"
-                            },
-                            { 
-                              label: "Tree Saplings Planted", 
-                              value: `${(totalAllocatedVal / 10).toFixed(0)} trees`, 
-                              desc: "Broadleaf plantings sponsored",
-                              color: "bg-[#C4A054]/60"
-                            }
-                          ].map((row, idx) => (
-                            <div key={idx} className="space-y-1 p-2 bg-secondary/5 border border-border/10 rounded-xl">
-                              <div className="flex justify-between items-center text-xs">
-                                <span className="text-muted-foreground font-semibold">{row.label}</span>
-                                <span className="text-foreground font-bold">{row.value}</span>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                          {impactMetrics.map((metric, idx) => {
+                            const MetricIcon = metric.icon;
+                            return (
+                              <div 
+                                key={idx} 
+                                className="p-4 bg-secondary/5 border border-border/10 rounded-2xl flex flex-col justify-between hover:border-accent/30 hover:bg-[#071611]/50 transition-all duration-300 group"
+                              >
+                                <div className="flex justify-between items-start mb-3">
+                                  <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                    {metric.label}
+                                  </span>
+                                  <div className={`p-1.5 rounded-lg bg-black/40 border border-white/[0.04] ${metric.color} group-hover:scale-105 transition-transform`}>
+                                    <MetricIcon className="w-4 h-4" />
+                                  </div>
+                                </div>
+                                <div className="space-y-1 mt-auto">
+                                  <span className="text-sm font-extrabold text-white leading-tight font-heading block line-clamp-2">
+                                    {metric.value}
+                                  </span>
+                                  <span className="text-[9px] text-muted-foreground/80 block leading-none">
+                                    {metric.desc}
+                                  </span>
+                                </div>
                               </div>
-                              <div className="w-full h-1.5 bg-secondary/45 rounded-full overflow-hidden">
-                                <div 
-                                  className={`h-full ${row.color}`} 
-                                  style={{ width: `${Math.min(totalAllocatedVal, 100)}%` }}
-                                />
-                              </div>
-                              <span className="text-[9px] text-muted-foreground/80 block leading-none">{row.desc}</span>
-                            </div>
-                          ))}
+                            );
+                          })}
                         </div>
                         
                         {/* Trust Indicators inside Impact Widget */}
