@@ -5,11 +5,6 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
-  Trophy,
-  Activity,
-  Heart,
-  TrendingUp,
-  Award,
   AlertCircle,
   Sparkles,
   Loader2,
@@ -36,42 +31,32 @@ const formVariants = {
   visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 18 } },
 };
 
-// ─── Benefits definitions ─────────────────────────────────────────────────────
-const BENEFITS = [
+// ─── Stepper definitions ──────────────────────────────────────────────────────
+const STEPS = [
   {
-    icon: Trophy,
-    text: "Enter monthly reward draws",
-    description: "Get entry tickets from subscription tiers and multipliers.",
-    iconColor: "text-[#C4A054]",
-    iconBg: "bg-[#C4A054]/10",
+    number: "1",
+    title: "Subscribe",
+    description: "Join a membership tier.",
   },
   {
-    icon: Activity,
-    text: "Track golf performance",
-    description: "Enter golf Stableford rounds and monitor your metrics over time.",
-    iconColor: "text-emerald-400",
-    iconBg: "bg-emerald-500/10",
+    number: "2",
+    title: "Enter Scores",
+    description: "Track your golf performance.",
   },
   {
-    icon: Heart,
-    text: "Support verified charities",
-    description: "Direct 100% of subscription allocations to vetted non-profits.",
-    iconColor: "text-red-400",
-    iconBg: "bg-red-500/10",
+    number: "3",
+    title: "Support Charities",
+    description: "Choose verified causes.",
   },
   {
-    icon: TrendingUp,
-    text: "Monitor impact and contributions",
-    description: "Audit cryptographic receipts and outcome charts in real-time.",
-    iconColor: "text-sky-400",
-    iconBg: "bg-sky-500/10",
+    number: "4",
+    title: "Earn Draw Entries",
+    description: "Become eligible for monthly rewards.",
   },
   {
-    icon: Award,
-    text: "View rankings and winnings",
-    description: "Compete on performance and giving leaderboards globally.",
-    iconColor: "text-purple-400",
-    iconBg: "bg-purple-500/10",
+    number: "5",
+    title: "Win Rewards",
+    description: "Participate in monthly prize draws.",
   },
 ];
 
@@ -106,85 +91,6 @@ export default function SubscriberLogin() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true);
-    setErrorMsg("");
-    try {
-      // Simulate Google Auth delay in mock mode or fallback
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const supabase = createClient();
-      
-      // Check if we are running in placeholder mode
-      const urlEnv = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-      const anonKeyEnv = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-      const isPlaceholder = 
-        urlEnv === "https://placeholder.supabase.co" || 
-        anonKeyEnv === "placeholder-anon-key" || 
-        !urlEnv || 
-        !anonKeyEnv;
-
-      if (isPlaceholder) {
-        // Set mock session cookie for user demo
-        const session = {
-          user: {
-            id: "mock-uid-user",
-            email: "user@fundora.com",
-            user_metadata: { full_name: "Google User Demo" }
-          },
-          role: "user",
-          access_token: "mock-access-token",
-          refresh_token: "mock-refresh-token",
-          expires_in: 3600,
-          expires_at: Math.floor(Date.now() / 1000) + 3600
-        };
-        // Set cookie
-        const setCookie = (name, value, days = 7) => {
-          const date = new Date();
-          date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-          const expires = "; expires=" + date.toUTCString();
-          document.cookie = `${name}=${encodeURIComponent(value)}${expires}; path=/; SameSite=Lax`;
-        };
-        setCookie("fundora-mock-session", JSON.stringify(session));
-        window.location.href = "/dashboard";
-      } else {
-        // Actual Supabase redirect
-        const { error } = await supabase.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo: `${window.location.origin}/dashboard`
-          }
-        });
-        if (error) throw error;
-      }
-    } catch (err) {
-      setErrorMsg(err.message || "Failed to authenticate with Google.");
-      setIsLoading(false);
-    }
-  };
-
-  const handleQuickLogin = async (demoEmail, demoPassword) => {
-    setIsLoading(true);
-    setErrorMsg("");
-    try {
-      const data = await signIn(demoEmail, demoPassword);
-      const supabase = createClient();
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", data.user.id)
-        .single();
-
-      if (profile?.role === "admin") {
-        window.location.href = "/admin/dashboard";
-      } else {
-        window.location.href = "/dashboard";
-      }
-    } catch (err) {
-      setErrorMsg(err.message || "Failed to sign in. Please verify credentials.");
-      setIsLoading(false);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#060C0A] grid grid-cols-1 lg:grid-cols-12 relative overflow-hidden font-sans">
       
@@ -192,7 +98,7 @@ export default function SubscriberLogin() {
       <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-[#C4A054]/[0.02] blur-[150px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-emerald-500/[0.02] blur-[150px] pointer-events-none" />
 
-      {/* ── LEFT SECTION: Branding & Benefits ── */}
+      {/* ── LEFT SECTION: Branding & Stepper ── */}
       <section className="lg:col-span-5 bg-gradient-to-br from-[#05110B] via-[#081510] to-[#060C0A] border-r border-white/[0.04] p-8 sm:p-12 lg:p-16 flex flex-col justify-between relative">
         {/* Subtle grid background inside left section */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c1d18_1px,transparent_1px),linear-gradient(to_bottom,#0c1d18_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-[0.15] pointer-events-none" />
@@ -211,44 +117,50 @@ export default function SubscriberLogin() {
           {/* Heading Info */}
           <div className="space-y-4">
             <h2 className="text-3xl sm:text-4xl font-heading font-black text-white leading-tight">
-              Why Join <span className="text-[#C4A054]">Fundora</span>?
+              Fund Your Impact.
+              <br />
+              Track Your Performance.
+              <br />
+              <span className="text-[#C4A054]">Unlock Monthly Rewards.</span>
             </h2>
             <p className="text-xs sm:text-sm text-[#8A9690] leading-relaxed max-w-sm">
-              We bridge golf performance logs with audited global giving, unlocking luxury incentives while driving outcome-based change.
+              Fundora combines golf performance tracking, verified charity contributions, and monthly reward draws into a single membership platform.
             </p>
           </div>
 
-          {/* Benefits Cards */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="space-y-4 max-w-md"
-          >
-            {BENEFITS.map((benefit, idx) => {
-              const IconComponent = benefit.icon;
-              return (
+          {/* How Fundora Works (Stepper) */}
+          <div className="space-y-6">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-white/50 mb-2">
+              How Fundora Works
+            </h3>
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="relative border-l border-white/[0.06] ml-2 pl-6 space-y-6 max-w-md"
+            >
+              {STEPS.map((step, idx) => (
                 <motion.div
                   key={idx}
                   variants={itemVariants}
-                  whileHover={{ x: 4 }}
-                  className="flex items-start gap-4 p-4 rounded-2xl border border-white/[0.03] bg-white/[0.01] hover:bg-white/[0.03] hover:border-white/[0.06] transition-all duration-300 group"
+                  className="relative group"
                 >
-                  <div className={`w-10 h-10 rounded-xl ${benefit.iconBg} flex items-center justify-center shrink-0 border border-white/[0.04] group-hover:scale-105 transition-transform duration-300`}>
-                    <IconComponent className={`w-5 h-5 ${benefit.iconColor}`} />
+                  {/* Circle step indicator */}
+                  <div className="absolute -left-[32px] top-0.5 w-4 h-4 rounded-full bg-[#060C0A] border border-white/20 group-hover:border-[#C4A054] flex items-center justify-center text-[8px] font-black text-white/50 group-hover:text-[#C4A054] transition-all duration-300 shadow-[0_0_10px_rgba(0,0,0,0.8)]">
+                    {step.number}
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-white mb-0.5 tracking-wide group-hover:text-[#C4A054] transition-colors duration-300">
-                      {benefit.text}
+                      {step.title}
                     </h4>
                     <p className="text-[10px] text-[#8A9690] leading-relaxed">
-                      {benefit.description}
+                      {step.description}
                     </p>
                   </div>
                 </motion.div>
-              );
-            })}
-          </motion.div>
+              ))}
+            </motion.div>
+          </div>
         </div>
 
         {/* Footer info */}
@@ -364,43 +276,6 @@ export default function SubscriberLogin() {
                 )}
               </Button>
             </form>
-
-            {/* Divider */}
-            <div className="relative flex items-center justify-center my-6">
-              <div className="w-full border-t border-white/[0.06]"></div>
-              <span className="absolute bg-[#060C0A] px-3 text-[10px] font-bold uppercase tracking-widest text-[#8A9690]/50">
-                Or continue with
-              </span>
-            </div>
-
-            {/* Google OAuth Login Button */}
-            <button
-              type="button"
-              onClick={handleGoogleSignIn}
-              disabled={isLoading}
-              className="w-full h-11 rounded-xl border border-white/10 bg-white/[0.01] hover:bg-white/[0.04] hover:border-white/20 transition-all duration-300 flex items-center justify-center gap-3 text-xs font-bold text-white hover:shadow-white/[0.02] hover:shadow-md"
-            >
-              {/* Google SVG Logo */}
-              <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-              </svg>
-              Continue with Google
-            </button>
-
-            {/* Quick Demo Access */}
-            <div className="pt-4 border-t border-white/[0.04]">
-              <button
-                type="button"
-                onClick={() => handleQuickLogin("user@fundora.com", "user")}
-                disabled={isLoading}
-                className="w-full h-9 rounded-xl border border-[#C4A054]/20 bg-[#C4A054]/5 text-[#C4A054] text-[9px] font-extrabold uppercase tracking-wider hover:bg-[#C4A054]/10 hover:border-[#C4A054]/40 transition-all duration-200"
-              >
-                Quick-Login: Regular Member Account
-              </button>
-            </div>
           </motion.div>
 
           {/* Form Footer Links */}
