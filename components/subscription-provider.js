@@ -124,6 +124,39 @@ export function SubscriptionProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
+      // In mock mode (placeholder Supabase credentials), the server-side cancel route
+      // reads subscriptions from a cookie, but the client mock uses localStorage.
+      // To avoid the "No active subscription found" error, cancel directly via the
+      // client-side Supabase mock which correctly reads from localStorage.
+      const isMockMode =
+        (process.env.NEXT_PUBLIC_SUPABASE_URL || "") === "https://placeholder.supabase.co" ||
+        (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "") === "placeholder-anon-key" ||
+        !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+        !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+      if (isMockMode) {
+        // Directly cancel via the client mock (reads/writes localStorage + cookie)
+        const supabase = createClient();
+        const { data: sub } = await supabase
+          .from("subscriptions")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (!sub) {
+          throw new Error("No active subscription found");
+        }
+
+        await supabase
+          .from("subscriptions")
+          .update({ status: "canceled" })
+          .eq("user_id", user.id);
+
+        await fetchSubscription();
+        return { success: true };
+      }
+
+      // Real Stripe path: call the server API route
       const res = await fetch("/api/stripe/cancel", {
         method: "POST",
         headers: { "Content-Type": "application/json" }
@@ -147,6 +180,26 @@ export function SubscriptionProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
+      const isMockMode =
+        (process.env.NEXT_PUBLIC_SUPABASE_URL || "") === "https://placeholder.supabase.co" ||
+        (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "") === "placeholder-anon-key" ||
+        !process.env.NEXT_PUBLIC_SUPABASE_URL ||
+        !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+      if (isMockMode) {
+        const supabase = createClient();
+        const renewalDate = new Date();
+        renewalDate.setMonth(renewalDate.getMonth() + 1);
+
+        await supabase
+          .from("subscriptions")
+          .update({ status: "active", renewal_date: renewalDate.toISOString() })
+          .eq("user_id", user.id);
+
+        await fetchSubscription();
+        return { success: true };
+      }
+
       const res = await fetch("/api/stripe/reactivate", {
         method: "POST",
         headers: { "Content-Type": "application/json" }

@@ -29,12 +29,18 @@ export default function SubscriptionWidget() {
   const [isUpgradeModalOpen, _setIsUpgradeModalOpen] = useState(false);
 
   const setIsCancelModalOpen = (val) => {
-    if (val) _setIsUpgradeModalOpen(false);
+    if (val) {
+      _setIsUpgradeModalOpen(false);
+      setActionError(null); // clear stale errors when opening modal
+    }
     _setIsCancelModalOpen(val);
   };
 
   const setIsUpgradeModalOpen = (val) => {
-    if (val) _setIsCancelModalOpen(false);
+    if (val) {
+      _setIsCancelModalOpen(false);
+      setActionError(null); // clear stale errors when opening modal
+    }
     _setIsUpgradeModalOpen(val);
   };
 
@@ -171,8 +177,8 @@ export default function SubscriptionWidget() {
 
   return (
     <div className="space-y-6">
-      {/* Display errors if any */}
-      {(error || actionError) && (
+      {/* Display errors if any — only show context error when no subscription is active to avoid contradictory states */}
+      {(actionError || (error && status !== "active")) && (
         <Alert variant="destructive">
           <AlertCircle className="w-4 h-4" />
           <AlertTitle>Subscription Error</AlertTitle>

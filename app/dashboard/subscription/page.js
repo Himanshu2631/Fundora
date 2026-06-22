@@ -202,8 +202,8 @@ export default function SubscriptionPage() {
         variants={{ visible: { transition: { staggerChildren: 0.09 } } }}
         className="max-w-5xl space-y-8"
       >
-        {/* Error Alert */}
-        {error && (
+        {/* Error Alert — only shown when subscription is not active, to avoid contradictory states */}
+        {error && status !== "active" && (
           <motion.div variants={itemVariants}>
             <Alert variant="destructive">
               <AlertCircle className="w-4 h-4" />
