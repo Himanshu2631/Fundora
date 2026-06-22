@@ -805,232 +805,246 @@ export default function DashboardOverview() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
-                {/* Subscription Widget + Contribution Breakdown (stacked) */}
-                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col gap-6 transition-all duration-300">
-                  <SubscriptionWidget />
+              <div className="space-y-8">
+                {/* Top Row: Membership Status & Charity Allocations */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+                  {/* Subscription Widget + Contribution Breakdown (stacked) */}
+                  <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col gap-6 transition-all duration-300">
+                    <SubscriptionWidget />
 
-                  {/* Contribution Breakdown & Draw Eligibility */}
-                  <Card className="p-6 flex-1 flex flex-col justify-between border-border bg-card">
-                    <div>
-                      <h3 className="font-heading font-extrabold text-base text-foreground mb-5 flex items-center gap-2">
-                        <Ticket className="w-4 h-4 text-accent" />
-                        Membership Benefits
-                      </h3>
+                    {/* Contribution Breakdown & Draw Eligibility */}
+                    <Card className="p-6 flex-1 flex flex-col justify-between border-border bg-card">
+                      <div>
+                        <h3 className="font-heading font-extrabold text-base text-foreground mb-5 flex items-center gap-2">
+                          <Ticket className="w-4 h-4 text-accent" />
+                          Membership Benefits
+                        </h3>
 
-                      {/* Contribution Breakdown */}
-                      <div className="space-y-3 mb-5">
-                        {[
-                          { label: "Monthly Contribution", value: `$${monthlyContribution}.00`, accent: true },
-                          { label: "Charity Routing", value: `${totalAllocatedVal}% Allocated`, accent: totalAllocatedVal === 100 },
-                          { label: "Active Draw Tickets", value: `${activeTicketsCount || 6} Entries`, accent: activeTicketsCount > 0 },
-                          { label: "Giving Score", value: `${dynamicGivingScore} pts`, accent: true },
-                        ].map((row, idx) => (
-                          <div key={idx} className="flex justify-between items-center text-xs border-b border-border/25 pb-2 last:border-0 last:pb-0">
-                            <span className="text-muted-foreground font-semibold">{row.label}</span>
-                            <span className={`font-bold ${row.accent ? "text-accent" : "text-foreground"}`}>
-                              {row.value}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* Draw Eligibility Status */}
-                      <div className="space-y-2.5">
-                        <div className="flex justify-between items-center text-[10px]">
-                          <span className="font-bold uppercase tracking-wider text-muted-foreground">Draw Eligibility</span>
-                          <span className={`font-extrabold ${hasActivePlan && scores.length > 0 && allocations.length > 0 ? "text-emerald-500" : "text-amber-500"}`}>
-                            {hasActivePlan && scores.length > 0 && allocations.length > 0 ? "Qualified" : "Incomplete"}
-                          </span>
-                        </div>
-                        <div className="space-y-1.5">
+                        {/* Contribution Breakdown */}
+                        <div className="space-y-3 mb-5">
                           {[
-                            { label: "Active Subscription", met: hasActivePlan },
-                            { label: "Score Submitted", met: scores.length > 0 },
-                            { label: "Charity Selected", met: allocations.length > 0 },
-                          ].map((req, idx) => (
-                            <div key={idx} className="flex items-center gap-2 text-[11px]">
-                              <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${req.met ? "bg-emerald-950/45 text-emerald-500 border border-emerald-800/40" : "bg-secondary/15 text-muted-foreground border border-border/30"}`}>
-                                <Check className="w-2.5 h-2.5" />
-                              </div>
-                              <span className={`font-medium ${req.met ? "text-foreground" : "text-muted-foreground"}`}>
-                                {req.label}
+                            { label: "Monthly Contribution", value: `$${monthlyContribution}.00`, accent: true },
+                            { label: "Charity Routing", value: `${totalAllocatedVal}% Allocated`, accent: totalAllocatedVal === 100 },
+                            { label: "Active Draw Tickets", value: `${activeTicketsCount || 6} Entries`, accent: activeTicketsCount > 0 },
+                            { label: "Giving Score", value: `${dynamicGivingScore} pts`, accent: true },
+                          ].map((row, idx) => (
+                            <div key={idx} className="flex justify-between items-center text-xs border-b border-border/25 pb-2 last:border-0 last:pb-0">
+                              <span className="text-muted-foreground font-semibold">{row.label}</span>
+                              <span className={`font-bold ${row.accent ? "text-accent" : "text-foreground"}`}>
+                                {row.value}
                               </span>
                             </div>
                           ))}
                         </div>
-                      </div>
-                    </div>
 
-                    <Button asChild variant="outline" className="w-full mt-4 h-9 text-xs font-bold uppercase tracking-wider">
-                      <Link href="/dashboard/subscription">Manage Subscription</Link>
-                    </Button>
-                  </Card>
-                </motion.div>
-
-                {/* Charity Allocations Widget */}
-                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300">
-                  <Card className="p-6 flex flex-col justify-between border-border bg-card h-full">
-                    <div>
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="font-heading font-bold text-base text-foreground flex items-center gap-2">
-                          <Heart className="w-4 h-4 text-accent animate-pulse" />
-                          Charity Allocations
-                        </h3>
-                        {!charitiesLoading && !charitiesError && allocations.length > 0 && (
-                          <Badge variant={totalAllocatedVal === 100 ? "success" : "warning"}>
-                            {totalAllocatedVal}% Allocated
-                          </Badge>
-                        )}
-                      </div>
-
-                      {charitiesLoading ? (
-                        <div className="py-8 flex flex-col items-center justify-center gap-2">
-                          <Loader2 className="w-6 h-6 text-accent animate-spin" />
-                          <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Loading selections...</span>
-                        </div>
-                      ) : charitiesError ? (
-                        <Alert variant="destructive" className="py-2.5 px-3">
-                          <AlertTriangle className="w-4 h-4" />
-                          <AlertDescription className="text-xs">{charitiesError}</AlertDescription>
-                        </Alert>
-                      ) : allocations.length === 0 ? (
-                        <div className="text-center py-6 border border-dashed border-border/60 rounded-xl bg-secondary/5">
-                          <Heart className="w-7 h-7 text-muted-foreground/35 mx-auto mb-2" />
-                          <p className="text-xs font-semibold text-foreground/80">No Vetted Causes Selected</p>
-                          <p className="text-[10.5px] text-muted-foreground mt-1 mb-4">
-                            Select a partner cause to distribute your monthly subscription contribution.
-                          </p>
-                          <Button asChild variant="accent" size="sm" className="h-8 text-xs font-bold uppercase tracking-wider">
-                            <Link href="/dashboard/charity">Configure Selections</Link>
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          {/* Dynamic List */}
-                          <div className="space-y-2.5 max-h-[170px] overflow-y-auto pr-1">
-                            {allocations.map((item) => (
-                              <div key={item.id} className="p-3 bg-secondary/15 rounded-xl border border-border/40 space-y-1 hover:border-accent/15 transition-all">
-                                <div className="flex justify-between items-start">
-                                  <span className="text-xs font-bold text-foreground line-clamp-1">{item.charity_name}</span>
-                                  <Badge variant="accent" className="text-[8px] py-0 px-1">{item.contribution_percentage}%</Badge>
+                        {/* Draw Eligibility Status */}
+                        <div className="space-y-2.5">
+                          <div className="flex justify-between items-center text-[10px]">
+                            <span className="font-bold uppercase tracking-wider text-muted-foreground">Draw Eligibility</span>
+                            <span className={`font-extrabold ${hasActivePlan && scores.length > 0 && allocations.length > 0 ? "text-emerald-500" : "text-amber-500"}`}>
+                              {hasActivePlan && scores.length > 0 && allocations.length > 0 ? "Qualified" : "Incomplete"}
+                            </span>
+                          </div>
+                          <div className="space-y-1.5">
+                            {[
+                              { label: "Active Subscription", met: hasActivePlan },
+                              { label: "Score Submitted", met: scores.length > 0 },
+                              { label: "Charity Selected", met: allocations.length > 0 },
+                            ].map((req, idx) => (
+                              <div key={idx} className="flex items-center gap-2 text-[11px]">
+                                <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${req.met ? "bg-emerald-950/45 text-emerald-500 border border-emerald-800/40" : "bg-secondary/15 text-muted-foreground border border-border/30"}`}>
+                                  <Check className="w-2.5 h-2.5" />
                                 </div>
-                                <p className="text-[10px] text-muted-foreground line-clamp-1 leading-relaxed">
-                                  {item.charity_description || item.charity_impact}
-                                </p>
+                                <span className={`font-medium ${req.met ? "text-foreground" : "text-muted-foreground"}`}>
+                                  {req.label}
+                                </span>
                               </div>
                             ))}
                           </div>
+                        </div>
+                      </div>
 
-                          {/* Total Progress split indicators */}
-                          <div className="space-y-1.5 pt-1">
-                            <div className="flex justify-between text-[10px] font-semibold text-muted-foreground">
-                              <span>Fund Split Distribution</span>
-                              <span>{totalAllocatedVal}% / 100%</span>
+                      <Button asChild variant="outline" className="w-full mt-4 h-9 text-xs font-bold uppercase tracking-wider">
+                        <Link href="/dashboard/subscription">Manage Subscription</Link>
+                      </Button>
+                    </Card>
+                  </motion.div>
+
+                  {/* Charity Allocations Widget */}
+                  <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300">
+                    <Card className="p-6 flex flex-col justify-between border-border bg-card h-full flex-1">
+                      <div>
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="font-heading font-bold text-base text-foreground flex items-center gap-2">
+                            <Heart className="w-4 h-4 text-accent animate-pulse" />
+                            Charity Allocations
+                          </h3>
+                          {!charitiesLoading && !charitiesError && allocations.length > 0 && (
+                            <Badge variant={totalAllocatedVal === 100 ? "success" : "warning"}>
+                              {totalAllocatedVal}% Allocated
+                            </Badge>
+                          )}
+                        </div>
+
+                        {charitiesLoading ? (
+                          <div className="py-8 flex flex-col items-center justify-center gap-2">
+                            <Loader2 className="w-6 h-6 text-accent animate-spin" />
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Loading selections...</span>
+                          </div>
+                        ) : charitiesError ? (
+                          <Alert variant="destructive" className="py-2.5 px-3">
+                            <AlertTriangle className="w-4 h-4" />
+                            <AlertDescription className="text-xs">{charitiesError}</AlertDescription>
+                          </Alert>
+                        ) : allocations.length === 0 ? (
+                          <div className="text-center py-6 border border-dashed border-border/60 rounded-xl bg-secondary/5">
+                            <Heart className="w-7 h-7 text-muted-foreground/35 mx-auto mb-2" />
+                            <p className="text-xs font-semibold text-foreground/80">No Vetted Causes Selected</p>
+                            <p className="text-[10.5px] text-muted-foreground mt-1 mb-4">
+                              Select a partner cause to distribute your monthly subscription contribution.
+                            </p>
+                            <Button asChild variant="accent" size="sm" className="h-8 text-xs font-bold uppercase tracking-wider">
+                              <Link href="/dashboard/charity">Configure Selections</Link>
+                            </Button>
+                          </div>
+                        ) : (
+                          <div className="space-y-4">
+                            {/* Dynamic List */}
+                            <div className="space-y-2.5 max-h-[170px] overflow-y-auto pr-1">
+                              {allocations.map((item) => (
+                                <div key={item.id} className="p-3 bg-secondary/15 rounded-xl border border-border/40 space-y-1 hover:border-accent/15 transition-all">
+                                  <div className="flex justify-between items-start">
+                                    <span className="text-xs font-bold text-foreground line-clamp-1">{item.charity_name}</span>
+                                    <Badge variant="accent" className="text-[8px] py-0 px-1">{item.contribution_percentage}%</Badge>
+                                  </div>
+                                  <p className="text-[10px] text-muted-foreground line-clamp-1 leading-relaxed">
+                                    {item.charity_description || item.charity_impact}
+                                  </p>
+                                </div>
+                              ))}
                             </div>
-                            <div className="h-2 w-full bg-secondary/55 rounded-full overflow-hidden flex border border-border/30">
-                              {allocations.map((item, idx) => {
-                                const colors = ["bg-emerald-600", "bg-accent", "bg-[#C4A054]/60", "bg-indigo-600"];
-                                return (
-                                  <motion.div
-                                    key={item.id}
-                                    initial={{ width: 0 }}
-                                    animate={{ width: `${item.contribution_percentage}%` }}
-                                    transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }}
-                                    className={`${colors[idx % colors.length]} h-full`}
-                                  />
-                                );
-                              })}
+
+                            {/* Total Progress split indicators */}
+                            <div className="space-y-1.5 pt-1">
+                              <div className="flex justify-between text-[10px] font-semibold text-muted-foreground">
+                                <span>Fund Split Distribution</span>
+                                <span>{totalAllocatedVal}% / 100%</span>
+                              </div>
+                              <div className="h-2 w-full bg-secondary/55 rounded-full overflow-hidden flex border border-border/30">
+                                {allocations.map((item, idx) => {
+                                  const colors = ["bg-emerald-600", "bg-accent", "bg-[#C4A054]/60", "bg-indigo-600"];
+                                  return (
+                                    <motion.div
+                                      key={item.id}
+                                      initial={{ width: 0 }}
+                                      animate={{ width: `${item.contribution_percentage}%` }}
+                                      transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }}
+                                      className={`${colors[idx % colors.length]} h-full`}
+                                    />
+                                  );
+                                })}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
-                    <Button asChild variant="outline" className="w-full mt-2 h-9 text-xs font-bold uppercase tracking-wider">
-                      <Link href="/dashboard/charity">Manage Allocations</Link>
-                    </Button>
-                  </Card>
-                </motion.div>
-                {/* Your Impact This Month & Verified Badge */}
-                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col justify-between space-y-6 lg:col-span-1 transition-all duration-300">
-                  <Card className="p-6 flex-1 flex flex-col justify-between border-border bg-card">
-                    <div>
-                      <h3 className="font-heading font-extrabold text-base text-foreground mb-5 flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4 text-accent" />
-                        Your Impact This Month
-                      </h3>
-                      <div className="space-y-4">
-                        {[
-                          { 
-                            label: "Carbon Offset", 
-                            value: `${(totalAllocatedVal * 1.8).toFixed(1)} kg`, 
-                            desc: "CO2 capture capacity sponsored",
-                            color: "bg-emerald-500"
-                          },
-                          { 
-                            label: "Clean Water Purified", 
-                            value: `${(totalAllocatedVal * 24).toFixed(0)} L`, 
-                            desc: "Daily village filtration capacity",
-                            color: "bg-blue-500"
-                          },
-                          { 
-                            label: "STEM Education Credits", 
-                            value: `${(totalAllocatedVal * 0.45).toFixed(1)} hrs`, 
-                            desc: "Teaching fellowships funded",
-                            color: "bg-accent"
-                          },
-                          { 
-                            label: "Tree Saplings Planted", 
-                            value: `${(totalAllocatedVal / 10).toFixed(0)} trees`, 
-                            desc: "Broadleaf plantings sponsored",
-                            color: "bg-[#C4A054]/60"
-                          }
-                        ].map((row, idx) => (
-                          <div key={idx} className="space-y-1">
-                            <div className="flex justify-between items-center text-xs">
-                              <span className="text-muted-foreground font-semibold">{row.label}</span>
-                              <span className="text-foreground font-bold">{row.value}</span>
-                            </div>
-                            <div className="w-full h-1.5 bg-secondary/45 rounded-full overflow-hidden">
-                              <div 
-                                className={`h-full ${row.color}`} 
-                                style={{ width: `${Math.min(totalAllocatedVal, 100)}%` }}
-                              />
-                            </div>
-                            <span className="text-[9px] text-muted-foreground/80 block leading-none">{row.desc}</span>
-                          </div>
-                        ))}
+                        )}
                       </div>
-                      
-                      {/* Trust Indicators inside Impact Widget */}
-                      <div className="h-[1px] bg-border/40 my-5" />
-                      <div className="space-y-2 text-[10px] text-muted-foreground/90">
-                        <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-accent text-[9px]">
-                          <ShieldCheck className="w-3.5 h-3.5" /> Trust & Audit Report
-                        </div>
-                        <p className="leading-relaxed">
-                          • <strong>Verified Charities:</strong> 100% of causes vetted & signed.<br />
-                          • <strong>Funds Audited:</strong> Third-party verified receipts ledger.<br />
-                          • <strong>Platform Total:</strong> 145,000+ trees & 1.2M L water filtered.
-                        </p>
-                      </div>
-                    </div>
-                  </Card>
+                      <Button asChild variant="outline" className="w-full mt-2 h-9 text-xs font-bold uppercase tracking-wider">
+                        <Link href="/dashboard/charity">Manage Allocations</Link>
+                      </Button>
+                    </Card>
+                  </motion.div>
+                </div>
 
-                  {/* Certified Audited Philanthropist Shield */}
-                  <Card className="p-4 text-center border-accent/20 bg-accent/5">
-                    <ShieldCheck className="w-8 h-8 text-accent mx-auto mb-2" />
-                    <h4 className="font-heading font-bold text-xs text-foreground mb-1">
-                      Audited Philanthropist
-                    </h4>
-                    <p className="text-[10px] text-muted-foreground leading-relaxed mb-2">
-                      Cross-audited by independent cryptographic signatures.
-                    </p>
-                    <span className="text-[9px] text-accent font-mono tracking-wider font-semibold">
-                      SIGNATURE: 0x8F9A...B8C3
-                    </span>
-                  </Card>
-                </motion.div>
+                {/* Bottom Row: Full Width Impact Summary */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+                  {/* Your Impact This Month & Verified Badge (2/3 width) */}
+                  <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="lg:col-span-2 flex flex-col transition-all duration-300">
+                    <Card className="p-6 flex-1 flex flex-col justify-between border-border bg-card">
+                      <div>
+                        <h3 className="font-heading font-extrabold text-base text-foreground mb-5 flex items-center gap-2">
+                          <TrendingUp className="w-4 h-4 text-accent" />
+                          Your Impact This Month
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          {[
+                            { 
+                              label: "Carbon Offset", 
+                              value: `${(totalAllocatedVal * 1.8).toFixed(1)} kg`, 
+                              desc: "CO2 capture capacity sponsored",
+                              color: "bg-emerald-500"
+                            },
+                            { 
+                              label: "Clean Water Purified", 
+                              value: `${(totalAllocatedVal * 24).toFixed(0)} L`, 
+                              desc: "Daily village filtration capacity",
+                              color: "bg-blue-500"
+                            },
+                            { 
+                              label: "STEM Education Credits", 
+                              value: `${(totalAllocatedVal * 0.45).toFixed(1)} hrs`, 
+                              desc: "Teaching fellowships funded",
+                              color: "bg-accent"
+                            },
+                            { 
+                              label: "Tree Saplings Planted", 
+                              value: `${(totalAllocatedVal / 10).toFixed(0)} trees`, 
+                              desc: "Broadleaf plantings sponsored",
+                              color: "bg-[#C4A054]/60"
+                            }
+                          ].map((row, idx) => (
+                            <div key={idx} className="space-y-1 p-2 bg-secondary/5 border border-border/10 rounded-xl">
+                              <div className="flex justify-between items-center text-xs">
+                                <span className="text-muted-foreground font-semibold">{row.label}</span>
+                                <span className="text-foreground font-bold">{row.value}</span>
+                              </div>
+                              <div className="w-full h-1.5 bg-secondary/45 rounded-full overflow-hidden">
+                                <div 
+                                  className={`h-full ${row.color}`} 
+                                  style={{ width: `${Math.min(totalAllocatedVal, 100)}%` }}
+                                />
+                              </div>
+                              <span className="text-[9px] text-muted-foreground/80 block leading-none">{row.desc}</span>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        {/* Trust Indicators inside Impact Widget */}
+                        <div className="h-[1px] bg-border/40 my-5" />
+                        <div className="space-y-2 text-[10px] text-muted-foreground/90">
+                          <div className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-accent text-[9px]">
+                            <ShieldCheck className="w-3.5 h-3.5" /> Trust & Audit Report
+                          </div>
+                          <p className="leading-relaxed">
+                            • <strong>Verified Charities:</strong> 100% of causes vetted & signed.<br />
+                            • <strong>Funds Audited:</strong> Third-party verified receipts ledger.<br />
+                            • <strong>Platform Total:</strong> 145,000+ trees & 1.2M L water filtered.
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  </motion.div>
+
+                  {/* Certified Audited Philanthropist Shield (1/3 width) */}
+                  <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="lg:col-span-1 flex flex-col transition-all duration-300">
+                    <Card className="p-8 text-center border-accent/20 bg-accent/5 flex flex-col h-full justify-center items-center">
+                      <ShieldCheck className="w-12 h-12 text-accent mb-4 animate-pulse" />
+                      <h4 className="font-heading font-bold text-xs text-foreground mb-2">
+                        Audited Philanthropist
+                      </h4>
+                      <p className="text-[10.5px] text-muted-foreground leading-relaxed mb-6 max-w-[200px]">
+                        Cross-audited by independent cryptographic signatures. All transactions securely signed.
+                      </p>
+                      <div className="bg-black/40 border border-white/[0.04] px-4 py-2.5 rounded-xl w-full">
+                        <span className="text-[9px] text-accent font-mono tracking-wider font-semibold block uppercase">
+                          PHILANTHROPIST SIGNATURE
+                        </span>
+                        <code className="text-xs text-white font-mono block mt-1">
+                          0x8F9A...B8C3
+                        </code>
+                      </div>
+                    </Card>
+                  </motion.div>
+                </div>
               </div>
 
               {/* Quick Audit Trail */}
