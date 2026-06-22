@@ -10,6 +10,7 @@ import { Modal } from "@/components/ui/modal";
 import { LoadingState } from "@/components/ui/loading-state";
 import { useScores } from "@/hooks/useScores";
 import { useAuth } from "@/hooks/useAuth";
+import { useLeaderboard } from "@/hooks/useLeaderboard";
 import {
   Trophy,
   Flame,
@@ -30,6 +31,7 @@ import {
 export default function ScoresPage() {
   const { user } = useAuth();
   const { scores, loading, error, addScore, updateScore, deleteScore } = useScores();
+  const { rank: leaderboardRank } = useLeaderboard();
 
   // Add Form States
   const [scoreInput, setScoreInput] = useState(36);
@@ -70,7 +72,7 @@ export default function ScoresPage() {
   const totalPoints = scores.reduce((sum, s) => sum + s.score, 0);
   const averageScore = scores.length > 0 ? (totalPoints / scores.length).toFixed(1) : "0.0";
   const streak = 5; // Static streak mapping
-  const rank = 284; // Static rank mapping
+  const rank = leaderboardRank; // Dynamic rank mapping
 
   // Real-time validations
   const isAddDuplicateDate = scores.some(s => s.score_date === dateInput);
@@ -232,7 +234,7 @@ export default function ScoresPage() {
           { label: "Total Points", value: `${totalPoints} pts`, icon: Trophy, accent: true, sub: "Sum of latest 5 scores" },
           { label: "Average Score", value: `${averageScore}`, icon: Activity, accent: false, sub: "Stableford rating" },
           { label: "Active Streak", value: `${streak} wk`, icon: Flame, accent: false, sub: "Play consistency" },
-          { label: "Global Rank", value: `#${rank}`, icon: TrendingUp, accent: false, sub: "Fundora leaderboard" },
+          { label: "Global Rank", value: rank, icon: TrendingUp, accent: false, sub: "Fundora leaderboard" },
         ].map((stat, i) => (
           <Card key={i} className="p-5 hover:border-accent/30 transition-all flex flex-col justify-between">
             <div className="flex items-start justify-between">

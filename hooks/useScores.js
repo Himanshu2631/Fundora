@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { getUserScores, addScore as apiAddScore, deleteScore as apiDeleteScore, updateScore as apiUpdateScore } from "@/services/scoreService";
+import { createClient } from "@/lib/supabase";
 
 export function useScores() {
   const { user } = useAuth();
@@ -43,6 +44,32 @@ export function useScores() {
       active = false;
     };
   }, [fetchScores]);
+
+  // Real-time Postgres changes listener for score changes
+  useEffect(() => {
+    if (!user) return;
+
+    const supabase = createClient();
+    const channel = supabase
+      .channel("scores-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "scores",
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          fetchScores();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, fetchScores]);
 
   /**
    * Add a golf score for the authenticated user.

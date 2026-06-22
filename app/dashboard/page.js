@@ -22,6 +22,7 @@ import { useSubscription, PLAN_LABELS } from "@/hooks/useSubscription";
 import { useScores } from "@/hooks/useScores";
 import { useCharities } from "@/hooks/useCharities";
 import { useDraws } from "@/hooks/useDraws";
+import { useLeaderboard } from "@/hooks/useLeaderboard";
 import SubscriptionWidget from "@/features/subscriptions/SubscriptionWidget";
 import {
   Trophy,
@@ -274,6 +275,21 @@ export default function DashboardOverview() {
   const { scores, loading: scoresLoading, error: scoresError } = useScores();
   const { allocations, loading: charitiesLoading, error: charitiesError } = useCharities();
   const { userEntries, draws, claims: rawClaims, loading: drawsLoading } = useDraws();
+  const { leaderboard, rank: leaderboardRank, loading: leaderboardLoading, error: leaderboardError } = useLeaderboard();
+
+  const displayLeaderboard = useMemo(() => {
+    if (!leaderboard || leaderboard.length === 0) return [];
+    const userIndex = leaderboard.findIndex(e => e.isYou);
+    if (userIndex !== -1 && userIndex < 4) {
+      return leaderboard.slice(0, 4);
+    }
+    const top3 = leaderboard.slice(0, 3);
+    if (userIndex !== -1) {
+      const userEntry = leaderboard[userIndex];
+      return [...top3, userEntry];
+    }
+    return top3;
+  }, [leaderboard]);
 
   const claims = Array.isArray(rawClaims) && rawClaims.length > 0 ? rawClaims : [
     { id: "CLM-001", draw_title: "Patagonia Eco Retreat", ticket_number: "TKT-0089", status: "approved", claim_date: "2026-06-12", score: "+100" },
@@ -350,7 +366,7 @@ export default function DashboardOverview() {
       : "Joined Jun 2026",
     score: dynamicGivingScore,
     streak: streakMultiplier,
-    rank: "#284",
+    rank: leaderboardRank,
     monthlyContribution,
   };
 
@@ -772,7 +788,7 @@ export default function DashboardOverview() {
                       <div className="space-y-3.5">
                         {[
                           { name: "First Draw Entry", desc: "Registered your first ticket", unlocked: true, icon: Check },
-                          { name: "Top 25% Standing", desc: "Climbed leaderboard to #284", unlocked: true, icon: Trophy },
+                          { name: "Top 25% Standing", desc: leaderboardRank === "Rank unavailable" || leaderboardRank === "Loading..." ? "Climbed the leaderboard" : `Climbed leaderboard to ${leaderboardRank}`, unlocked: true, icon: Trophy },
                           { name: "Global Advocate", desc: "Active Advocate tier selected", unlocked: true, icon: ShieldCheck },
                           { name: "5 Draw Streak", desc: "Log rounds consistently (3/5)", unlocked: false, progress: 60, icon: Flame }
                         ].map((ach, idx) => (
@@ -812,31 +828,36 @@ export default function DashboardOverview() {
                         </span>
                       </h3>
                       <div className="space-y-2">
-                        {[
-                          { rank: "1", name: "Marcus Klein", points: "490 pts", isYou: false },
-                          { rank: "2", name: "Elena Rodriguez", points: "420 pts", isYou: false },
-                          { rank: "3", name: "Yuki Shimizu", points: "380 pts", isYou: false },
-                          { rank: "284", name: `${displayUser.name} (You)`, points: `${displayUser.score} pts`, isYou: true },
-                        ].map((entry, i) => (
-                          <div
-                            key={i}
-                            className={`flex items-center justify-between text-xs py-2 px-3 rounded-xl ${
-                              entry.isYou
-                                ? "bg-accent/10 border border-accent/30 text-foreground"
-                                : "border border-transparent text-muted-foreground"
-                            }`}
-                          >
-                            <div className="flex items-center gap-3 min-w-0 flex-1">
-                              <span className={`w-6 font-bold shrink-0 ${entry.isYou ? "text-accent" : "text-muted-foreground/60"}`}>
-                                #{entry.rank}
-                              </span>
-                              <span className={`font-semibold truncate ${entry.isYou ? "text-foreground" : "text-muted-foreground"}`}>
-                                {entry.name}
-                              </span>
-                            </div>
-                            <span className="font-bold text-foreground shrink-0 ml-2">{entry.points}</span>
+                        {leaderboardLoading ? (
+                          <div className="flex items-center justify-center py-6">
+                            <Loader2 className="w-4 h-4 animate-spin text-accent" />
                           </div>
-                        ))}
+                        ) : leaderboardError ? (
+                          <div className="text-xs text-muted-foreground text-center py-6">
+                            Rank unavailable
+                          </div>
+                        ) : (
+                          displayLeaderboard.map((entry, i) => (
+                            <div
+                              key={i}
+                              className={`flex items-center justify-between text-xs py-2 px-3 rounded-xl ${
+                                entry.isYou
+                                  ? "bg-accent/10 border border-accent/30 text-foreground"
+                                  : "border border-transparent text-muted-foreground"
+                              }`}
+                            >
+                              <div className="flex items-center gap-3 min-w-0 flex-1">
+                                <span className={`w-6 font-bold shrink-0 ${entry.isYou ? "text-accent" : "text-muted-foreground/60"}`}>
+                                  #{entry.rank}
+                                </span>
+                                <span className={`font-semibold truncate ${entry.isYou ? "text-foreground" : "text-muted-foreground"}`}>
+                                  {entry.name} {entry.isYou && "(You)"}
+                                </span>
+                              </div>
+                              <span className="font-bold text-foreground shrink-0 ml-2">{entry.score} pts</span>
+                            </div>
+                          ))
+                        )}
                       </div>
                     </div>
                     <Button asChild variant="outline" className="w-full mt-5 h-9 text-xs font-bold uppercase tracking-wider">
