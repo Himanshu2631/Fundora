@@ -9,6 +9,11 @@ import {
   AlertCircle,
   Sparkles,
   Loader2,
+  Users,
+  Trophy,
+  CheckCircle2,
+  Heart,
+  BarChart3,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,18 +24,57 @@ import { createClient } from "@/lib/supabase";
 // ─── Animations ───────────────────────────────────────────────────────────────
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 16 } },
+  hidden: { opacity: 0, x: -20 },
+  visible: { opacity: 1, x: 0, transition: { type: "spring", stiffness: 90, damping: 15 } },
 };
 
 const formVariants = {
-  hidden: { opacity: 0, y: 12, scale: 0.98 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 18 } },
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 18 } },
 };
+
+// ─── Capabilities definitions ──────────────────────────────────────────────────
+const CAPABILITIES = [
+  {
+    icon: Users,
+    title: "Users & Memberships",
+    description: "Manage subscriber profiles, subscription states, and accounts.",
+    iconColor: "text-emerald-400",
+    iconBg: "bg-emerald-500/10",
+  },
+  {
+    icon: Trophy,
+    title: "Draw Management",
+    description: "Configure and run monthly draws and rewards.",
+    iconColor: "text-[#C4A054]",
+    iconBg: "bg-[#C4A054]/10",
+  },
+  {
+    icon: CheckCircle2,
+    title: "Winner Verification",
+    description: "Audit claims and verify monthly draw winners.",
+    iconColor: "text-purple-400",
+    iconBg: "bg-purple-500/10",
+  },
+  {
+    icon: Heart,
+    title: "Charity Operations",
+    description: "Manage vetted non-profit organizations and payouts.",
+    iconColor: "text-red-400",
+    iconBg: "bg-red-500/10",
+  },
+  {
+    icon: BarChart3,
+    title: "Analytics & Reporting",
+    description: "Access system-wide giving logs and financial auditing.",
+    iconColor: "text-sky-400",
+    iconBg: "bg-sky-500/10",
+  },
+];
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -92,185 +136,209 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#060C0A] flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-[#060C0A] grid grid-cols-1 lg:grid-cols-12 relative overflow-hidden font-sans">
+      
       {/* Background glow effects */}
-      <div className="absolute top-0 left-1/3 w-[500px] h-[500px] rounded-full bg-red-500/[0.02] blur-[150px] pointer-events-none" />
-      <div className="absolute top-[20%] right-1/4 w-[400px] h-[400px] rounded-full bg-red-500/[0.015] blur-[150px] pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-[#C4A054]/[0.02] blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-emerald-500/[0.02] blur-[150px] pointer-events-none" />
 
-      {/* ── Top Header (Unified) ── */}
-      <header className="flex items-center justify-between px-6 py-5 border-b border-white/[0.04] shrink-0 z-10 max-w-7xl w-full mx-auto">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-7 h-7 rounded-xl bg-[#C4A054] flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-sm select-none">
-            F
-          </div>
-          <span className="font-heading font-extrabold tracking-wider text-base text-white group-hover:text-[#C4A054] transition-colors duration-300">
-            FUNDORA
-          </span>
-        </Link>
+      {/* ── LEFT SECTION: Branding & Capabilities ── */}
+      <section className="lg:col-span-5 bg-gradient-to-br from-[#05110B] via-[#081510] to-[#060C0A] border-r border-white/[0.04] p-8 sm:p-12 lg:p-16 flex flex-col justify-between relative">
+        {/* Subtle grid background inside left section */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c1d18_1px,transparent_1px),linear-gradient(to_bottom,#0c1d18_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-[0.15] pointer-events-none" />
 
-        <Link
-          href="/login"
-          className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#8A9690] hover:text-white transition-colors group"
-        >
-          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
-          Back to portals
-        </Link>
-      </header>
-
-      {/* ── Page Content Wrapper ── */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 py-12 md:py-20 max-w-6xl w-full mx-auto z-10">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="w-full space-y-10"
-        >
-          {/* Header Introduction Section */}
-          <motion.div variants={itemVariants} className="text-center space-y-5 max-w-2xl mx-auto">
-            {/* Tag Badge */}
-            <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-full px-4 py-1.5">
-              <ShieldAlert className="w-3.5 h-3.5 text-red-400 animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-red-400">
-                Restricted Console
-              </span>
+        <div className="relative z-10 space-y-12">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 group w-fit">
+            <div className="w-8 h-8 rounded-xl bg-[#C4A054] flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-sm select-none shadow-[0_0_20px_rgba(196,160,84,0.3)]">
+              F
             </div>
+            <span className="font-heading font-black tracking-widest text-lg text-white group-hover:text-[#C4A054] transition-colors duration-300">
+              FUNDORA
+            </span>
+          </Link>
 
-            {/* Giant Title Stack */}
-            <h1 className="font-heading text-3xl sm:text-4xl font-black text-white tracking-tight leading-tight">
-              Admin Console Access
-            </h1>
-
-            {/* Subtitle */}
-            <p className="text-xs sm:text-sm text-[#8A9690] max-w-md mx-auto leading-relaxed">
-              Log in below to access platform administration controls, winner claims verification, draw configurations, and analytics.
+          {/* Heading Info */}
+          <div className="space-y-4">
+            <h2 className="text-3xl sm:text-4xl font-heading font-black text-white leading-tight">
+              Fundora
+              <br />
+              <span className="text-[#C4A054]">Administration Center</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-[#8A9690] leading-relaxed max-w-sm">
+              Manage subscriptions, users, reward draws, charities, winner verification, and analytics.
             </p>
-          </motion.div>
+          </div>
 
-          {/* Form Card Container */}
+          {/* Capability Cards */}
           <motion.div
-            variants={formVariants}
-            className="w-full max-w-md mx-auto"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-4 max-w-md"
           >
-            <div className="relative rounded-2xl border border-red-500/25 bg-[#0A1C16]/60 backdrop-blur-sm overflow-hidden shadow-[0_0_50px_rgba(239,68,68,0.06)]">
-              {/* Top red accent line */}
-              <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-red-500/60 to-transparent" />
-
-              <div className="p-7 pt-8">
-                {/* Form header */}
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-red-500/10 border border-red-500/20">
-                    <ShieldAlert className="w-4.5 h-4.5 text-red-400" />
+            {CAPABILITIES.map((capability, idx) => {
+              const IconComponent = capability.icon;
+              return (
+                <motion.div
+                  key={idx}
+                  variants={itemVariants}
+                  whileHover={{ x: 4 }}
+                  className="flex items-start gap-4 p-4 rounded-2xl border border-white/[0.03] bg-white/[0.01] hover:bg-white/[0.03] hover:border-white/[0.06] transition-all duration-300 group"
+                >
+                  <div className={`w-10 h-10 rounded-xl ${capability.iconBg} flex items-center justify-center shrink-0 border border-white/[0.04] group-hover:scale-105 transition-transform duration-300`}>
+                    <IconComponent className={`w-5 h-5 ${capability.iconColor}`} />
                   </div>
                   <div>
-                    <p className="text-[9px] font-extrabold uppercase tracking-widest text-red-400">
-                      System Authority
+                    <h4 className="text-xs font-bold text-white mb-0.5 tracking-wide group-hover:text-[#C4A054] transition-colors duration-300">
+                      {capability.title}
+                    </h4>
+                    <p className="text-[10px] text-[#8A9690] leading-relaxed">
+                      {capability.description}
                     </p>
-                    <h2 className="font-heading text-base font-extrabold text-white leading-tight">
-                      Sign In to Console
-                    </h2>
                   </div>
-                </div>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        </div>
 
-                {/* Error */}
-                <AnimatePresence>
-                  {errorMsg && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                      className="mb-5"
-                    >
-                      <Alert variant="destructive" className="border-red-500/30 bg-red-950/20">
-                        <AlertCircle className="w-4 h-4 text-red-400" />
-                        <AlertTitle className="text-red-400">Security Notification</AlertTitle>
-                        <AlertDescription className="text-red-400/90">{errorMsg}</AlertDescription>
-                      </Alert>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+        {/* Footer info */}
+        <div className="relative z-10 text-[9px] text-[#8A9690]/40 mt-12 border-t border-white/[0.04] pt-4">
+          © 2026 Fundora Technologies Inc. · Secured Platform.
+        </div>
+      </section>
 
-                {/* Form */}
-                <form onSubmit={handleSignIn} className="space-y-4">
-                  <Input
-                    required
-                    type="email"
-                    label="Administrator Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@fundora.com"
-                    id="admin-email"
-                    className="focus:border-red-500 focus:ring-1 focus:ring-red-500/20"
-                  />
+      {/* ── RIGHT SECTION: Authentication Form ── */}
+      <section className="lg:col-span-7 flex flex-col justify-between p-8 sm:p-12 lg:p-16 relative">
+        {/* Header link back to portals */}
+        <header className="flex justify-end mb-12 relative z-10">
+          <Link
+            href="/login"
+            className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#8A9690] hover:text-white transition-colors group"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+            Back to portals
+          </Link>
+        </header>
 
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between items-center">
-                      <label className="text-[10px] font-bold uppercase tracking-wider text-white/80">
-                        Console Password
-                      </label>
-                    </div>
-                    <Input
-                      required
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      id="admin-password"
-                      className="focus:border-red-500 focus:ring-1 focus:ring-red-500/20"
-                    />
-                  </div>
+        {/* Vertical centered form container */}
+        <div className="max-w-md w-full mx-auto my-auto relative z-10 space-y-8">
+          
+          {/* Header Title */}
+          <div className="space-y-3">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-full px-3 py-1">
+              <ShieldAlert className="w-3 h-3 text-red-400 animate-pulse" />
+              <span className="text-[8px] font-extrabold uppercase tracking-widest text-red-400">
+                Administrator Portal
+              </span>
+            </div>
+            <h1 className="text-3xl font-heading font-black text-white tracking-tight">
+              Admin Sign In
+            </h1>
+            <p className="text-xs text-[#8A9690] leading-relaxed">
+              Secure access to platform administration tools.
+            </p>
+          </div>
 
-                  <Button
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full h-11 font-extrabold uppercase tracking-wider text-xs mt-2 bg-red-600 hover:bg-red-500 text-white border-0 hover:shadow-red-500/10 hover:shadow-lg transition-all duration-300"
+          {/* Alert Error Messages */}
+          <AnimatePresence>
+            {errorMsg && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+              >
+                <Alert variant="destructive" className="border-red-500/30 bg-red-950/20">
+                  <AlertCircle className="w-4 h-4 text-red-400" />
+                  <AlertTitle className="text-red-400">Security Notification</AlertTitle>
+                  <AlertDescription className="text-red-400/90">{errorMsg}</AlertDescription>
+                </Alert>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Form */}
+          <motion.div
+            variants={formVariants}
+            initial="hidden"
+            animate="visible"
+            className="space-y-6"
+          >
+            <form onSubmit={handleSignIn} className="space-y-4">
+              <Input
+                required
+                type="email"
+                label="Administrator Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="admin@fundora.com"
+                id="admin-email"
+                className="focus:ring-1 focus:ring-[#C4A054]/20"
+              />
+
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-white/80">
+                    Password
+                  </label>
+                  <Link
+                    href="/forgot"
+                    className="text-xs font-semibold text-[#C4A054] hover:underline"
                   >
-                    {isLoading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Authenticating...
-                      </span>
-                    ) : (
-                      "Access Admin Console"
-                    )}
-                  </Button>
-                </form>
-
-                {/* Demo access */}
-                <div className="mt-6 pt-5 border-t border-white/[0.06]">
-                  <div className="flex items-center gap-1.5 mb-3">
-                    <Sparkles className="w-3 h-3 text-[#C4A054] animate-pulse" />
-                    <span className="text-[9px] uppercase font-bold tracking-widest text-[#8A9690]">
-                      Demo Console Access
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleQuickLogin("admin@fundora.com", "admin")}
-                    disabled={isLoading}
-                    className="w-full h-9 rounded-xl border border-red-500/20 bg-red-500/5 text-red-400 text-[9px] font-extrabold uppercase tracking-wider hover:bg-red-500/10 hover:border-red-500/40 transition-all duration-200"
-                  >
-                    Quick-Login: Administrator Account
-                  </button>
-                  <p className="text-[9px] text-center text-[#8A9690]/50 mt-2.5 leading-relaxed">
-                    One-click local authentication via simulated directory.
-                  </p>
+                    Forgot Password?
+                  </Link>
                 </div>
+                <Input
+                  required
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  id="admin-password"
+                  className="focus:ring-1 focus:ring-[#C4A054]/20"
+                />
               </div>
+
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full h-11 font-extrabold uppercase tracking-wider text-xs mt-2 bg-[#C4A054] hover:bg-[#C4A054]/90 text-[#060C0A] rounded-xl border-0 hover:shadow-[#C4A054]/10 hover:shadow-lg transition-all duration-300"
+              >
+                {isLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Authenticating...
+                  </span>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+            </form>
+
+            {/* Demo console quick access (kept clean and nested as secondary developer action) */}
+            <div className="pt-4 border-t border-white/[0.04] text-center">
+              <button
+                type="button"
+                onClick={() => handleQuickLogin("admin@fundora.com", "admin")}
+                disabled={isLoading}
+                className="w-full h-9 rounded-xl border border-red-500/20 bg-red-500/5 text-red-400 text-[9px] font-extrabold uppercase tracking-wider hover:bg-red-500/10 hover:border-red-500/40 transition-all duration-200"
+              >
+                Quick-Login: Administrator Account
+              </button>
             </div>
           </motion.div>
+        </div>
 
-          {/* Footer note */}
-          <motion.p
-            variants={itemVariants}
-            className="text-center text-[10px] text-[#8A9690]/50 mt-6"
-          >
-            © 2026 Fundora Technologies Inc. · Secure Console v1.0.0 ·{" "}
-            <Link href="/" className="hover:text-[#8A9690] transition-colors">
-              Privacy Policy
-            </Link>
-          </motion.p>
-        </motion.div>
-      </div>
+        {/* Footer Links */}
+        <footer className="text-center text-[10px] text-[#8A9690]/40 mt-12 border-t border-white/[0.04] pt-4">
+          <Link href="/" className="hover:text-white transition-colors">
+            Privacy Policy
+          </Link>
+        </footer>
+      </section>
+
     </div>
   );
 }
