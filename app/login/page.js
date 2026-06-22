@@ -37,24 +37,23 @@ const ROLES = [
     accentColor: "emerald",
     badge: "No Account Needed",
     headline: "Explore Fundora",
-    description: "Discover how charitable giving meets premium prize draws.",
+    description: "Discover the platform concept, support charities, and learn draw mechanics.",
     features: [
-      "View platform concept & mission",
-      "Explore listed charities",
-      "Understand draw mechanics",
-      "Learn how membership works",
+      "Explore platform concept",
+      "Browse charities",
+      "Learn draw mechanics",
     ],
     cta: "Explore Platform",
     ctaHref: "/",
     isLink: true,
-    gradient: "from-emerald-500/8 to-emerald-600/3",
-    border: "border-emerald-500/15 hover:border-emerald-500/40",
+    gradient: "from-emerald-500/[0.03] to-emerald-500/[0.08]",
+    border: "border-emerald-500/15 hover:border-emerald-500/45 hover:shadow-[0_0_30px_rgba(16,185,129,0.08)] hover:bg-emerald-500/[0.06]",
     activeBorder: "border-emerald-500/60",
     iconBg: "bg-emerald-500/10",
     iconColor: "text-emerald-400",
     badgeBg: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
     ctaStyle: "border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/50",
-    glow: "shadow-emerald-500/5",
+    glow: "shadow-[0_0_40px_rgba(16,185,129,0.15)] bg-emerald-500/[0.08]",
   },
   {
     id: "subscriber",
@@ -63,24 +62,24 @@ const ROLES = [
     accentColor: "accent",
     badge: "Member Access",
     headline: "Member Sign In",
-    description: "Access your giving dashboard, scores, and draw entries.",
+    description: "Manage your golf membership, log scorecards, and enter premium reward draws.",
     features: [
-      "Manage profile & settings",
-      "Enter golf Stableford scores",
-      "Participate in prize draws",
-      "Track winnings & impact",
+      "Manage membership",
+      "Submit scores",
+      "Participate in draws",
+      "Track rewards",
     ],
     cta: "Sign In",
     ctaHref: null,
     isLink: false,
-    gradient: "from-[#C4A054]/8 to-[#C4A054]/3",
-    border: "border-[#C4A054]/15 hover:border-[#C4A054]/40",
+    gradient: "from-[#C4A054]/[0.03] to-[#C4A054]/[0.08]",
+    border: "border-[#C4A054]/15 hover:border-[#C4A054]/45 hover:shadow-[0_0_30px_rgba(196,160,84,0.08)] hover:bg-[#C4A054]/[0.06]",
     activeBorder: "border-[#C4A054]/70",
     iconBg: "bg-[#C4A054]/10",
     iconColor: "text-[#C4A054]",
     badgeBg: "bg-[#C4A054]/10 text-[#C4A054] border-[#C4A054]/20",
     ctaStyle: "bg-[#C4A054] text-[#060C0A] hover:bg-[#C4A054]/90 font-extrabold",
-    glow: "shadow-[#C4A054]/5",
+    glow: "shadow-[0_0_40px_rgba(196,160,84,0.18)] bg-[#C4A054]/[0.08]",
   },
   {
     id: "admin",
@@ -89,24 +88,24 @@ const ROLES = [
     accentColor: "red",
     badge: "Restricted Access",
     headline: "Admin Console",
-    description: "Platform management, analytics, and system controls.",
+    description: "Administrative dashboard for managing users, draws, payouts, and system analytics.",
     features: [
-      "Manage users & subscriptions",
-      "Configure draw protocols",
-      "Verify winner claims",
-      "Access platform analytics",
+      "Manage users",
+      "Configure draws",
+      "Verify winners",
+      "Access analytics",
     ],
     cta: "Admin Sign In",
     ctaHref: null,
     isLink: false,
-    gradient: "from-red-500/8 to-red-600/3",
-    border: "border-red-500/15 hover:border-red-500/40",
+    gradient: "from-red-500/[0.03] to-red-500/[0.08]",
+    border: "border-red-500/15 hover:border-red-500/45 hover:shadow-[0_0_30px_rgba(239,68,68,0.08)] hover:bg-red-500/[0.06]",
     activeBorder: "border-red-500/60",
     iconBg: "bg-red-500/10",
     iconColor: "text-red-400",
     badgeBg: "bg-red-500/10 text-red-400 border-red-500/20",
     ctaStyle: "border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/50",
-    glow: "shadow-red-500/5",
+    glow: "shadow-[0_0_40px_rgba(239,68,68,0.15)] bg-red-500/[0.08]",
   },
 ];
 
@@ -126,6 +125,46 @@ const formVariants = {
   visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 100, damping: 18 } },
   exit: { opacity: 0, y: -8, scale: 0.98, transition: { duration: 0.2 } },
 };
+
+// ─── Card Wrapper for HTML Semantics and Equal Heights ──────────────────────
+function CardWrapper({ role, isSelected, setSelectedRole, setErrorMsg, setEmail, setPassword, children }) {
+  const cardClassName = `relative w-full h-full text-left p-6 rounded-2xl border bg-[#0A1C16]/40 backdrop-blur-sm bg-gradient-to-br ${role.gradient} transition-[border-color,background-color,box-shadow] duration-300 cursor-pointer group overflow-hidden shadow-xl flex flex-col justify-between ${
+    isSelected
+      ? `${role.activeBorder} ${role.glow}`
+      : role.border
+  }`;
+
+  if (role.isLink) {
+    return (
+      <Link href={role.ctaHref} className="block h-full w-full">
+        <motion.div
+          whileHover={{ y: -6 }}
+          whileTap={{ scale: 0.98 }}
+          className={cardClassName}
+        >
+          {children}
+        </motion.div>
+      </Link>
+    );
+  }
+
+  return (
+    <motion.button
+      type="button"
+      onClick={() => {
+        setSelectedRole(isSelected ? null : role.id);
+        setErrorMsg("");
+        setEmail("");
+        setPassword("");
+      }}
+      whileHover={{ y: -6 }}
+      whileTap={{ scale: 0.98 }}
+      className={cardClassName}
+    >
+      {children}
+    </motion.button>
+  );
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function Login() {
@@ -260,29 +299,21 @@ export default function Login() {
             {/* ── Role Cards Grid ── */}
             <motion.div
               variants={itemVariants}
-              className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto"
+              className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto items-stretch"
             >
               {ROLES.map((role) => {
                 const Icon = role.icon;
                 const isSelected = selectedRole === role.id;
 
                 return (
-                  <motion.button
+                  <CardWrapper
                     key={role.id}
-                    onClick={() => {
-                      if (role.isLink) return;
-                      setSelectedRole(isSelected ? null : role.id);
-                      setErrorMsg("");
-                      setEmail("");
-                      setPassword("");
-                    }}
-                    whileHover={{ y: -4 }}
-                    whileTap={{ scale: 0.98 }}
-                    className={`relative text-left p-6 rounded-2xl border bg-[#0A1C16]/40 backdrop-blur-sm bg-gradient-to-br ${role.gradient} transition-all duration-300 cursor-pointer group overflow-hidden shadow-xl ${
-                      isSelected
-                        ? `${role.activeBorder} ${role.glow}`
-                        : role.border
-                    }`}
+                    role={role}
+                    isSelected={isSelected}
+                    setSelectedRole={setSelectedRole}
+                    setErrorMsg={setErrorMsg}
+                    setEmail={setEmail}
+                    setPassword={setPassword}
                   >
                     {/* Ambient glow on select */}
                     {isSelected && (
@@ -300,62 +331,65 @@ export default function Login() {
                           initial={{ scale: 0, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
                           exit={{ scale: 0, opacity: 0 }}
-                          className="absolute top-4 right-4 w-5 h-5 rounded-full bg-white/10 border border-white/20 flex items-center justify-center"
+                          className="absolute top-4 right-4 w-5 h-5 rounded-full bg-white/10 border border-white/20 flex items-center justify-center z-20"
                         >
                           <Check className="w-2.5 h-2.5 text-white" />
                         </motion.div>
                       )}
                     </AnimatePresence>
 
-                    {/* Icon & Badge */}
-                    <div className="flex items-start justify-between mb-5">
-                      <div className={`w-11 h-11 rounded-xl ${role.iconBg} border border-white/[0.06] flex items-center justify-center`}>
-                        <Icon className={`w-5.5 h-5.5 ${role.iconColor}`} />
+                    {/* Content Top */}
+                    <div className="flex-1 flex flex-col w-full">
+                      {/* Icon & Badge */}
+                      <div className="flex items-start justify-between mb-5 w-full">
+                        <div className={`w-11 h-11 rounded-xl ${role.iconBg} border border-white/[0.06] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
+                          <Icon className={`w-5.5 h-5.5 ${role.iconColor}`} />
+                        </div>
+                        <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full border ${role.badgeBg}`}>
+                          {role.badge}
+                        </span>
                       </div>
-                      <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full border ${role.badgeBg}`}>
-                        {role.badge}
-                      </span>
+
+                      {/* Title & desc */}
+                      <h3 className="font-heading text-sm font-extrabold text-white mb-1.5 tracking-wide">
+                        {role.label}
+                      </h3>
+                      <p className="text-[11px] text-[#8A9690] leading-relaxed mb-5">
+                        {role.description}
+                      </p>
+
+                      {/* Features list */}
+                      <ul className="space-y-2 mb-6">
+                        {role.features.map((f, i) => (
+                          <li key={i} className="flex items-center gap-2 text-[10px] text-[#8A9690]">
+                            <span className={`w-1 h-1 rounded-full shrink-0 ${role.iconColor} opacity-70`} />
+                            {f}
+                          </li>
+                        ))}
+                      </ul>
                     </div>
 
-                    {/* Title & desc */}
-                    <h3 className="font-heading text-sm font-extrabold text-white mb-1.5 tracking-wide">
-                      {role.label}
-                    </h3>
-                    <p className="text-[11px] text-[#8A9690] leading-relaxed mb-5">
-                      {role.description}
-                    </p>
-
-                    {/* Features list */}
-                    <ul className="space-y-2 mb-6">
-                      {role.features.map((f, i) => (
-                        <li key={i} className="flex items-center gap-2 text-[10px] text-[#8A9690]">
-                          <span className={`w-1 h-1 rounded-full shrink-0 ${role.iconColor} opacity-70`} />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-
                     {/* CTA */}
-                    {role.isLink ? (
-                      <Link
-                        href={role.ctaHref}
-                        onClick={(e) => e.stopPropagation()}
-                        className={`w-full inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl border text-[11px] font-extrabold uppercase tracking-wider transition-all duration-200 ${role.ctaStyle}`}
-                      >
-                        {role.cta}
-                        <ArrowRight className="w-3 h-3" />
-                      </Link>
-                    ) : (
-                      <div
-                        className={`w-full inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl border text-[11px] font-extrabold uppercase tracking-wider transition-all duration-200 ${role.ctaStyle} ${
-                          isSelected ? "ring-1 ring-white/10" : ""
-                        }`}
-                      >
-                        {role.cta}
-                        <LogIn className="w-3 h-3" />
-                      </div>
-                    )}
-                  </motion.button>
+                    <div className="mt-auto w-full">
+                      {role.isLink ? (
+                        <div
+                          className={`w-full inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl border text-[11px] font-extrabold uppercase tracking-wider transition-all duration-200 ${role.ctaStyle}`}
+                        >
+                          {role.cta}
+                          <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform duration-200" />
+                        </div>
+                      ) : (
+                        <div
+                          className={`w-full inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl border text-[11px] font-extrabold uppercase tracking-wider transition-all duration-200 ${role.ctaStyle} ${
+                            isSelected ? "ring-1 ring-white/10" : ""
+                          }`}
+                        >
+                          {role.cta}
+                          <LogIn className="w-3 h-3 group-hover:translate-x-1 transition-transform duration-200" />
+                        </div>
+                      )}
+                    </div>
+                  </CardWrapper>
                 );
               })}
             </motion.div>
