@@ -2,6 +2,7 @@
 
 import { createContext, useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { createClient } from "@/lib/supabase";
 import {
   getSubscription,
   updateSubscription as apiUpdateSubscription,
@@ -60,6 +61,36 @@ export function SubscriptionProvider({ children }) {
       active = false;
     };
   }, [fetchSubscription]);
+
+  // Real-time Postgres changes listener for instant UI updates
+  useEffect(() => {
+    if (!user) return;
+
+    const supabase = createClient();
+    
+    const channel = supabase
+      .channel("subscriptions")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "subscriptions",
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          console.log("🔔 [SubscriptionProvider] Real-time Postgres change detected:", payload);
+          fetchSubscription();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      if (typeof supabase.removeChannel === "function") {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, [user, fetchSubscription]);
 
   const subscribe = async (priceId) => {
     if (!user) throw new Error("Must be logged in to subscribe");
