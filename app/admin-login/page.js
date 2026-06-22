@@ -7,7 +7,6 @@ import {
   ArrowLeft,
   ShieldAlert,
   AlertCircle,
-  Sparkles,
   Loader2,
   Users,
   Trophy,
@@ -100,31 +99,6 @@ export default function AdminLogin() {
         window.location.href = "/admin/dashboard";
       } else {
         // Clear session if they are not an administrator
-        await supabase.auth.signOut();
-        setErrorMsg("Access denied. Administrator credentials required.");
-        setIsLoading(false);
-      }
-    } catch (err) {
-      setErrorMsg(err.message || "Failed to sign in. Please verify credentials.");
-      setIsLoading(false);
-    }
-  };
-
-  const handleQuickLogin = async (demoEmail, demoPassword) => {
-    setIsLoading(true);
-    setErrorMsg("");
-    try {
-      const data = await signIn(demoEmail, demoPassword);
-      const supabase = createClient();
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", data.user.id)
-        .single();
-
-      if (profile?.role === "admin") {
-        window.location.href = "/admin/dashboard";
-      } else {
         await supabase.auth.signOut();
         setErrorMsg("Access denied. Administrator credentials required.");
         setIsLoading(false);
@@ -228,9 +202,9 @@ export default function AdminLogin() {
           {/* Header Title */}
           <div className="space-y-3">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 rounded-full px-3 py-1">
-              <ShieldAlert className="w-3 h-3 text-red-400 animate-pulse" />
-              <span className="text-[8px] font-extrabold uppercase tracking-widest text-red-400">
+            <div className="inline-flex items-center gap-2 bg-[#C4A054]/10 border border-[#C4A054]/20 rounded-full px-3 py-1">
+              <ShieldAlert className="w-3 h-3 text-red-500" />
+              <span className="text-[8px] font-extrabold uppercase tracking-widest text-[#C4A054]">
                 Administrator Portal
               </span>
             </div>
@@ -316,18 +290,6 @@ export default function AdminLogin() {
                 )}
               </Button>
             </form>
-
-            {/* Demo console quick access (kept clean and nested as secondary developer action) */}
-            <div className="pt-4 border-t border-white/[0.04] text-center">
-              <button
-                type="button"
-                onClick={() => handleQuickLogin("admin@fundora.com", "admin")}
-                disabled={isLoading}
-                className="w-full h-9 rounded-xl border border-red-500/20 bg-red-500/5 text-red-400 text-[9px] font-extrabold uppercase tracking-wider hover:bg-red-500/10 hover:border-red-500/40 transition-all duration-200"
-              >
-                Quick-Login: Administrator Account
-              </button>
-            </div>
           </motion.div>
         </div>
 
