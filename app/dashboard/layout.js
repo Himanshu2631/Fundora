@@ -85,7 +85,7 @@ export default function DashboardLayout({ children }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground">
+    <div className="flex flex-1 min-h-0 bg-background text-foreground">
       {/* ── Mobile overlay backdrop ── */}
       <AnimatePresence>
         {mobileOpen && (
@@ -103,10 +103,10 @@ export default function DashboardLayout({ children }) {
       {/* Desktop: floating fixed sidebar */}
       <div className="hidden md:flex md:flex-col md:shrink-0" style={{ width: (sidebarCollapsed ? 72 : 260) + 32 }}>
         <div
-          className="fixed top-4 left-4 z-20"
+          className="fixed top-24 left-4 z-20"
           style={{
             width: sidebarCollapsed ? 72 : 260,
-            height: "calc(100vh - 32px)",
+            height: "calc(100vh - 112px)",
           }}
         >
           <DashboardSidebar
@@ -124,8 +124,8 @@ export default function DashboardLayout({ children }) {
             animate={{ x: 0 }}
             exit={{ x: -280 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-4 left-4 z-40 md:hidden"
-            style={{ width: 260, height: "calc(100vh - 32px)" }}
+            className="fixed top-24 left-4 z-40 md:hidden"
+            style={{ width: 260, height: "calc(100vh - 112px)" }}
           >
             <DashboardSidebar
               collapsed={false}

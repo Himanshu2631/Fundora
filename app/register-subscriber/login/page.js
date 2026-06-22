@@ -83,7 +83,7 @@ export default function SubscriberLogin() {
       if (profile?.role === "admin") {
         window.location.href = "/admin/dashboard";
       } else {
-        window.location.href = "/dashboard";
+        window.location.href = "/";
       }
     } catch (err) {
       setErrorMsg(err.message || "Failed to sign in. Please verify credentials.");

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -439,8 +438,6 @@ export default function PricingPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <Navbar />
-
       <main className="flex-1">
         {/* ── HERO ── */}
         <section className="relative overflow-hidden pt-20 pb-16 md:pt-28 md:pb-20 border-b border-border">

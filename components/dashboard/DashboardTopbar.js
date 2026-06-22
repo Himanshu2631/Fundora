@@ -23,7 +23,7 @@ export default function DashboardTopbar({ onMobileMenuToggle, pageTitle, pageSub
     profile?.full_name || user?.email?.split("@")[0] || "Member";
 
   return (
-    <header className="h-16 border-b border-border/60 bg-background/80 backdrop-blur-sm flex items-center justify-between px-6 shrink-0 sticky top-0 z-20">
+    <header className="h-16 border-b border-border/60 bg-background/80 backdrop-blur-sm flex items-center justify-between px-6 shrink-0 sticky top-20 z-20">
       {/* Left: Mobile menu toggle + page title */}
       <div className="flex items-center gap-4">
         {/* Mobile hamburger */}

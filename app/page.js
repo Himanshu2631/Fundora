@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -103,8 +102,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
-      <Navbar />
-
       <main className="flex-1">
         {/* HERO SECTION */}
         <section className="relative overflow-hidden pt-20 pb-24 md:pt-28 md:pb-36 border-b border-border bg-background">

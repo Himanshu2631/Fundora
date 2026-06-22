@@ -1,6 +1,7 @@
 import { Plus_Jakarta_Sans, Inter } from "next/font/google";
 import { AuthProvider } from "@/components/auth-provider";
 import { SubscriptionProvider } from "@/components/subscription-provider";
+import ClientNavbar from "@/components/client-navbar";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-accent selection:text-background">
         <AuthProvider>
           <SubscriptionProvider>
+            <ClientNavbar />
             {children}
           </SubscriptionProvider>
         </AuthProvider>
