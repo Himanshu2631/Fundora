@@ -114,26 +114,32 @@ export default function AdminLayout({ children }) {
         )}
       </AnimatePresence>
 
-      {/* ── Sidebar ── */}
-      {/* Desktop: static */}
-      <div className="hidden md:flex md:flex-col md:shrink-0" style={{ width: sidebarCollapsed ? 72 : 260 }}>
-        <div className="fixed top-0 left-0 h-screen" style={{ width: sidebarCollapsed ? 72 : 260 }}>
-          <AdminSidebar
-            collapsed={sidebarCollapsed}
-            onToggle={() => setSidebarCollapsed((c) => !c)}
-          />
-        </div>
+      {/* ── Desktop: Floating sidebar ── */}
+      {/* Reserve horizontal space so content doesn't overlap */}
+      <div
+        className="hidden md:block shrink-0 transition-all duration-300"
+        style={{ width: (sidebarCollapsed ? 68 : 256) + 40 }}
+      />
+      {/* Fixed floating panel — 20px gap on top/left/bottom */}
+      <div
+        className="hidden md:block fixed top-5 left-5 bottom-5 z-20"
+        style={{ width: sidebarCollapsed ? 68 : 256 }}
+      >
+        <AdminSidebar
+          collapsed={sidebarCollapsed}
+          onToggle={() => setSidebarCollapsed((c) => !c)}
+        />
       </div>
 
-      {/* Mobile: slide-over drawer */}
+      {/* ── Mobile: slide-over floating drawer ── */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ x: -260 }}
-            animate={{ x: 0 }}
-            exit={{ x: -260 }}
+            initial={{ x: -300, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -300, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed top-0 left-0 h-screen w-[260px] z-40 md:hidden"
+            className="fixed top-5 left-5 bottom-5 w-[256px] z-40 md:hidden"
           >
             <AdminSidebar
               collapsed={false}
