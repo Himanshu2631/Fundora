@@ -2,7 +2,7 @@
 
 import { createContext, useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { createClient } from "@/lib/supabase";
+import { createClient, isPlaceholder } from "@/lib/supabase";
 import {
   getSubscription,
   updateSubscription as apiUpdateSubscription,
@@ -128,11 +128,7 @@ export function SubscriptionProvider({ children }) {
       // reads subscriptions from a cookie, but the client mock uses localStorage.
       // To avoid the "No active subscription found" error, cancel directly via the
       // client-side Supabase mock which correctly reads from localStorage.
-      const isMockMode =
-        (process.env.NEXT_PUBLIC_SUPABASE_URL || "") === "https://placeholder.supabase.co" ||
-        (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "") === "placeholder-anon-key" ||
-        !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-        !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      const isMockMode = isPlaceholder;
 
       if (isMockMode) {
         // Directly cancel via the client mock (reads/writes localStorage + cookie)
@@ -191,11 +187,7 @@ export function SubscriptionProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
-      const isMockMode =
-        (process.env.NEXT_PUBLIC_SUPABASE_URL || "") === "https://placeholder.supabase.co" ||
-        (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "") === "placeholder-anon-key" ||
-        !process.env.NEXT_PUBLIC_SUPABASE_URL ||
-        !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      const isMockMode = isPlaceholder;
 
       if (isMockMode) {
         const supabase = createClient();

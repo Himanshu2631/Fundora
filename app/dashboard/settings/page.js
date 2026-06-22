@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/hooks/useAuth";
-import { createClient } from "@/lib/supabase";
+import { createClient, isPlaceholder } from "@/lib/supabase";
 import {
   User,
   Bell,
@@ -139,7 +139,6 @@ export default function SettingsPage() {
       const supabase = createClient();
       
       // Perform local mock check if credentials are placeholder
-      const isPlaceholder = process.env.NEXT_PUBLIC_SUPABASE_URL === "https://placeholder.supabase.co" || !process.env.NEXT_PUBLIC_SUPABASE_URL;
       if (isPlaceholder && typeof window !== "undefined") {
         const users = JSON.parse(localStorage.getItem("fundora-mock-users") || "[]");
         const found = users.find(u => u.id === user.id);
