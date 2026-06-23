@@ -49,7 +49,7 @@ const itemVariants = {
 };
 
 export default function CharityDashboard() {
-  const { 
+  let { 
     charities, 
     allocations, 
     loading: hookLoading, 
@@ -57,6 +57,9 @@ export default function CharityDashboard() {
     allocate, 
     removeAllocation 
   } = useCharities();
+
+  charities = charities || [];
+  allocations = allocations || [];
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");

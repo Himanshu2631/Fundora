@@ -90,20 +90,40 @@ export default function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
     setErrorMsg("");
     setSuccessMsg("");
-    try {
-      await signUp(name, email, password);
-      setSuccessMsg("Registration initiated! Please check your email to verify your address.");
-      setName("");
-      setEmail("");
-      setPassword("");
-    } catch (err) {
-      setErrorMsg(err.message || "Failed to create account. Please try again.");
-    } finally {
-      setIsLoading(false);
+
+    // Client-side validations
+    if (!email) {
+      setErrorMsg("Email is required.");
+      return;
     }
+    if (!password) {
+      setErrorMsg("Password is required.");
+      return;
+    }
+    if (password.length < 6) {
+      setErrorMsg("Password must contain at least 6 characters.");
+      return;
+    }
+
+    setIsLoading(true);
+    const result = await signUp(name, email, password);
+    setIsLoading(false);
+
+    if (!result.success) {
+      if (result.message?.toLowerCase().includes("password")) {
+        setErrorMsg("Password must contain at least 6 characters.");
+      } else {
+        setErrorMsg(result.message || "Failed to create account. Please try again.");
+      }
+      return;
+    }
+
+    setSuccessMsg("Registration initiated! Please check your email to verify your address.");
+    setName("");
+    setEmail("");
+    setPassword("");
   };
 
   return (

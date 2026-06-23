@@ -79,13 +79,21 @@ export function AuthProvider({ children }) {
       });
       if (error) {
         console.error("❌ [AuthProvider] signIn failed:", error.message || error);
-        throw error;
+        let msg = error.message;
+        if (msg === "Invalid login credentials" || msg?.toLowerCase().includes("invalid login credentials")) {
+          msg = "Incorrect email or password.";
+        }
+        return { success: false, message: msg };
       }
       console.log("✅ [AuthProvider] signIn succeeded, user:", data.user?.email);
-      return data;
+      return { success: true, data };
     } catch (err) {
       console.error("❌ [AuthProvider] signIn catch block:", err);
-      throw err;
+      let msg = err.message || "Failed to sign in.";
+      if (msg === "Invalid login credentials" || msg?.toLowerCase().includes("invalid login credentials")) {
+        msg = "Incorrect email or password.";
+      }
+      return { success: false, message: msg };
     } finally {
       setLoading(false);
     }
@@ -106,7 +114,7 @@ export function AuthProvider({ children }) {
       });
       if (error) {
         console.error("❌ [AuthProvider] signUp failed:", error.message || error);
-        throw error;
+        return { success: false, message: error.message };
       }
       console.log("✅ [AuthProvider] signUp succeeded, user:", data.user?.email);
 
@@ -121,10 +129,10 @@ export function AuthProvider({ children }) {
         }),
       }).catch((err) => console.error("❌ [AuthProvider] Failed to send registration email:", err));
 
-      return data;
+      return { success: true, data };
     } catch (err) {
       console.error("❌ [AuthProvider] signUp catch block:", err);
-      throw err;
+      return { success: false, message: err.message || "Failed to create account." };
     } finally {
       setLoading(false);
     }
@@ -137,15 +145,16 @@ export function AuthProvider({ children }) {
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error("❌ [AuthProvider] signOut failed:", error.message || error);
-        throw error;
+        return { success: false, message: error.message };
       }
       console.log("✅ [AuthProvider] signOut succeeded");
       setUser(null);
       setProfile(null);
       window.location.href = "/login";
+      return { success: true };
     } catch (err) {
       console.error("❌ [AuthProvider] signOut catch block:", err);
-      throw err;
+      return { success: false, message: err.message || "Failed to sign out." };
     } finally {
       setLoading(false);
     }

@@ -71,8 +71,16 @@ export default function SubscriberLogin() {
     e?.preventDefault();
     setIsLoading(true);
     setErrorMsg("");
+    
+    const result = await signIn(email, password);
+    if (!result.success) {
+      setErrorMsg(result.message || "Incorrect email or password.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
-      const data = await signIn(email, password);
+      const { data } = result;
       const supabase = createClient();
       const { data: profile } = await supabase
         .from("profiles")

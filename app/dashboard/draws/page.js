@@ -52,7 +52,7 @@ export default function DrawsPage() {
   const { user, profile } = useAuth();
   
   // Day 4 & 5 Hooks integration
-  const { 
+  let { 
     draws, 
     userEntries, 
     claims,
@@ -66,8 +66,14 @@ export default function DrawsPage() {
   } = useDraws();
 
   const { status: subStatus, subscription } = useSubscription();
-  const { scores, loading: scoresLoading } = useScores();
-  const { allocations, loading: charitiesLoading } = useCharities();
+  let { scores, loading: scoresLoading } = useScores();
+  let { allocations, loading: charitiesLoading } = useCharities();
+
+  draws = draws || [];
+  userEntries = userEntries || [];
+  claims = claims || [];
+  scores = scores || [];
+  allocations = allocations || [];
   const [isPending, startTransition] = useTransition();
 
   // Claims UI states

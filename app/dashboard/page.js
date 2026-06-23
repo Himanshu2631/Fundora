@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -272,10 +272,17 @@ export default function DashboardOverview() {
   const { subscription, status } = useSubscription();
 
   // Day 3 Real Data integration via custom hooks
-  const { scores, loading: scoresLoading, error: scoresError } = useScores();
-  const { allocations, loading: charitiesLoading, error: charitiesError } = useCharities();
-  const { userEntries, draws, claims: rawClaims, loading: drawsLoading } = useDraws();
-  const { leaderboard, rank: leaderboardRank, loading: leaderboardLoading, error: leaderboardError } = useLeaderboard();
+  let { scores, loading: scoresLoading, error: scoresError } = useScores();
+  let { allocations, loading: charitiesLoading, error: charitiesError } = useCharities();
+  let { userEntries, draws, claims: rawClaims, loading: drawsLoading } = useDraws();
+  let { leaderboard, rank: leaderboardRank, loading: leaderboardLoading, error: leaderboardError } = useLeaderboard();
+
+  // Safeguard array references to prevent runtime crashes on undefined/null
+  scores = scores || [];
+  allocations = allocations || [];
+  userEntries = userEntries || [];
+  draws = draws || [];
+  leaderboard = leaderboard || [];
 
   const displayLeaderboard = useMemo(() => {
     if (!leaderboard || leaderboard.length === 0) return [];

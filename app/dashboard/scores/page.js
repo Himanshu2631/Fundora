@@ -30,7 +30,8 @@ import {
 
 export default function ScoresPage() {
   const { user } = useAuth();
-  const { scores, loading, error, addScore, updateScore, deleteScore } = useScores();
+  let { scores, loading, error, addScore, updateScore, deleteScore } = useScores();
+  scores = scores || [];
   const { rank: leaderboardRank } = useLeaderboard();
 
   // Add Form States
