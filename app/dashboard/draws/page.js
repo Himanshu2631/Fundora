@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import * as React from "react";
 import { useEffect, useTransition } from "react";
@@ -15,7 +15,6 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useScores } from "@/hooks/useScores";
 import { useCharities } from "@/hooks/useCharities";
 import { useDraws } from "@/hooks/useDraws";
-import { createClient } from "@/lib/supabase";
 import { checkEligibility } from "@/lib/drawValidation";
 import { calculateMatches, getPrizeCategory } from "@/lib/drawUtilities";
 import { 
@@ -57,15 +56,11 @@ export default function DrawsPage() {
     draws, 
     userEntries, 
     claims,
-    participations,
-    setParticipationStatus,
-    autoGenerateEntriesIfEligible,
     submitClaim,
     reviewClaim,
     fetchAllClaims,
     completeDraw,
     registerForDraw, 
-    unregisterForDraw,
     loading: drawsLoading, 
     error: drawsError 
   } = useDraws();
@@ -115,56 +110,27 @@ export default function DrawsPage() {
     }
   }, [user, isAdmin, fetchAllClaims]);
 
-  // 3b. Auto-generate entries when page loads or eligibility state changes
+  // 4. Background Entry Automation
   useEffect(() => {
-    if (isLoaded && subStatus) {
-      autoGenerateEntriesIfEligible(dynamicGivingScore, subscription?.plan_type, subStatus);
-    }
-  }, [isLoaded, subStatus, draws, participations, userEntries, dynamicGivingScore, subscription?.plan_type, autoGenerateEntriesIfEligible]);
-
-  // 4. Fetch draw entries stats for odds calculation
-  const [drawStats, setDrawStats] = React.useState({});
-  
-  React.useEffect(() => {
-    const fetchStats = async () => {
-      const supabase = createClient();
-      const stats = {};
-      for (const draw of draws) {
-        const { data, error } = await supabase
-          .from("draw_entries")
-          .select("user_id")
-          .eq("draw_id", draw.id);
+    if (user && isEligible && draws.length > 0 && isLoaded) {
+      const activeDraws = draws.filter(d => d.status === "active");
+      
+      activeDraws.forEach((draw) => {
+        const hasTickets = userEntries.some(e => e.draw_id === draw.id);
         
-        if (data) {
-          const tickets = data.length;
-          const uniqueUsers = new Set(data.map(d => d.user_id)).size;
-          stats[draw.id] = { tickets, uniqueUsers };
-        } else {
-          stats[draw.id] = { tickets: 0, uniqueUsers: 0 };
+        if (!hasTickets) {
+          startTransition(async () => {
+            try {
+              console.log(`[Auto-Registration] Registering entries for draw: ${draw.title}`);
+              await registerForDraw(draw.id, dynamicGivingScore, subscription?.plan_type, subStatus);
+            } catch (err) {
+              console.error("[Auto-Registration] Failure:", err);
+            }
+          });
         }
-      }
-      setDrawStats(stats);
-    };
-    if (draws.length > 0) {
-      fetchStats();
+      });
     }
-  }, [draws, userEntries]);
-
-  const handleSetParticipation = async (drawId, status) => {
-    startTransition(async () => {
-      try {
-        await setParticipationStatus(
-          drawId,
-          status,
-          dynamicGivingScore,
-          subscription?.plan_type,
-          subStatus
-        );
-      } catch (err) {
-        console.error("Set participation error:", err);
-      }
-    });
-  };
+  }, [user, isEligible, draws, userEntries, registerForDraw, dynamicGivingScore, subscription, subStatus, isLoaded]);
 
   // Claims Submit Handler
   const handleClaimSubmit = async (drawId, entryId) => {
@@ -241,34 +207,9 @@ export default function DrawsPage() {
     );
   }
 
-  const sortedDraws = React.useMemo(() => {
-    if (!draws) return [];
-    return [...draws].sort((a, b) => {
-      if (a.status === "active" && b.status !== "active") return -1;
-      if (b.status === "active" && a.status !== "active") return 1;
-
-      const isACompleted = a.status === "completed" || a.status === "drawn";
-      const isBCompleted = b.status === "completed" || b.status === "drawn";
-      if (isACompleted && !isBCompleted) return -1;
-      if (isBCompleted && !isACompleted) return 1;
-      if (isACompleted && isBCompleted) {
-        return new Date(b.draw_date) - new Date(a.draw_date);
-      }
-
-      const isAUpcoming = a.status === "upcoming";
-      const isBUpcoming = b.status === "upcoming";
-      if (isAUpcoming && !isBUpcoming) return -1;
-      if (isBUpcoming && !isAUpcoming) return 1;
-      if (isAUpcoming && isBUpcoming) {
-        return new Date(b.draw_date) - new Date(a.draw_date);
-      }
-      return 0;
-    });
-  }, [draws]);
-
-  const activeDraws = sortedDraws.filter(d => d.status === "active");
-  const upcomingDraws = sortedDraws.filter(d => d.status === "upcoming");
-  const completedDraws = sortedDraws.filter(d => d.status === "completed" || d.status === "drawn");
+  const activeDraw = draws.find(d => d.status === "active");
+  const upcomingDraws = draws.filter(d => d.status === "upcoming");
+  const completedDraws = draws.filter(d => d.status === "completed");
 
   // Calculate user wins
   const userWins = [];
@@ -294,7 +235,7 @@ export default function DrawsPage() {
 
   return (
     <div className="p-6 md:p-8 space-y-8 max-w-7xl mx-auto">
-      {/* ── Page Header ── */}
+      {/* ΓöÇΓöÇ Page Header ΓöÇΓöÇ */}
       <motion.div
         initial="hidden"
         animate="visible"
@@ -324,7 +265,7 @@ export default function DrawsPage() {
           </motion.div>
         )}
 
-        {/* ── Draw Prerequisite Checklist & Eligibility Card ── */}
+        {/* ΓöÇΓöÇ Draw Prerequisite Checklist & Eligibility Card ΓöÇΓöÇ */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Eligibility Badge Status Panel */}
           <Card className="lg:col-span-5 border-border bg-card/65 backdrop-blur-md flex flex-col justify-between p-6">
@@ -467,185 +408,114 @@ export default function DrawsPage() {
           </Card>
         </motion.div>
 
-        {/* ── Main Layout Widgets Grid ── */}
+        {/* ΓöÇΓöÇ Main Layout Widgets Grid ΓöÇΓöÇ */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Main Content Column (Left) */}
           <div className="lg:col-span-8 space-y-8">
             
-            {/* Active Draws Section */}
-            <div className="space-y-6">
-              <h3 className="font-heading text-base font-extrabold text-foreground flex items-center gap-2">
-                <Ticket className="w-5 h-5 text-accent" />
-                Active Draws
-              </h3>
-              {activeDraws.length === 0 ? (
-                <EmptyState
-                  title="No Active Draw Period"
-                  description="The monthly draw submission phase is closed. The next draw will launch dynamically at the start of next cycle."
-                  icon={Ticket}
-                />
-              ) : (
-                <div className="space-y-6">
-                  {activeDraws.map((draw) => {
-                    const tickets = userEntries.filter(e => e.draw_id === draw.id);
-                    const drawPart = participations.find(p => p.draw_id === draw.id);
-                    const isParticipating = drawPart?.status === "participating";
-                    const isNotInterested = drawPart?.status === "not_interested";
-                    
-                    const totalDrawTickets = drawStats[draw.id]?.tickets || 0;
-                    const userTicketsCount = tickets.length;
-                    const odds = totalDrawTickets > 0 ? ((userTicketsCount / totalDrawTickets) * 100).toFixed(2) : "0.00";
-
-                    return (
-                      <Card key={draw.id} className="border-accent/25 relative overflow-hidden bg-card/45 backdrop-blur-md">
-                        <div className="absolute top-0 left-0 w-full h-[3px] bg-accent" />
-                        <CardHeader className="pb-4 border-b border-border/30">
-                          <div className="flex justify-between items-start gap-4">
-                            <div>
-                              <span className="text-[9px] font-bold uppercase tracking-wider text-accent block leading-none mb-1.5">
-                                Active Reward Pool
-                              </span>
-                              <CardTitle className="text-base font-extrabold text-foreground flex items-center gap-2">
-                                <Ticket className="w-4 h-4 text-accent" />
-                                {draw.title}
-                              </CardTitle>
-                              <CardDescription className="text-xs text-muted-foreground mt-1">
-                                {draw.prize}
-                              </CardDescription>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Badge variant={isParticipating ? "success" : isNotInterested ? "destructive" : "outline"} className="uppercase font-bold">
-                                {isParticipating ? "✓ Participating" : isNotInterested ? "Not Interested" : "Awaiting Choice"}
-                              </Badge>
-                              <Badge variant="accent" className="uppercase">
-                                {draw.status}
-                              </Badge>
-                            </div>
-                          </div>
-                        </CardHeader>
-                        <CardContent className="pt-6 space-y-6">
-                          {/* Draw Information Grid */}
-                          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 text-xs">
-                            <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl">
-                              <span className="text-[9px] font-bold uppercase text-muted-foreground block">Closing Date</span>
-                              <span className="text-xs font-bold text-foreground">
-                                {new Date(draw.draw_date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
-                              </span>
-                            </div>
-                            <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl">
-                              <span className="text-[9px] font-bold uppercase text-muted-foreground block">Min Score Required</span>
-                              <span className="text-xs font-bold text-foreground">{draw.min_score} pts</span>
-                            </div>
-                            <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl">
-                              <span className="text-[9px] font-bold uppercase text-muted-foreground block">Sponsor</span>
-                              <span className="text-xs font-bold text-foreground line-clamp-1">{draw.sponsor}</span>
-                            </div>
-                            <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl">
-                              <span className="text-[9px] font-bold uppercase text-muted-foreground block">Registered Users</span>
-                              <span className="text-xs font-bold text-foreground">{(drawStats[draw.id]?.uniqueUsers || 0)} users</span>
-                            </div>
-                            <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl">
-                              <span className="text-[9px] font-bold uppercase text-muted-foreground block">Total Tickets Pool</span>
-                              <span className="text-xs font-bold text-foreground">{(drawStats[draw.id]?.tickets || 0)} tickets</span>
-                            </div>
-                          </div>
-
-                          {/* Participation Status & User Actions */}
-                          <div>
-                            <h4 className="text-xs font-bold text-foreground mb-3 flex items-center gap-1.5">
-                              <Sparkles className="w-3.5 h-3.5 text-accent" />
-                              Participation Dashboard
-                            </h4>
-
-                            {!isEligible ? (
-                              <div className="bg-destructive/5 p-3 rounded-xl border border-destructive/10 flex gap-2 text-[11px] text-muted-foreground leading-relaxed">
-                                <Lock className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
-                                <div>
-                                  <strong>Participation Locked:</strong> Complete the checklist prerequisites above to unlock participation.
-                                </div>
-                              </div>
-                            ) : dynamicGivingScore < draw.min_score ? (
-                              <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 flex gap-2 text-[11px] text-muted-foreground leading-relaxed">
-                                <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                                <div>
-                                  <strong>Threshold Pending:</strong> This draw requires a Giving Score of {draw.min_score} pts. Increase your score to unlock.
-                                </div>
-                              </div>
-                            ) : (
-                              <div className="space-y-4">
-                                <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center bg-secondary/5 p-4 rounded-xl border border-border/30">
-                                  <div>
-                                    <span className="text-[10px] text-muted-foreground uppercase font-bold block mb-1">Status</span>
-                                    {isParticipating ? (
-                                      <p className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
-                                        <span className="relative flex h-2 w-2">
-                                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                        </span>
-                                        Participating with {userTicketsCount} {userTicketsCount === 1 ? "ticket" : "tickets"} (Odds: {odds}%)
-                                      </p>
-                                    ) : isNotInterested ? (
-                                      <p className="text-xs font-semibold text-destructive">Not interested in this draw</p>
-                                    ) : (
-                                      <p className="text-xs font-semibold text-muted-foreground">Select your participation choice</p>
-                                    )}
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <Button
-                                      onClick={() => handleSetParticipation(draw.id, "participating")}
-                                      variant={isParticipating ? "accent" : "outline"}
-                                      size="sm"
-                                      className="font-bold uppercase tracking-wider text-[10px] h-9"
-                                    >
-                                      Participate
-                                    </Button>
-                                    <Button
-                                      onClick={() => handleSetParticipation(draw.id, "not_interested")}
-                                      variant={isNotInterested ? "destructive" : "outline"}
-                                      size="sm"
-                                      className="font-bold uppercase tracking-wider text-[10px] h-9"
-                                    >
-                                      Not Interested
-                                    </Button>
-                                  </div>
-                                </div>
-
-                                {isParticipating && tickets.length > 0 && (
-                                  <div className="space-y-3">
-                                    <div className="flex items-center justify-between text-xs mb-1">
-                                      <span className="font-semibold text-muted-foreground">Your Ticket Details:</span>
-                                    </div>
-                                    
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                      {tickets.map((entry, idx) => (
-                                        <div key={entry.id} className="p-3 bg-secondary/15 rounded-xl border border-border/30 space-y-2 hover:border-accent/15 transition-all">
-                                          <div className="flex justify-between items-center">
-                                            <span className="font-mono text-xs font-bold text-accent">{entry.ticket_number}</span>
-                                            <span className="text-[9px] text-muted-foreground font-semibold">Ticket #{idx+1}</span>
-                                          </div>
-                                          <div className="flex gap-1.5 flex-wrap">
-                                            {(entry.numbers || []).map((num, i) => (
-                                              <span key={i} className="text-[10px] bg-card border border-border/60 text-foreground px-2 py-0.5 rounded-xl font-semibold font-mono">
-                                                {num}
-                                              </span>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+            {/* Widget 1: Current Draw Widget */}
+            <Card className="border-accent/25 relative overflow-hidden bg-card/45 backdrop-blur-md">
+              <div className="absolute top-0 left-0 w-full h-[3px] bg-accent" />
+              <CardHeader className="pb-4 border-b border-border/30">
+                <div className="flex justify-between items-start gap-4">
+                  <div>
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-accent block leading-none mb-1.5">
+                      Current Draw Month
+                    </span>
+                    <CardTitle className="text-base font-extrabold text-foreground flex items-center gap-2">
+                      <Ticket className="w-4 h-4 text-accent" />
+                      {activeDraw ? activeDraw.title : "Eco Prize Bracket"}
+                    </CardTitle>
+                    <CardDescription className="text-xs text-muted-foreground mt-1">
+                      {activeDraw ? activeDraw.prize : "Draws reset on the 1st of every month."}
+                    </CardDescription>
+                  </div>
+                  <Badge variant={activeDraw ? "accent" : "outline"} className="uppercase">
+                    {activeDraw ? `Status: ${activeDraw.status}` : "Closed"}
+                  </Badge>
                 </div>
-              )}
-            </div>
+              </CardHeader>
+              <CardContent className="pt-6 space-y-6">
+                {activeDraw ? (
+                  <>
+                    {/* Draw Information Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                      <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl">
+                        <span className="text-[9px] font-bold uppercase text-muted-foreground block">Month</span>
+                        <span className="text-xs font-bold text-foreground">
+                          {new Date(activeDraw.draw_date).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
+                        </span>
+                      </div>
+                      <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl">
+                        <span className="text-[9px] font-bold uppercase text-muted-foreground block">Min Score Required</span>
+                        <span className="text-xs font-bold text-foreground">{activeDraw.min_score} pts</span>
+                      </div>
+                      <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl">
+                        <span className="text-[9px] font-bold uppercase text-muted-foreground block">Sponsor</span>
+                        <span className="text-xs font-bold text-foreground line-clamp-1">{activeDraw.sponsor}</span>
+                      </div>
+                    </div>
+
+                    {/* Entry Status & Ticket Details */}
+                    <div>
+                      <h4 className="text-xs font-bold text-foreground mb-3 flex items-center gap-1.5">
+                        <Sparkles className="w-3.5 h-3.5 text-accent" />
+                        Your Ticket Entries Status
+                      </h4>
+
+                      {!isEligible ? (
+                        <div className="bg-destructive/5 p-3 rounded-xl border border-destructive/10 flex gap-2 text-[11px] text-muted-foreground leading-relaxed">
+                          <Lock className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+                          <div>
+                            <strong>Entries Locked:</strong> Complete the checklist prerequisites above to automatically allocate entries.
+                          </div>
+                        </div>
+                      ) : dynamicGivingScore < activeDraw.min_score ? (
+                        <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 flex gap-2 text-[11px] text-muted-foreground leading-relaxed">
+                          <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                          <div>
+                            <strong>Threshold Pending:</strong> This draw requires a Giving Score of {activeDraw.min_score} pts. Increase your score to unlock.
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between text-xs mb-1">
+                            <span className="font-semibold text-muted-foreground">Allocation status:</span>
+                            <Badge variant="success" className="font-bold">Entered</Badge>
+                          </div>
+                          
+                          {/* Ticket details with individual lottery numbers */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {userEntries.filter(e => e.draw_id === activeDraw.id).map((entry, idx) => (
+                              <div key={entry.id} className="p-3 bg-secondary/15 rounded-xl border border-border/30 space-y-2 hover:border-accent/15 transition-all">
+                                <div className="flex justify-between items-center">
+                                  <span className="font-mono text-xs font-bold text-accent">{entry.ticket_number}</span>
+                                  <span className="text-[9px] text-muted-foreground font-semibold">Ticket #{idx+1}</span>
+                                </div>
+                                <div className="flex gap-1.5 flex-wrap">
+                                  {(entry.numbers || []).map((num, i) => (
+                                    <span key={i} className="text-[10px] bg-card border border-border/60 text-foreground px-2 py-0.5 rounded-xl font-semibold font-mono">
+                                      {num}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <EmptyState
+                    title="No Active Draw Period"
+                    description="The monthly draw submission phase is closed. The next draw will launch dynamically at the start of next cycle."
+                    icon={Ticket}
+                  />
+                )}
+              </CardContent>
+            </Card>
 
             {/* Widget 2: Winner Widget */}
             <Card className="border-border bg-card">
@@ -767,7 +637,7 @@ export default function DrawsPage() {
                                   </div>
                                   <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
                                     <span>Submitted: {new Date(claim.submitted_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                                    <span>·</span>
+                                    <span>┬╖</span>
                                     <a href={claim.screenshot_url} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline flex items-center gap-0.5">
                                       Receipt <ExternalLink className="w-2.5 h-2.5" />
                                     </a>
@@ -805,39 +675,6 @@ export default function DrawsPage() {
           {/* Sidebar Columns (Right) */}
           <div className="lg:col-span-4 space-y-8">
             
-            {/* Widget: Joined Pools Summary */}
-            <Card className="border-border bg-card">
-              <CardHeader className="pb-4 border-b border-border/30">
-                <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
-                  <CheckCircle className="w-4 h-4 text-emerald-400" />
-                  Joined Pools
-                </CardTitle>
-                <CardDescription className="text-[11px] text-muted-foreground">
-                  Your registered prize draws this month.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pt-4 space-y-4">
-                {activeDraws.filter(d => userEntries.some(e => e.draw_id === d.id)).length === 0 ? (
-                  <div className="text-center py-4 text-xs text-muted-foreground">
-                    You haven't joined any active draws yet.
-                  </div>
-                ) : (
-                  activeDraws.filter(d => userEntries.some(e => e.draw_id === d.id)).map((draw) => {
-                    const tickets = userEntries.filter(e => e.draw_id === draw.id);
-                    return (
-                      <div key={draw.id} className="text-xs space-y-1.5 pb-3 border-b border-border/30 last:border-0 last:pb-0">
-                        <div className="flex justify-between items-start gap-2">
-                          <h5 className="font-bold text-foreground line-clamp-1">{draw.title}</h5>
-                          <Badge variant="success" className="text-[8px] uppercase">Joined</Badge>
-                        </div>
-                        <p className="text-[11px] text-muted-foreground font-semibold">{tickets.length} tickets allocated</p>
-                      </div>
-                    );
-                  })
-                )}
-              </CardContent>
-            </Card>
-
             {/* Widget 3: History Widget */}
             <Card className="border-border bg-card">
               <CardHeader className="pb-4 border-b border-border/30">
@@ -950,7 +787,7 @@ export default function DrawsPage() {
 
         </motion.div>
 
-        {/* ── Togglable Administrative Console Card (For testing claim reviews and completes) ── */}
+        {/* ΓöÇΓöÇ Togglable Administrative Console Card (For testing claim reviews and completes) ΓöÇΓöÇ */}
         {isAdmin && (
           <motion.div variants={itemVariants} className="pt-8">
             <Card className="border-dashed border-accent/40 bg-accent/5 overflow-hidden">
@@ -982,7 +819,7 @@ export default function DrawsPage() {
                         <div key={draw.id} className="p-3 bg-card border border-border/80 rounded-xl flex items-center justify-between gap-4 text-xs">
                           <div>
                             <span className="font-semibold text-foreground block">{draw.title}</span>
-                            <span className="text-[10px] text-muted-foreground font-medium">Status: {draw.status} · Month: {draw.month}/{draw.year}</span>
+                            <span className="text-[10px] text-muted-foreground font-medium">Status: {draw.status} ┬╖ Month: {draw.month}/{draw.year}</span>
                           </div>
                           <Button 
                             onClick={() => handleCompleteDraw(draw.id)}
