@@ -5,9 +5,9 @@ import { createClient } from "@/lib/supabase";
 // The code previously used 'active' and 'completed' — those DO NOT exist in DB.
 export const DRAW_STATUS = {
   UPCOMING: "upcoming",
-  ACTIVE: "upcoming",    // alias — DB doesn't distinguish active/upcoming
+  ACTIVE: "active",
   DRAWN: "drawn",
-  COMPLETED: "drawn",    // alias — DB uses 'drawn' not 'completed'
+  COMPLETED: "completed",
   CANCELLED: "cancelled",
 };
 
@@ -16,7 +16,7 @@ export const DRAW_STATUS = {
  */
 function normaliseStatus(status) {
   if (!status) return null;
-  const map = { active: "upcoming", completed: "drawn", canceled: "cancelled" };
+  const map = { canceled: "cancelled" };
   return map[status] || status;
 }
 
@@ -73,7 +73,7 @@ function normaliseDraw(draw) {
   return {
     ...draw,
     // Status aliases for UI compatibility
-    status: draw.status === "drawn" ? "drawn" : draw.status,
+    status: draw.status === "drawn" ? "completed" : draw.status,
     // Derived display fields with safe fallbacks
     title: draw.title || `Draw ${draw.month || draw.id?.substring(0, 6) || ""}`,
     prize: draw.prize || "Exclusive Prize",
@@ -135,7 +135,7 @@ export async function updateDrawStatus(drawId, status, supabaseClient) {
   const supabase = supabaseClient || createClient();
 
   const normStatus = normaliseStatus(status);
-  const validStatuses = ["upcoming", "drawn", "cancelled"];
+  const validStatuses = ["upcoming", "active", "drawn", "completed", "cancelled"];
   if (!validStatuses.includes(normStatus)) {
     throw new Error(`Invalid status. Must be one of: ${validStatuses.join(", ")}`);
   }
@@ -221,25 +221,93 @@ export async function generateEntriesForUser(
     throw new Error("An active subscription is required to enter draws.");
   }
 
-  // Check for existing entry (unique constraint enforces one per user per draw)
+  // Determine ticket count based on tier
+  let entryCount = 1;
+  if (subscriptionTier === "builder") {
+    entryCount = 10;
+  } else if (subscriptionTier === "advocate") {
+    entryCount = 3;
+  }
+
+  // Check if user already has entries for this draw
   const existing = await getUserEntriesForDraw(userId, drawId, supabase);
-  if (existing.length > 0) return existing;
+  if (existing.length > 0) {
+    return existing;
+  }
+
+  // Generate and insert the entries
+  const newEntries = [];
+  for (let idx = 0; idx < entryCount; idx++) {
+    // Generate 5 unique random numbers between 1 and 99
+    const numsSet = new Set();
+    while (numsSet.size < 5) {
+      numsSet.add(Math.floor(Math.random() * 99) + 1);
+    }
+    const numbers = Array.from(numsSet).sort((a, b) => a - b);
+    
+    // Generate a unique ticket number
+    // Format: FND-XXX-XXX
+    const randomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const ticketNumber = `FND-${randomCode.substring(0, 3)}-${randomCode.substring(3, 6)}`;
+
+    newEntries.push({
+      user_id: userId,
+      draw_id: drawId,
+      ticket_number: ticketNumber,
+      numbers: numbers
+    });
+  }
 
   const { data, error } = await supabase
     .from("draw_entries")
-    .insert({ user_id: userId, draw_id: drawId })
-    .select()
-    .single();
+    .insert(newEntries)
+    .select();
 
   if (error) {
-    // Handle unique violation gracefully
-    if (error.code === "23505") {
-      return await getUserEntriesForDraw(userId, drawId, supabase);
-    }
     console.error("generateEntriesForUser error:", error.code, error.message);
-    throw new Error(error.message || "Failed to register draw entry");
+    throw new Error(error.message || "Failed to register draw entries");
   }
-  return [data];
+  return data;
+}
+
+/**
+ * Unregister a user from a specific draw (deletes their draw_entries).
+ * @param {string} userId - User ID.
+ * @param {string} drawId - Draw ID.
+ * @param {object} [supabaseClient] - Optional server-side Supabase client.
+ */
+export async function unregisterFromDraw(userId, drawId, supabaseClient) {
+  const supabase = supabaseClient || createClient();
+  const { error } = await supabase
+    .from("draw_entries")
+    .delete()
+    .eq("user_id", userId)
+    .eq("draw_id", drawId);
+
+  if (error) {
+    console.error("unregisterFromDraw error:", error.code, error.message);
+    throw new Error(error.message || "Failed to unregister from draw");
+  }
+  return true;
+}
+
+/**
+ * Get total entries count for a specific draw.
+ * @param {string} drawId - Draw ID.
+ * @param {object} [supabaseClient] - Optional server-side Supabase client.
+ */
+export async function getDrawParticipantsCount(drawId, supabaseClient) {
+  const supabase = supabaseClient || createClient();
+  const { data, error, count } = await supabase
+    .from("draw_entries")
+    .select("id", { count: "exact", head: true })
+    .eq("draw_id", drawId);
+
+  if (error) {
+    console.error("getDrawParticipantsCount error:", error.code, error.message);
+    return 0;
+  }
+  return count !== null && count !== undefined ? count : (data ? data.length : 0);
 }
 
 /**
@@ -259,7 +327,7 @@ export async function recordWinningNumbers(drawId, winningNumbers, supabaseClien
   const { data, error } = await supabase
     .from("draws")
     .update({
-      status: "drawn",
+      status: "completed",
       winning_numbers: formattedNumbers,
       generated_numbers: formattedNumbers,
       generated_timestamp: new Date().toISOString(),
@@ -299,7 +367,7 @@ export async function generateDraw(drawId, supabaseClient) {
   const { data, error } = await supabase
     .from("draws")
     .update({
-      status: "drawn",
+      status: "completed",
       winning_numbers: numbers,
       generated_numbers: numbers,
       generated_timestamp: timestamp,

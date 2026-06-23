@@ -305,8 +305,8 @@ export default function DashboardOverview() {
   ];
 
   const [timeLeft, setTimeLeft] = useState({ days: 4, hours: 11, minutes: 24, seconds: 45 });
-  const activeDraw = draws ? draws.find(d => d.status === "active") : null;
-  const activePrize = activeDraw ? (typeof activeDraw.prize_value === 'number' ? `$${activeDraw.prize_value.toLocaleString()}` : activeDraw.prize_value) : "$24,950";
+  const activeDraw = draws && draws.length > 0 ? draws[0] : null;
+  const activePrize = activeDraw ? (typeof activeDraw.prize_value === 'number' && activeDraw.prize_value > 0 ? `$${activeDraw.prize_value.toLocaleString()}` : activeDraw.prize || "Exclusive Prize") : "$24,950";
 
   useEffect(() => {
     const targetDate = activeDraw?.draw_date 
@@ -377,13 +377,11 @@ export default function DashboardOverview() {
   }
 
   // Filter active draw entries count
-  const activeTicketsCount = userEntries.filter(e => {
-    const d = draws.find(dr => dr.id === e.draw_id);
-    return d && d.status === "active";
-  }).length;
+  const activeTicketsCount = activeDraw 
+    ? userEntries.filter(e => e.draw_id === activeDraw.id).length 
+    : 0;
 
-  const firstActiveDraw = draws.find(d => d.status === "active");
-  const activeDrawSub = firstActiveDraw ? firstActiveDraw.title : "No active draws";
+  const activeDrawSub = activeDraw ? activeDraw.title : "No active draws";
 
   const displayUser = {
     name: profile?.full_name || authUser?.email?.split("@")[0] || "Member",
@@ -1419,10 +1417,19 @@ export default function DashboardOverview() {
                         Current Prize Draw
                       </h3>
                       <div className="p-4 bg-secondary/10 border border-border/30 rounded-xl space-y-3">
-                        <span className="text-[9px] uppercase font-bold text-muted-foreground block">Active Jackpot Pool</span>
-                        <span className="text-3xl font-black text-accent font-heading block leading-none">
-                          <AnimatedCounter value={activePrize} />
-                        </span>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <span className="text-[9px] uppercase font-bold text-muted-foreground block">Active Jackpot Pool</span>
+                            <span className="text-3xl font-black text-accent font-heading block leading-none mt-1">
+                              <AnimatedCounter value={activePrize} />
+                            </span>
+                          </div>
+                          {activeDraw && (
+                            <Badge variant={userEntries.some(e => e.draw_id === activeDraw.id) ? "success" : "outline"} className="text-[8px] font-bold">
+                              {userEntries.some(e => e.draw_id === activeDraw.id) ? "Joined" : "Not Joined"}
+                            </Badge>
+                          )}
+                        </div>
                         <span className="text-xs font-semibold text-foreground block">
                           Active Target: {activeDrawSub}
                         </span>
@@ -1432,7 +1439,9 @@ export default function DashboardOverview() {
                       </div>
                     </div>
                     <Button asChild variant="accent" className="w-full mt-4 h-9 text-xs font-bold uppercase tracking-wider">
-                      <Link href="/dashboard/draws">Browse All Draws</Link>
+                      <Link href="/dashboard/draws">
+                        {activeDraw && userEntries.some(e => e.draw_id === activeDraw.id) ? "Manage My Entries" : "Join Draw Pool"}
+                      </Link>
                     </Button>
                   </Card>
                 </motion.div>

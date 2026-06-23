@@ -13,7 +13,8 @@ import {
   reviewWinnerClaim,
   getWinnerClaims,
   getUserClaims,
-  updateDrawStatus
+  updateDrawStatus,
+  unregisterFromDraw
 } from "@/services/drawService";
 
 export function useDraws() {
@@ -29,6 +30,13 @@ export function useDraws() {
     setError(null);
     try {
       const drawsData = await getDraws();
+      if (drawsData) {
+        console.log("=== [useDraws] FETCHED DRAWS ===");
+        drawsData.forEach(d => {
+          console.log(`Draw ID: ${d.id} | Title: ${d.title} | Status: ${d.status}`);
+        });
+        console.log("=================================");
+      }
       setDraws(drawsData);
 
       if (user) {
@@ -88,6 +96,27 @@ export function useDraws() {
       return generated;
     } catch (err) {
       setError(err.message || "Failed to register draw entries.");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Unregister the user from a specific active draw.
+   */
+  const unregisterForDraw = async (drawId) => {
+    if (!user) throw new Error("Must be logged in to participate in draws.");
+    setLoading(true);
+    setError(null);
+    try {
+      await unregisterFromDraw(user.id, drawId);
+      // Refresh user entries state list
+      const updatedEntries = await getUserEntries(user.id);
+      setUserEntries(updatedEntries);
+      return true;
+    } catch (err) {
+      setError(err.message || "Failed to leave draw.");
       throw err;
     } finally {
       setLoading(false);
@@ -241,6 +270,7 @@ export function useDraws() {
     error,
     refresh: fetchData,
     registerForDraw,
+    unregisterForDraw,
     enterWinningNumbers,
     addNewDraw,
     completeDraw,
