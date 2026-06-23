@@ -75,22 +75,76 @@ export default function ResetPassword() {
   const supabase = createClient();
 
   useEffect(() => {
-    const fetchSession = async () => {
+    let active = true;
+    let timeoutId = null;
+    let subscription = null;
+
+    const runCheck = async () => {
+      // Check if hash fragment has access token or recovery type, or query has token
+      const hasHashToken = typeof window !== "undefined" && 
+        (window.location.hash.includes("access_token=") || 
+         window.location.hash.includes("type=recovery") ||
+         window.location.search.includes("token="));
+
       try {
+        // Try getting session immediately
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
-          setUser(session.user);
-        } else {
-          setUser(null);
+          if (active) {
+            setUser(session.user);
+            setLoadingSession(false);
+          }
+          return;
         }
+
+        // If no session and no recovery tokens are in the URL/hash, resolve immediately as invalid session
+        if (!hasHashToken) {
+          if (active) {
+            setUser(null);
+            setLoadingSession(false);
+          }
+          return;
+        }
+
+        // We have recovery tokens but no session yet (client is parsing the hash/URL fragment).
+        // Listen for the PASSWORD_RECOVERY or SIGNED_IN event to set the session.
+        const authListener = supabase.auth.onAuthStateChange(async (event, session) => {
+          if (!active) return;
+          if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN" || session?.user) {
+            setUser(session?.user || null);
+            setLoadingSession(false);
+            if (timeoutId) clearTimeout(timeoutId);
+          }
+        });
+        subscription = authListener.data?.subscription;
+
+        // Set fallback timeout to prevent infinite loading state
+        timeoutId = setTimeout(() => {
+          if (active && loadingSession) {
+            console.warn("Recovery session validation timed out.");
+            setUser(null);
+            setLoadingSession(false);
+          }
+        }, 5000);
+
       } catch (err) {
-        console.error("Error fetching reset session:", err);
-        setUser(null);
-      } finally {
-        setLoadingSession(false);
+        console.error("Error in session validation:", err);
+        if (active) {
+          setUser(null);
+          setLoadingSession(false);
+        }
       }
     };
-    fetchSession();
+
+    runCheck();
+
+    return () => {
+      active = false;
+      if (timeoutId) clearTimeout(timeoutId);
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
   }, []);
 
   const handlePasswordUpdate = async (e) => {
@@ -348,7 +402,7 @@ export default function ResetPassword() {
                         )}
                       </Button>
                     </form>
-                  </div>
+                  </motion.div>
                 )}
               </div>
             )}

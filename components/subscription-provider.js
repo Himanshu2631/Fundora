@@ -42,7 +42,12 @@ export function SubscriptionProvider({ children }) {
       const data = await getSubscription(user.id);
       setSubscription(data);
     } catch (err) {
-      console.error("SubscriptionProvider: Failed to fetch subscription:", err);
+      console.error("SubscriptionProvider: Failed to fetch subscription:", {
+        message: err.message,
+        code: err.code,
+        details: err.details,
+        stack: err.stack
+      });
       setError(err.message || "Failed to load subscription");
     } finally {
       setLoading(false);

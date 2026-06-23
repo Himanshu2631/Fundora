@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase";
  * @param {object} [supabaseClient] - Optional server-side Supabase client.
  */
 export async function getSubscription(userId, supabaseClient) {
+  if (!userId) return null;
   const supabase = supabaseClient || createClient();
   const { data, error } = await supabase
     .from("subscriptions")
@@ -16,8 +17,13 @@ export async function getSubscription(userId, supabaseClient) {
     .maybeSingle();
 
   if (error) {
-    console.error("Error in getSubscription:", error);
-    throw error;
+    console.error("Error in getSubscription:", {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint
+    });
+    return null;
   }
   return data;
 }
@@ -165,8 +171,13 @@ export async function getSubscriptionPlans(supabaseClient) {
     .order("amount", { ascending: true });
 
   if (error) {
-    console.error("Error in getSubscriptionPlans:", error);
-    throw error;
+    console.error("Error in getSubscriptionPlans:", {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint
+    });
+    return [];
   }
   return data;
 }
@@ -308,6 +319,7 @@ export async function syncStripeSubscriptionToDatabase(userId, stripeSubId, pric
  * @param {object} [supabaseClient] - Optional server-side Supabase client.
  */
 export async function getUserPayments(userId, supabaseClient) {
+  if (!userId) return [];
   const supabase = supabaseClient || createClient();
   const { data, error } = await supabase
     .from("payments")
@@ -316,8 +328,13 @@ export async function getUserPayments(userId, supabaseClient) {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error in getUserPayments:", error);
-    throw error;
+    console.error("Error in getUserPayments:", {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint
+    });
+    return [];
   }
   return data;
 }
