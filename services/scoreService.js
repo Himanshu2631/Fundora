@@ -74,8 +74,8 @@ export async function addScore(userId, scoreVal, scoreDate, supabaseClient) {
         .eq("id", scoreToDel.id);
 
       if (delError) {
-        console.error("Error evicting oldest score:", delError);
-        throw delError;
+        console.error("Error evicting oldest score:", delError.code, delError.message, delError.details);
+        throw new Error(delError.message || "Failed to delete old score during eviction");
       }
     }
   }
@@ -92,8 +92,8 @@ export async function addScore(userId, scoreVal, scoreDate, supabaseClient) {
     .single();
 
   if (error) {
-    console.error("Error in addScore insert:", error);
-    throw error;
+    console.error("Error in addScore insert:", error.code, error.message, error.details);
+    throw new Error(error.message || "Failed to insert score in database");
   }
 
   return data;
@@ -112,8 +112,8 @@ export async function deleteScore(scoreId, supabaseClient) {
     .eq("id", scoreId);
 
   if (error) {
-    console.error("Error in deleteScore:", error);
-    throw error;
+    console.error("Error in deleteScore:", error.code, error.message, error.details);
+    throw new Error(error.message || "Failed to delete score from database");
   }
 }
 
@@ -165,8 +165,8 @@ export async function updateScore(scoreId, userId, updates, supabaseClient) {
     .single();
 
   if (error) {
-    console.error("Error updating score:", error);
-    throw error;
+    console.error("Error updating score:", error.code, error.message, error.details);
+    throw new Error(error.message || "Failed to update score in database");
   }
 
   return data;

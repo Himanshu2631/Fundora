@@ -21,18 +21,59 @@ export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const ensureProfileExists = async (currentUser) => {
+    if (!currentUser) return null;
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", currentUser.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error checking profile:", error);
+      }
+
+      if (data) {
+        return data;
+      }
+
+      // Profile is missing, attempt to insert
+      console.log("Profile missing for user", currentUser.id, ". Auto-creating profile...");
+      const newProfile = {
+        id: currentUser.id,
+        email: currentUser.email,
+        full_name: currentUser.user_metadata?.full_name || "",
+        role: "user"
+      };
+
+      const { data: insertedData, error: insertError } = await supabase
+        .from("profiles")
+        .insert(newProfile)
+        .select()
+        .single();
+
+      if (insertError) {
+        console.error("Error auto-creating profile in database:", insertError);
+        return null;
+      }
+
+      console.log("Successfully auto-created profile for user", currentUser.id);
+      return insertedData;
+    } catch (err) {
+      console.error("Exception in ensureProfileExists:", err);
+      return null;
+    }
+  };
+
   useEffect(() => {
     const getInitialSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           setUser(session.user);
-          const { data } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", session.user.id)
-            .single();
-          setProfile(data);
+          const userProfile = await ensureProfileExists(session.user);
+          setProfile(userProfile);
         } else {
           setUser(null);
           setProfile(null);
@@ -51,12 +92,8 @@ export function AuthProvider({ children }) {
       setLoading(true);
       if (session) {
         setUser(session.user);
-        const { data } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", session.user.id)
-          .single();
-        setProfile(data);
+        const userProfile = await ensureProfileExists(session.user);
+        setProfile(userProfile);
       } else {
         setUser(null);
         setProfile(null);
