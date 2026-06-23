@@ -111,7 +111,7 @@ const formVariants = {
 
 // ─── Card Wrapper for HTML Semantics and Equal Heights ──────────────────────
 function CardWrapper({ role, children }) {
-  const cardClassName = `relative w-full h-full text-left p-6 rounded-2xl border bg-[#0A1C16]/40 backdrop-blur-sm bg-gradient-to-br ${role.gradient} transition-[border-color,background-color,box-shadow] duration-300 cursor-pointer group overflow-hidden shadow-xl flex flex-col justify-between ${role.border}`;
+  const cardClassName = `relative w-full h-full text-left p-4 lg:p-[18px] rounded-2xl border bg-[#0A1C16]/40 backdrop-blur-sm bg-gradient-to-br ${role.gradient} transition-[border-color,background-color,box-shadow] duration-300 cursor-pointer group overflow-hidden shadow-xl flex flex-col justify-between ${role.border}`;
 
   return (
     <Link href={role.ctaHref} className="block h-full w-full">
@@ -135,7 +135,7 @@ export default function Login() {
       <div className="absolute top-[20%] right-1/4 w-[400px] h-[400px] rounded-full bg-[#C4A054]/[0.03] blur-[150px] pointer-events-none" />
 
       {/* ── Top Header (Unified) ── */}
-      <header className="flex items-center justify-between px-6 py-5 border-b border-white/[0.04] shrink-0 z-10 max-w-7xl w-full mx-auto">
+      <header className="flex items-center justify-between px-6 py-3 border-b border-white/[0.04] shrink-0 z-10 max-w-7xl w-full mx-auto">
         <Link href="/" className="flex items-center gap-2 group">
           <div className="w-7 h-7 rounded-xl bg-[#C4A054] flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-sm select-none">
             F
@@ -155,32 +155,32 @@ export default function Login() {
       </header>
 
       {/* ── Page Content Wrapper ── */}
-      <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 py-12 md:py-20 max-w-6xl w-full mx-auto z-10">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 py-4 lg:py-6 max-w-6xl w-full mx-auto z-10">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="w-full space-y-10 sm:space-y-16"
+          className="w-full space-y-3 sm:space-y-4 lg:space-y-5"
         >
           {/* ── Premium Hero Introduction Section ── */}
-          <motion.div variants={itemVariants} className="text-center space-y-6 max-w-4xl mx-auto">
+          <motion.div variants={itemVariants} className="text-center space-y-2 lg:space-y-3 max-w-4xl mx-auto">
             {/* Tag Badge */}
-            <div className="inline-flex items-center gap-2 bg-[#C4A054]/10 border border-[#C4A054]/20 rounded-full px-4 py-1.5">
+            <div className="inline-flex items-center gap-2 bg-[#C4A054]/10 border border-[#C4A054]/20 rounded-full px-3 py-1 sm:px-4 sm:py-1.5">
               <Sparkles className="w-3.5 h-3.5 text-[#C4A054] animate-pulse" />
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[#C4A054]">
+              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-[#C4A054]">
                 Introducing Fundora
               </span>
             </div>
 
             {/* Giant Title Stack */}
-            <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.1] md:leading-[1.05]">
+            <h1 className="font-heading text-2xl sm:text-3xl lg:text-[32px] xl:text-[32px] 2xl:text-[40px] font-black text-white tracking-tight leading-[1.1] md:leading-[1.05]">
               <span className="block hover:text-[#C4A054] transition-colors duration-300">Fund Your Impact.</span>
               <span className="block hover:text-[#C4A054] transition-colors duration-300">Track Your Performance.</span>
               <span className="block text-[#C4A054]">Unlock Monthly Rewards.</span>
             </h1>
 
             {/* Subtitle */}
-            <p className="text-sm sm:text-base md:text-lg text-[#8A9690] max-w-2xl mx-auto leading-relaxed font-medium">
+            <p className="text-xs lg:text-sm text-[#8A9690] max-w-2xl mx-auto leading-relaxed font-medium">
               Fundora combines golf performance tracking, verified charity contributions, and monthly reward draws into a single membership platform.
             </p>
           </motion.div>
@@ -189,10 +189,10 @@ export default function Login() {
           <div className="w-full max-w-xs mx-auto border-t border-white/[0.06]" />
 
           {/* ── Portal Area / Role Cards Section ── */}
-          <div className="space-y-12">
+          <div className="w-full">
             <motion.div
               variants={itemVariants}
-              className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto items-stretch"
+              className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-5 max-w-5xl mx-auto items-stretch"
             >
               {ROLES.map((role) => {
                 const Icon = role.icon;
@@ -205,25 +205,25 @@ export default function Login() {
                     {/* Content Top */}
                     <div className="flex-1 flex flex-col w-full">
                       {/* Icon & Badge */}
-                      <div className="flex items-start justify-between mb-5 w-full">
-                        <div className={`w-11 h-11 rounded-xl ${role.iconBg} border border-white/[0.06] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
-                          <Icon className={`w-5.5 h-5.5 ${role.iconColor}`} />
+                      <div className="flex items-start justify-between mb-2 lg:mb-2.5 w-full">
+                        <div className={`w-9 h-9 lg:w-10 lg:h-10 rounded-xl ${role.iconBg} border border-white/[0.06] flex items-center justify-center group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300`}>
+                          <Icon className={`w-4.5 h-4.5 lg:w-5 lg:h-5 ${role.iconColor}`} />
                         </div>
-                        <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full border ${role.badgeBg}`}>
+                        <span className={`text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full border ${role.badgeBg}`}>
                           {role.badge}
                         </span>
                       </div>
 
                       {/* Title & desc */}
-                      <h3 className="font-heading text-sm font-extrabold text-white mb-1.5 tracking-wide">
+                      <h3 className="font-heading text-sm font-extrabold text-white mb-1 tracking-wide">
                         {role.label}
                       </h3>
-                      <p className="text-[11px] text-[#8A9690] leading-relaxed mb-5">
+                      <p className="text-[11px] text-[#8A9690] leading-relaxed mb-2 lg:mb-2.5">
                         {role.description}
                       </p>
 
                       {/* Features list */}
-                      <ul className="space-y-2 mb-6">
+                      <ul className="space-y-1 mb-2.5 lg:mb-3">
                         {role.features.map((f, i) => (
                           <li key={i} className="flex items-center gap-2 text-[10px] text-[#8A9690]">
                             <span className={`w-1 h-1 rounded-full shrink-0 ${role.iconColor} opacity-70`} />
@@ -236,7 +236,7 @@ export default function Login() {
                     {/* CTA */}
                     <div className="mt-auto w-full">
                       <div
-                        className={`w-full inline-flex items-center justify-center gap-2 h-10 px-4 rounded-xl border text-[11px] font-extrabold uppercase tracking-wider transition-all duration-200 ${role.ctaStyle}`}
+                        className={`w-full inline-flex items-center justify-center gap-2 h-9 px-4 rounded-xl border text-[11px] font-extrabold uppercase tracking-wider transition-all duration-200 ${role.ctaStyle}`}
                       >
                         {role.cta}
                         <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform duration-200" />
@@ -251,7 +251,7 @@ export default function Login() {
           {/* Footer note */}
           <motion.p
             variants={itemVariants}
-            className="text-center text-[10px] text-[#8A9690]/50 mt-12"
+            className="text-center text-[10px] text-[#8A9690]/50 mt-0"
           >
             © 2026 Fundora Technologies Inc. · v1.0.0 Stable ·{" "}
             <Link href="/" className="hover:text-[#8A9690] transition-colors">
