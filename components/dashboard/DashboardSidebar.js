@@ -15,10 +15,12 @@ import {
   ChevronRight,
   LogOut,
   Shield,
+  ShieldCheck,
   User,
   Receipt,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription, PLAN_LABELS } from "@/hooks/useSubscription";
 import { cn } from "@/lib/utils";
 
 const BASE_NAV_SECTIONS = [
@@ -49,9 +51,18 @@ const BASE_NAV_SECTIONS = [
 export default function DashboardSidebar({ collapsed, onToggle }) {
   const pathname = usePathname();
   const { user, profile, signOut } = useAuth();
+  const { status, subscription } = useSubscription();
 
   // Admin detection — matches the pattern used across the codebase
   const isAdmin = profile?.role === "admin" || user?.email?.includes("admin") || user?.email?.startsWith("admin@");
+
+  const membershipLabel = useMemo(() => {
+    if (isAdmin) return "ADMINISTRATOR";
+    if (status === "active" && subscription?.plan_type) {
+      return PLAN_LABELS[subscription.plan_type]?.toUpperCase() || "ACTIVE MEMBER";
+    }
+    return "FREE MEMBER";
+  }, [isAdmin, status, subscription]);
 
   // Conditionally inject Admin Console nav item for admin users
   const navSections = useMemo(() => {
@@ -100,14 +111,24 @@ export default function DashboardSidebar({ collapsed, onToggle }) {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex items-center gap-3"
+            className="flex flex-col w-full"
           >
-            <div className="w-9 h-9 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0">
-              <User className="w-4 h-4" />
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0">
+                <User className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-foreground truncate">{displayName}</p>
+                <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="text-xs font-bold text-foreground truncate">{displayName}</p>
-              <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
+
+            {/* Membership Badge */}
+            <div className="mt-4 py-2 px-3 rounded-lg border border-[#C4A054]/30 bg-[#C4A054]/5 flex items-center justify-center gap-2 text-[#C4A054]">
+              <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+              <span className="text-[10px] font-extrabold uppercase tracking-widest leading-none">
+                {membershipLabel}
+              </span>
             </div>
           </motion.div>
         )}
