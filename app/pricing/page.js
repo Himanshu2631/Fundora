@@ -183,10 +183,71 @@ const BENEFITS = [
 // ─────────────────────────────────────────────
 // SUBCOMPONENTS
 // ─────────────────────────────────────────────
-function ComparisonCell({ value }) {
-  if (value === true) return <CheckCircle2 className="w-4 h-4 text-accent mx-auto" />;
-  if (value === false) return <Minus className="w-3.5 h-3.5 text-border mx-auto" />;
-  return <span className="text-xs font-bold text-foreground">{value}</span>;
+function PlanHeaderButton({ planKey, recommended, user, subscription, status, isYearly, handleSubscribe }) {
+  const isCurrentPlan = subscription?.plan_type === planKey && status === "active";
+  const isCancelled = subscription?.plan_type === planKey && status === "cancelled";
+
+  if (!user) {
+    return (
+      <Button asChild size="xs" variant={recommended ? "accent" : "outline"} className="mt-3 py-1 text-[10px] h-7 w-full font-extrabold uppercase tracking-wider">
+        <Link href="/signup">Get Started</Link>
+      </Button>
+    );
+  }
+
+  if (isCurrentPlan) {
+    return (
+      <Button size="xs" variant="outline" className="mt-3 py-1 text-[10px] h-7 w-full font-extrabold uppercase tracking-wider border-border/80 text-muted-foreground" disabled>
+        Current
+      </Button>
+    );
+  }
+
+  if (isCancelled) {
+    return (
+      <Button onClick={() => handleSubscribe(planKey)} size="xs" variant="accent" className="mt-3 py-1 text-[10px] h-7 w-full font-extrabold uppercase tracking-wider">
+        Re-Activate
+      </Button>
+    );
+  }
+
+  return (
+    <Button onClick={() => handleSubscribe(planKey)} size="xs" variant={recommended ? "accent" : "outline"} className="mt-3 py-1 text-[10px] h-7 w-full font-extrabold uppercase tracking-wider">
+      Activate
+    </Button>
+  );
+}
+
+function ComparisonCell({ value, planKey, isScoutValue }) {
+  if (value === true) {
+    if (isScoutValue) {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
+          <Check className="w-3.5 h-3.5 text-emerald-400" />
+          <span>Included</span>
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold text-accent bg-accent/10 border border-accent/20 shadow-[0_0_12px_rgba(212,163,89,0.06)]">
+        <Sparkles className="w-3.5 h-3.5 text-accent fill-accent/10" />
+        <span>Premium</span>
+      </span>
+    );
+  }
+  if (value === false) {
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium text-muted-foreground/40 bg-secondary/5 border border-border/10">
+        <Minus className="w-3.5 h-3.5 text-muted-foreground/30" />
+        <span>N/A</span>
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center justify-center px-3 py-1 text-xs font-extrabold rounded-lg bg-card border border-border/60 text-foreground">
+      {value}
+    </span>
+  );
 }
 
 function FaqItem({ q, a, isOpen, onToggle }) {
@@ -410,6 +471,20 @@ export default function PricingPage() {
   const { subscribe, status, subscription } = useSubscription();
   const router = useRouter();
 
+  const [activeCompareTab, setActiveCompareTab] = useState("advocate");
+  const [expandedCategories, setExpandedCategories] = useState({
+    "Core Giving": true,
+    "Rewards & Score": true,
+    "Reporting & Trust": true,
+  });
+
+  const toggleCategory = (category) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [category]: !prev[category],
+    }));
+  };
+
   const handleSubscribe = async (planKey) => {
     if (!user) {
       router.push("/signup");
@@ -617,7 +692,7 @@ export default function PricingPage() {
         </section>
 
         {/* ── COMPARISON TABLE ── */}
-        <section className="py-20 md:py-24 border-b border-border">
+        <section className="py-20 md:py-24 border-b border-border bg-gradient-to-b from-transparent via-card/10 to-transparent">
           <div className="mx-auto max-w-7xl px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -633,75 +708,254 @@ export default function PricingPage() {
               </h2>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="overflow-x-auto"
-            >
-              <table className="w-full min-w-[640px] border-collapse">
-                {/* Sticky header with plan names */}
-                <thead>
-                  <tr>
-                    <th className="text-left py-4 pr-6 w-[40%] text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                      Feature
-                    </th>
-                    {PLANS.map((p) => (
-                      <th key={p.key} className="text-center py-4 px-3 w-[20%]">
-                        <div className="flex flex-col items-center gap-1">
-                          <span
-                            className={`text-xs font-extrabold uppercase tracking-wider ${
-                              p.recommended ? "text-accent" : "text-foreground"
-                            }`}
-                          >
-                            {p.name}
-                          </span>
-                          {p.recommended && (
-                            <Badge variant="accent" className="text-[8px]">
-                              Popular
-                            </Badge>
-                          )}
-                        </div>
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
+            {/* Desktop Comparison Table (CSS Grid) */}
+            <div className="hidden md:block relative border border-border/50 bg-card/10 rounded-2xl overflow-hidden p-6 shadow-xl">
+              {/* Grid Header wrapper for sticky positioning */}
+              <div className="grid grid-cols-[1.25fr_1fr_1fr_1fr] gap-x-6 pb-6 sticky top-20 bg-background/95 backdrop-blur-md z-30 border-b border-border/60 py-4 -mx-6 px-6">
+                <div className="flex flex-col justify-end">
+                  <span className="text-xs uppercase tracking-widest text-accent font-bold">Compare Features</span>
+                  <p className="text-[10px] text-muted-foreground mt-1 max-w-[200px] leading-relaxed">
+                    Select the tier that best matches your philanthropic goals.
+                  </p>
+                </div>
 
+                {PLANS.map((p) => {
+                  const isFeatured = p.key === "advocate";
+                  const bestUse = p.key === "scout"
+                    ? "Best for beginners"
+                    : p.key === "advocate"
+                    ? "Most Popular"
+                    : "For high impact";
+                  return (
+                    <div
+                      key={p.key}
+                      className={`flex flex-col p-4 rounded-xl relative transition-all duration-300 ${
+                        isFeatured
+                          ? "border border-accent bg-accent/[0.04] shadow-[0_0_20px_rgba(212,163,89,0.12)] z-10"
+                          : "border border-border/40 bg-card/40 hover:border-border/80"
+                      }`}
+                    >
+                      {isFeatured && (
+                        <div className="absolute -top-2.5 right-4 z-20">
+                          <span className="bg-accent text-[#060C0A] text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-md">
+                            Popular
+                          </span>
+                        </div>
+                      )}
+                      <span className={`text-[9px] uppercase font-bold tracking-wider ${isFeatured ? "text-accent" : "text-muted-foreground"}`}>
+                        {bestUse}
+                      </span>
+                      <span className="text-sm font-extrabold text-foreground mt-0.5 flex items-center gap-1">
+                        {p.name}
+                        {isFeatured && <Sparkles className="w-3.5 h-3.5 text-accent fill-accent/15" />}
+                      </span>
+                      <div className="flex items-baseline gap-1 mt-1.5">
+                        <span className={`text-xl font-extrabold ${isFeatured ? "text-accent" : "text-foreground"}`}>
+                          ${isYearly ? p.yearlyPrice : p.monthlyPrice}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground">/mo</span>
+                      </div>
+                      <PlanHeaderButton
+                        planKey={p.key}
+                        recommended={isFeatured}
+                        user={user}
+                        subscription={subscription}
+                        status={status}
+                        isYearly={isYearly}
+                        handleSubscribe={handleSubscribe}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Grid Body */}
+              <div className="mt-2">
                 {COMPARISON.map((section) => (
-                  <tbody key={section.category}>
+                  <div key={section.category} className="mb-4">
                     {/* Category row */}
-                    <tr>
-                      <td
-                        colSpan={4}
-                        className="pt-8 pb-2 text-[10px] font-extrabold uppercase tracking-widest text-accent border-b border-border/60"
-                      >
+                    <button
+                      onClick={() => toggleCategory(section.category)}
+                      className="w-full flex items-center justify-between py-3 px-4 bg-secondary/10 hover:bg-secondary/15 transition-colors border border-border/30 rounded-lg group mt-6"
+                    >
+                      <span className="text-xs font-extrabold uppercase tracking-widest text-accent flex items-center gap-2">
                         {section.category}
-                      </td>
-                    </tr>
-                    {section.rows.map((row, ri) => (
-                      <tr
-                        key={ri}
-                        className="border-b border-border/30 hover:bg-secondary/10 transition-colors"
+                        <span className="text-[10px] text-muted-foreground/60 font-medium normal-case tracking-normal">
+                          ({section.rows.length} features)
+                        </span>
+                      </span>
+                      <motion.div
+                        animate={{ rotate: expandedCategories[section.category] ? 0 : -90 }}
+                        transition={{ duration: 0.2 }}
                       >
-                        <td className="py-3.5 pr-6 text-xs text-muted-foreground font-medium">
-                          {row.label}
-                        </td>
-                        <td className="py-3.5 px-3 text-center">
-                          <ComparisonCell value={row.scout} />
-                        </td>
-                        <td className="py-3.5 px-3 text-center bg-accent/[0.04]">
-                          <ComparisonCell value={row.advocate} />
-                        </td>
-                        <td className="py-3.5 px-3 text-center">
-                          <ComparisonCell value={row.builder} />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
+                        <ChevronDown className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                      </motion.div>
+                    </button>
+
+                    <AnimatePresence initial={false}>
+                      {expandedCategories[section.category] && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.25, ease: "easeInOut" }}
+                          className="overflow-hidden"
+                        >
+                          <div className="divide-y divide-border/20 border-x border-b border-border/20 rounded-b-lg">
+                            {section.rows.map((row, ri) => (
+                              <div
+                                key={ri}
+                                className="grid grid-cols-[1.25fr_1fr_1fr_1fr] gap-x-6 py-0 hover:bg-secondary/5 transition-colors items-stretch relative"
+                              >
+                                {/* Column 1: Feature Label */}
+                                <div className="py-4 pl-6 flex flex-col justify-center">
+                                  <span className="text-xs font-semibold text-foreground/90">{row.label}</span>
+                                </div>
+
+                                {/* Column 2: Eco Scout value */}
+                                <div className="py-4 flex justify-center items-center">
+                                  <ComparisonCell value={row.scout} planKey="scout" isScoutValue={true} />
+                                </div>
+
+                                {/* Column 3: Global Advocate value (Featured/Dominant column!) */}
+                                <div className="py-4 flex justify-center items-center bg-accent/[0.02] border-x border-accent/25 shadow-[0_0_15px_rgba(212,163,89,0.01)]">
+                                  <ComparisonCell value={row.advocate} planKey="advocate" isScoutValue={false} />
+                                </div>
+
+                                {/* Column 4: Legacy Builder value */}
+                                <div className="py-4 flex justify-center items-center">
+                                  <ComparisonCell value={row.builder} planKey="builder" isScoutValue={false} />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 ))}
-              </table>
-            </motion.div>
+              </div>
+            </div>
+
+            {/* Mobile Comparison Layout (Tabs + Stacked Group List) */}
+            <div className="md:hidden">
+              {/* Tab Selector */}
+              <div className="grid grid-cols-3 gap-1 bg-card border border-border/60 p-1 rounded-xl mb-4">
+                {PLANS.map((p) => {
+                  const isFeatured = p.key === "advocate";
+                  const isActive = activeCompareTab === p.key;
+                  return (
+                    <button
+                      key={p.key}
+                      onClick={() => setActiveCompareTab(p.key)}
+                      className={`py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 flex flex-col items-center justify-center relative ${
+                        isActive
+                          ? isFeatured
+                            ? "bg-accent text-[#060C0A] shadow-sm"
+                            : "bg-foreground text-background shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      <span>{p.name}</span>
+                      {isFeatured && (
+                        <span className={`text-[7px] font-extrabold uppercase px-1.5 py-0.2 rounded-full absolute -top-1.5 ${
+                          isActive ? "bg-[#060C0A]/25 text-[#060C0A]" : "bg-accent text-[#060C0A]"
+                        }`}>
+                          Popular
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Compact Plan Summary Card */}
+              <div className="border border-border/50 bg-card/60 rounded-xl p-4 mb-6 flex items-center justify-between relative overflow-hidden">
+                {activeCompareTab === "advocate" && (
+                  <div className="absolute top-0 left-0 w-full h-[2.5px] bg-accent" />
+                )}
+                <div>
+                  <span className="text-[9px] font-extrabold uppercase text-accent tracking-wider block">
+                    {activeCompareTab === "scout" ? "Best for beginners" : activeCompareTab === "advocate" ? "Most Popular" : "For high impact"}
+                  </span>
+                  <span className="text-sm font-extrabold text-foreground mt-0.5 block">
+                    {activeCompareTab === "scout" ? "Eco Scout" : activeCompareTab === "advocate" ? "Global Advocate" : "Legacy Builder"}
+                  </span>
+                  <div className="flex items-baseline gap-1 mt-0.5">
+                    <span className="text-base font-extrabold text-foreground">
+                      ${isYearly
+                        ? activeCompareTab === "scout" ? 8 : activeCompareTab === "advocate" ? 20 : 80
+                        : activeCompareTab === "scout" ? 10 : activeCompareTab === "advocate" ? 25 : 100
+                      }
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">/mo</span>
+                  </div>
+                </div>
+
+                <div className="w-[130px]">
+                  <PlanHeaderButton
+                    planKey={activeCompareTab}
+                    recommended={activeCompareTab === "advocate"}
+                    user={user}
+                    subscription={subscription}
+                    status={status}
+                    isYearly={isYearly}
+                    handleSubscribe={handleSubscribe}
+                  />
+                </div>
+              </div>
+
+              {/* Feature sections list */}
+              <div className="space-y-4">
+                {COMPARISON.map((section) => (
+                  <div key={section.category} className="border border-border/40 bg-card/20 rounded-xl overflow-hidden shadow-sm">
+                    <button
+                      onClick={() => toggleCategory(section.category)}
+                      className="w-full flex items-center justify-between py-3 px-4 bg-secondary/10 hover:bg-secondary/15 transition-colors border-b border-border/20 group"
+                    >
+                      <span className="text-xs font-extrabold uppercase tracking-widest text-accent flex items-center gap-1.5">
+                        {section.category}
+                        <span className="text-[10px] text-muted-foreground/60 font-medium normal-case tracking-normal">
+                          ({section.rows.length})
+                        </span>
+                      </span>
+                      <motion.div
+                        animate={{ rotate: expandedCategories[section.category] ? 0 : -90 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <ChevronDown className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                      </motion.div>
+                    </button>
+
+                    <AnimatePresence initial={false}>
+                      {expandedCategories[section.category] && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="divide-y divide-border/10">
+                            {section.rows.map((row, ri) => (
+                              <div key={ri} className="flex items-center justify-between py-3.5 px-4 hover:bg-secondary/5 transition-colors">
+                                <span className="text-xs text-muted-foreground font-medium pr-4">{row.label}</span>
+                                <div className="shrink-0">
+                                  <ComparisonCell
+                                    value={row[activeCompareTab]}
+                                    planKey={activeCompareTab}
+                                    isScoutValue={row.scout === true}
+                                  />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 

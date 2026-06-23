@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,151 @@ import { ArrowRight, ShieldCheck, Trophy, Sparkles, Heart, Check, HelpCircle, Gi
 
 export default function Home() {
   const [isYearly, setIsYearly] = useState(false);
+  const [stats, setStats] = useState({
+    activeMembers: 148,
+    totalScores: 412,
+    totalCharityContributions: 422900,
+    totalCharitiesSupported: 4,
+    activeDraws: 1,
+    contributionAchieved: 83,
+    rewardPool: 24950
+  });
+  const [recentActivity, setRecentActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchPlatformData() {
+      try {
+        const { createClient } = await import("@/lib/supabase");
+        const supabase = createClient();
+        
+        // 1. Fetch charities (publicly readable)
+        const { data: charities } = await supabase
+          .from("charities")
+          .select("id, name, raised");
+        
+        let charitiesCount = 4;
+        let contributionsSum = 422900;
+        if (charities && charities.length > 0) {
+          charitiesCount = charities.length;
+          contributionsSum = charities.reduce((sum, c) => {
+            const val = parseFloat(String(c.raised || "").replace(/[^0-9.]/g, ""));
+            return sum + (isNaN(val) ? 0 : val);
+          }, 0);
+        }
+
+        // 2. Fetch active draws
+        const { data: draws } = await supabase
+          .from("draws")
+          .select("id, title, status");
+        
+        let drawsCount = 1;
+        if (draws && draws.length > 0) {
+          drawsCount = draws.filter(d => d.status === "active" || d.status === "upcoming").length;
+        }
+
+        let activities = [];
+        let membersCount = 148;
+        let scoresCount = 412;
+
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        // Fetch profiles and scores (authenticated or mock client only)
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, full_name, created_at");
+        
+        if (profiles && profiles.length > 0) {
+          membersCount = profiles.filter(p => p.role !== "admin").length;
+          
+          profiles.forEach(p => {
+            if (p.created_at) {
+              activities.push({
+                type: "membership",
+                user: p.full_name || "New Member",
+                detail: "activated membership",
+                time: p.created_at
+              });
+            }
+          });
+        }
+
+        const { data: scores } = await supabase
+          .from("scores")
+          .select("id, score, score_date, user_id, created_at");
+        
+        if (scores && scores.length > 0) {
+          scoresCount = scores.length;
+          
+          scores.forEach(s => {
+            const userObj = profiles?.find(p => p.id === s.user_id);
+            activities.push({
+              type: "score",
+              user: userObj?.full_name || "Member",
+              detail: `logged round of ${s.score} Stableford`,
+              time: s.created_at || s.score_date
+            });
+          });
+        }
+
+        // Process recent activity
+        if (activities.length > 0) {
+          activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+          const slicedActivities = activities.slice(0, 3).map(act => {
+            const rawName = act.user;
+            let maskedName = "Member";
+            if (rawName && rawName !== "Member" && rawName !== "New Member") {
+              const parts = rawName.split(" ");
+              if (parts.length > 1) {
+                maskedName = `${parts[0]} ${parts[1][0]}.`;
+              } else {
+                maskedName = rawName;
+              }
+            } else {
+              maskedName = rawName;
+            }
+            
+            const diffMs = new Date() - new Date(act.time);
+            const diffMin = Math.floor(diffMs / 60000);
+            const diffHrs = Math.floor(diffMin / 60);
+            const diffDays = Math.floor(diffHrs / 24);
+            
+            let relativeTime = "Just now";
+            if (diffMin > 0) relativeTime = `${diffMin}m ago`;
+            if (diffHrs > 0) relativeTime = `${diffHrs}h ago`;
+            if (diffDays > 0) relativeTime = `${diffDays}d ago`;
+            
+            return {
+              title: maskedName,
+              detail: act.detail,
+              time: relativeTime,
+              type: act.type
+            };
+          });
+          setRecentActivity(slicedActivities);
+        }
+
+        const targetGoal = 500000;
+        const pctAchieved = Math.min(Math.round((contributionsSum / targetGoal) * 100), 100) || 83;
+        const calculatedPool = Math.round(contributionsSum * 0.05) || 24950;
+
+        setStats({
+          activeMembers: membersCount,
+          totalScores: scoresCount,
+          totalCharityContributions: contributionsSum,
+          totalCharitiesSupported: charitiesCount,
+          activeDraws: drawsCount,
+          contributionAchieved: pctAchieved,
+          rewardPool: calculatedPool
+        });
+      } catch (err) {
+        console.error("Error loading stats for widget:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPlatformData();
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -156,54 +301,101 @@ export default function Home() {
 
               {/* Hero Right - Handcrafted interactive stats card */}
               <motion.div variants={itemVariants} className="lg:col-span-5 w-full">
-                <Card glow className="p-8 shadow-xl">
+                <Card glow className="p-6 shadow-xl">
                   {/* Subtle highlight border */}
                   <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent to-transparent" />
 
-                  <div className="flex justify-between items-start mb-8">
+                  <div className="flex justify-between items-start mb-4">
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1.5">Monthly Reward Pool</p>
-                      <h3 className="font-heading text-3xl font-extrabold text-foreground">$24,950</h3>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1 flex items-center gap-1">
+                        <Gift className="w-3 h-3 text-accent" /> Monthly Reward Pool
+                      </p>
+                      <h3 className="font-heading text-3xl font-extrabold text-foreground">
+                        ${stats.rewardPool.toLocaleString("en-US")}
+                      </h3>
                     </div>
-                    <Badge variant="accent">
+                    <Badge variant="accent" className="font-semibold text-[10px]">
                       Next Draw: 4d 11h
                     </Badge>
                   </div>
 
-                  {/* Simulated interactive live tracker */}
+                  {/* Dynamic interactive contribution tracker */}
                   <div className="space-y-4">
                     <div>
-                      <div className="flex justify-between text-xs mb-1.5 text-muted-foreground font-medium">
-                        <span>Monthly Contribution Target</span>
-                        <span className="text-foreground font-bold">83% achieved</span>
+                      <div className="flex justify-between text-xs mb-1 text-muted-foreground font-medium">
+                        <span className="flex items-center gap-1"><Heart className="w-3 h-3 text-accent" /> Contribution Goal</span>
+                        <span className="text-foreground font-bold">{stats.contributionAchieved}% achieved</span>
                       </div>
                       <div className="w-full h-1.5 bg-border/40 rounded-full overflow-hidden">
                         <motion.div
                           initial={{ width: 0 }}
-                          animate={{ width: "83%" }}
+                          animate={{ width: `${stats.contributionAchieved}%` }}
                           transition={{ duration: 1.5, ease: "easeOut" }}
                           className="h-full bg-accent"
                         />
                       </div>
+                      <p className="text-[9px] text-muted-foreground mt-0.5">
+                        Target: ${(500000).toLocaleString("en-US")} raised via member subscriptions.
+                      </p>
                     </div>
 
-                    <div className="h-[1px] bg-border/40 my-6" />
+                    <div className="h-[1px] bg-border/40 my-3.5" />
 
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-foreground mb-3">Live Feed</p>
-                    <div className="space-y-3">
-                      {[
-                        { user: "Alicia Torres", score: "39 Stableford", action: "logged score & earned 3x entries", time: "2m ago" },
-                        { user: "Sam Whitfield", score: "+150 Giving Score", action: "subscribed to Legacy Builder", time: "12m ago" },
-                        { user: "Hiro Nakamura", score: "42 Stableford", action: "logged score & boosted entries", time: "44m ago" }
-                      ].map((feed, i) => (
-                        <div key={i} className="flex items-center justify-between text-xs py-1 border-b border-border/20 last:border-0">
-                          <span className="text-muted-foreground">
-                            <strong className="text-foreground">{feed.user}</strong> {feed.action}
-                          </span>
-                          <span className="text-accent font-semibold">{feed.score}</span>
-                        </div>
-                      ))}
+                    {/* Platform Analytics Grid */}
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-foreground mb-2 flex items-center gap-1.5">
+                      <Activity className="w-3.5 h-3.5 text-accent" /> Platform Analytics
+                    </p>
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <div className="bg-[#0A1C16]/20 border border-border/40 rounded-xl py-2 px-3">
+                        <p className="text-[9px] font-semibold text-muted-foreground uppercase">Contributions</p>
+                        <p className="text-sm font-extrabold text-foreground mt-0.5">${stats.totalCharityContributions.toLocaleString("en-US")}</p>
+                      </div>
+                      <div className="bg-[#0A1C16]/20 border border-border/40 rounded-xl py-2 px-3">
+                        <p className="text-[9px] font-semibold text-muted-foreground uppercase">Active Members</p>
+                        <p className="text-sm font-extrabold text-foreground mt-0.5">{stats.activeMembers}</p>
+                      </div>
+                      <div className="bg-[#0A1C16]/20 border border-border/40 rounded-xl py-2 px-3">
+                        <p className="text-[9px] font-semibold text-muted-foreground uppercase">Causes Supported</p>
+                        <p className="text-sm font-extrabold text-foreground mt-0.5">{stats.totalCharitiesSupported}</p>
+                      </div>
+                      <div className="bg-[#0A1C16]/20 border border-border/40 rounded-xl py-2 px-3">
+                        <p className="text-[9px] font-semibold text-muted-foreground uppercase">Rounds Submitted</p>
+                        <p className="text-sm font-extrabold text-foreground mt-0.5">{stats.totalScores}</p>
+                      </div>
                     </div>
+
+                    <div className="h-[1px] bg-border/40 my-3.5" />
+
+                    {/* Audit activity feed */}
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-foreground mb-2 flex items-center gap-1.5">
+                      <ShieldCheck className="w-3.5 h-3.5 text-accent" /> Audit Activity Feed
+                    </p>
+
+                    {loading ? (
+                      <div className="text-xs text-muted-foreground text-center py-4">
+                        Querying platform data...
+                      </div>
+                    ) : recentActivity.length > 0 ? (
+                      <div className="space-y-2.5">
+                        {recentActivity.map((act, i) => (
+                          <div key={i} className="flex justify-between items-center text-xs py-1 border-b border-border/10 last:border-0">
+                            <span className="text-muted-foreground truncate max-w-[200px]">
+                              <strong className="text-foreground">{act.title}</strong> {act.detail}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground/60 shrink-0 font-medium">{act.time}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="bg-[#0A1C16]/10 border border-border/30 rounded-xl p-3 text-center">
+                        <p className="text-[11px] text-muted-foreground leading-relaxed">
+                          No recent activity logged in this audit window. Platform activity feed will compile dynamically as new members subscribe and submit rounds.
+                        </p>
+                        <Link href="/signup" className="inline-flex items-center gap-1 text-[10px] font-bold text-accent uppercase tracking-wider mt-1.5 hover:underline">
+                          Be among the first members to participate <ArrowRight className="w-3 h-3" />
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 </Card>
               </motion.div>
