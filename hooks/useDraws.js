@@ -42,7 +42,10 @@ export function useDraws() {
         setClaims([]);
       }
     } catch (err) {
-      console.error("useDraws hook fetch error:", err);
+      // Silently handle missing-table errors — dashboard degrades gracefully
+      if (err.code !== "PGRST205" && err.code !== "42P01") {
+        console.error("useDraws fetch error:", err.code || "", err.message);
+      }
       setError(err.message || "Failed to retrieve monthly prize draws.");
     } finally {
       setLoading(false);

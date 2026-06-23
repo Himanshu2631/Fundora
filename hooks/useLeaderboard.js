@@ -34,16 +34,17 @@ export function useLeaderboard() {
       setLoading(true);
       const supabase = createClient();
 
-      // 1. Fetch profiles and scores
+      // 1. Fetch profiles
       const { data: profiles, error: pError } = await supabase
         .from("profiles")
         .select("id, full_name, email");
-      if (pError) throw pError;
+      // PGRST205 = table missing, non-fatal
+      if (pError && pError.code !== "PGRST205") throw pError;
 
       const { data: allScores, error: sError } = await supabase
         .from("scores")
         .select("user_id, score");
-      if (sError) throw sError;
+      if (sError && sError.code !== "PGRST205") throw sError;
 
       // 2. Map static competitors to default values (fallback seed)
       const STATIC_COMPETITORS = [
@@ -123,7 +124,10 @@ export function useLeaderboard() {
       setLeaderboard(entries);
       setError(null);
     } catch (err) {
-      console.error("Failed to load leaderboard data:", err);
+      // Silently handle missing-table errors — leaderboard degrades gracefully
+      if (err.code !== "PGRST205" && err.code !== "42P01") {
+        console.error("useLeaderboard fetch error:", err.code, err.message);
+      }
       setError(err.message || "Failed to load leaderboard data");
     } finally {
       setLoading(false);
@@ -138,56 +142,34 @@ export function useLeaderboard() {
   // Real-time Postgres changes listener for dynamic rank changes
   useEffect(() => {
     const supabase = createClient();
+    let scoresChannel, profilesChannel, subscriptionsChannel;
 
-    const scoresChannel = supabase
-      .channel("scores-leaderboard")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "scores",
-        },
-        () => {
-          fetchLeaderboard();
-        }
-      )
-      .subscribe();
+    const timer = setTimeout(() => {
+      try {
+        scoresChannel = supabase
+          .channel("scores-leaderboard")
+          .on("postgres_changes", { event: "*", schema: "public", table: "scores" }, () => { fetchLeaderboard(); })
+          .subscribe((s) => { if (s === "CHANNEL_ERROR") console.warn("leaderboard scores channel error"); });
 
-    const profilesChannel = supabase
-      .channel("profiles-leaderboard")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "profiles",
-        },
-        () => {
-          fetchLeaderboard();
-        }
-      )
-      .subscribe();
+        profilesChannel = supabase
+          .channel("profiles-leaderboard")
+          .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => { fetchLeaderboard(); })
+          .subscribe((s) => { if (s === "CHANNEL_ERROR") console.warn("leaderboard profiles channel error"); });
 
-    const subscriptionsChannel = supabase
-      .channel("subscriptions-leaderboard")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "subscriptions",
-        },
-        () => {
-          fetchLeaderboard();
-        }
-      )
-      .subscribe();
+        subscriptionsChannel = supabase
+          .channel("subscriptions-leaderboard")
+          .on("postgres_changes", { event: "*", schema: "public", table: "subscriptions" }, () => { fetchLeaderboard(); })
+          .subscribe((s) => { if (s === "CHANNEL_ERROR") console.warn("leaderboard subscriptions channel error"); });
+      } catch (err) {
+        console.warn("useLeaderboard: failed to set up realtime channels:", err.message);
+      }
+    }, 0);
 
     return () => {
-      supabase.removeChannel(scoresChannel);
-      supabase.removeChannel(profilesChannel);
-      supabase.removeChannel(subscriptionsChannel);
+      clearTimeout(timer);
+      if (scoresChannel) supabase.removeChannel(scoresChannel);
+      if (profilesChannel) supabase.removeChannel(profilesChannel);
+      if (subscriptionsChannel) supabase.removeChannel(subscriptionsChannel);
     };
   }, [fetchLeaderboard]);
 

@@ -17,12 +17,11 @@ export async function getSubscription(userId, supabaseClient) {
     .maybeSingle();
 
   if (error) {
-    console.error("Error in getSubscription:", {
-      code: error.code,
-      message: error.message,
-      details: error.details,
-      hint: error.hint
-    });
+    // PGRST205 = table missing (migration not yet applied) — silent fallback
+    if (error.code === "PGRST205" || error.code === "42P01") {
+      return null;
+    }
+    console.error("getSubscription error:", error.code, "|", error.message);
     return null;
   }
   return data;
@@ -171,12 +170,8 @@ export async function getSubscriptionPlans(supabaseClient) {
     .order("amount", { ascending: true });
 
   if (error) {
-    console.error("Error in getSubscriptionPlans:", {
-      code: error.code,
-      message: error.message,
-      details: error.details,
-      hint: error.hint
-    });
+    if (error.code === "PGRST205" || error.code === "42P01") return [];
+    console.error("getSubscriptionPlans error:", error.code, error.message);
     return [];
   }
   return data;

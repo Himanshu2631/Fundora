@@ -19,14 +19,19 @@ import {
   Settings,
   ShieldAlert,
   BarChart3,
+  Bell,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
   const { user, profile, signOut, loading } = useAuth();
+  const { status } = useSubscription();
 
   const displayName = profile?.full_name || user?.email?.split("@")[0] || "Member";
   const initials = displayName.slice(0, 2).toUpperCase();
@@ -40,22 +45,22 @@ export default function Navbar() {
 
   const menuItems = isAdmin
     ? [
-        { name: "Admin Dashboard", href: "/admin/dashboard", icon: ShieldAlert },
-        { name: "User Management", href: "/admin/users", icon: User },
-        { name: "Draw Management", href: "/admin/draws", icon: Ticket },
-        { name: "Charity Management", href: "/admin/charities", icon: Heart },
-        { name: "Winners Management", href: "/admin/winners", icon: Trophy },
-        { name: "Reports & Analytics", href: "/admin/analytics", icon: BarChart3 },
-      ]
+      { name: "Admin Dashboard", href: "/admin/dashboard", icon: ShieldAlert },
+      { name: "User Management", href: "/admin/users", icon: User },
+      { name: "Draw Management", href: "/admin/draws", icon: Ticket },
+      { name: "Charity Management", href: "/admin/charities", icon: Heart },
+      { name: "Winners Management", href: "/admin/winners", icon: Trophy },
+      { name: "Reports & Analytics", href: "/admin/analytics", icon: BarChart3 },
+    ]
     : [
-        { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-        { name: "Subscription", href: "/dashboard/subscription", icon: CreditCard },
-        { name: "Billing & History", href: "/dashboard/billing", icon: Receipt },
-        { name: "My Scores", href: "/dashboard/scores", icon: Trophy },
-        { name: "Charities", href: "/dashboard/charity", icon: Heart },
-        { name: "Draws", href: "/dashboard/draws", icon: Ticket },
-        { name: "Settings", href: "/dashboard/settings", icon: Settings },
-      ];
+      { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
+      { name: "Subscription", href: "/dashboard/subscription", icon: CreditCard },
+      { name: "Billing & History", href: "/dashboard/billing", icon: Receipt },
+      { name: "My Scores", href: "/dashboard/scores", icon: Trophy },
+      { name: "Charities", href: "/dashboard/charity", icon: Heart },
+      { name: "Draws", href: "/dashboard/draws", icon: Ticket },
+      { name: "Settings", href: "/dashboard/settings", icon: Settings },
+    ];
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/80 bg-background/85 backdrop-blur-md">
@@ -103,7 +108,43 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-4">
             {!loading && (
               user ? (
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
+                  {/* Active Member Badge */}
+                  {status === "active" && (
+                    <Badge variant="success" className="hidden lg:flex gap-1 shrink-0">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      Active Member
+                    </Badge>
+                  )}
+
+                  {/* Notification Bell */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setNotifOpen(!notifOpen)}
+                      className="relative w-8 h-8 flex items-center justify-center rounded-xl border border-border text-muted-foreground hover:text-foreground hover:border-accent/40 hover:scale-[1.05] active:scale-[0.95] transition-all duration-200"
+                      aria-label="Notifications"
+                    >
+                      <Bell className="w-4 h-4" />
+                      <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-accent" />
+                    </button>
+                    <AnimatePresence>
+                      {notifOpen && (
+                        <>
+                          <div className="fixed inset-0 z-40" onClick={() => setNotifOpen(false)} />
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            className="absolute right-0 mt-2 w-72 rounded-2xl border border-white/[0.08] bg-[#070D0B]/95 backdrop-blur-xl shadow-2xl p-4 z-50"
+                          >
+                            <p className="text-xs font-bold text-white mb-1">Notifications</p>
+                            <p className="text-[11px] text-muted-foreground">No new notifications.</p>
+                          </motion.div>
+                        </>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
                   {/* Profile Menu Dropdown */}
                   <div className="relative">
                     <button

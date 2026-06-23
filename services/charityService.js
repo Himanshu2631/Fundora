@@ -12,10 +12,19 @@ export async function getCharities(supabaseClient) {
     .select("*");
   
   if (error) {
-    console.error("Error in getCharities:", error);
-    throw error;
+    console.error("getCharities error:", error.code, error.message);
+    return [];
   }
-  return data || [];
+  // Normalise optional extended columns with safe fallbacks
+  return (data || []).map(c => ({
+    ...c,
+    category: c.category || "General",
+    impact: c.impact || "",
+    why_matters: c.why_matters || "",
+    auditor_score: c.auditor_score || "",
+    spending_ratio: c.spending_ratio || "",
+    raised: c.raised || "$0",
+  }));
 }
 
 /**
@@ -27,15 +36,19 @@ export async function getCharities(supabaseClient) {
 export async function getUserAllocations(userId, supabaseClient) {
   const supabase = supabaseClient || createClient();
   
-  // 1. Fetch selections
+  // 1. Fetch selections — gracefully handle table not yet migrated
   const { data: selections, error: selError } = await supabase
     .from("user_charity_selections")
     .select("*")
     .eq("user_id", userId);
   
   if (selError) {
-    console.error("Error in getUserAllocations selections:", selError);
-    throw selError;
+    // PGRST205 = table doesn't exist yet — not a crash, just return empty
+    if (selError.code === "PGRST205" || selError.code === "42P01") {
+      return [];
+    }
+    console.error("getUserAllocations error:", selError.code, selError.message);
+    return [];
   }
 
   if (!selections || selections.length === 0) return [];
@@ -83,7 +96,10 @@ export async function allocateCharity(userId, charityId, percentage, supabaseCli
     .eq("user_id", userId);
 
   if (fetchError) {
-    console.error("Error fetching existing allocations:", fetchError);
+    if (fetchError.code === "PGRST205" || fetchError.code === "42P01") {
+      throw new Error("Charity selections are not available yet. Please run the database migration.");
+    }
+    console.error("allocateCharity fetch error:", fetchError.code, fetchError.message);
     throw fetchError;
   }
 

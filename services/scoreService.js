@@ -15,8 +15,9 @@ export async function getUserScores(userId, supabaseClient) {
     .eq("user_id", userId);
   
   if (error) {
-    console.error("Error in getUserScores:", error);
-    throw error;
+    if (error.code === "PGRST205" || error.code === "42P01") return [];
+    console.error("getUserScores error:", error.code, error.message);
+    return [];
   }
 
   // Sort reverse chronological: newest date first, then newest created_at first

@@ -50,24 +50,40 @@ export function useScores() {
     if (!user) return;
 
     const supabase = createClient();
-    const channel = supabase
-      .channel("scores-realtime")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "scores",
-          filter: `user_id=eq.${user.id}`,
-        },
-        () => {
-          fetchScores();
-        }
-      )
-      .subscribe();
+    let channel;
+
+    // Small async gap lets React strict-mode double-invoke cleanup first
+    const timer = setTimeout(() => {
+      try {
+        channel = supabase
+          .channel(`scores-realtime-${user.id}`)
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "scores",
+              filter: `user_id=eq.${user.id}`,
+            },
+            () => {
+              fetchScores();
+            }
+          )
+          .subscribe((status) => {
+            if (status === "CHANNEL_ERROR") {
+              console.warn("useScores: realtime channel error — skipping live updates");
+            }
+          });
+      } catch (err) {
+        console.warn("useScores: failed to set up realtime channel:", err.message);
+      }
+    }, 0);
 
     return () => {
-      supabase.removeChannel(channel);
+      clearTimeout(timer);
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, [user, fetchScores]);
 

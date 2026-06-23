@@ -72,26 +72,37 @@ export function SubscriptionProvider({ children }) {
     if (!user) return;
 
     const supabase = createClient();
-    
-    const channel = supabase
-      .channel("subscriptions")
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "subscriptions",
-          filter: `user_id=eq.${user.id}`,
-        },
-        (payload) => {
-          console.log("🔔 [SubscriptionProvider] Real-time Postgres change detected:", payload);
-          fetchSubscription();
-        }
-      )
-      .subscribe();
+    let channel;
+
+    const timer = setTimeout(() => {
+      try {
+        channel = supabase
+          .channel(`subscriptions-${user.id}`)
+          .on(
+            "postgres_changes",
+            {
+              event: "*",
+              schema: "public",
+              table: "subscriptions",
+              filter: `user_id=eq.${user.id}`,
+            },
+            () => {
+              fetchSubscription();
+            }
+          )
+          .subscribe((status) => {
+            if (status === "CHANNEL_ERROR") {
+              console.warn("SubscriptionProvider: realtime channel error");
+            }
+          });
+      } catch (err) {
+        console.warn("SubscriptionProvider: failed to set up realtime channel:", err.message);
+      }
+    }, 0);
 
     return () => {
-      if (typeof supabase.removeChannel === "function") {
+      clearTimeout(timer);
+      if (channel && typeof supabase.removeChannel === "function") {
         supabase.removeChannel(channel);
       }
     };

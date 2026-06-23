@@ -14,14 +14,11 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
-  ShieldCheck,
   Shield,
   User,
   Receipt,
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useSubscription, PLAN_LABELS } from "@/hooks/useSubscription";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 const BASE_NAV_SECTIONS = [
@@ -52,7 +49,6 @@ const BASE_NAV_SECTIONS = [
 export default function DashboardSidebar({ collapsed, onToggle }) {
   const pathname = usePathname();
   const { user, profile, signOut } = useAuth();
-  const { subscription, status } = useSubscription();
 
   // Admin detection — matches the pattern used across the codebase
   const isAdmin = profile?.role === "admin" || user?.email?.includes("admin") || user?.email?.startsWith("admin@");
@@ -81,11 +77,6 @@ export default function DashboardSidebar({ collapsed, onToggle }) {
     profile?.full_name ||
     user?.email?.split("@")[0] ||
     "Member";
-
-  const tierLabel =
-    status === "active" || status === "cancelled"
-      ? PLAN_LABELS[subscription?.plan_type] || "Member"
-      : "No Active Plan";
 
   return (
     <motion.aside
@@ -118,23 +109,6 @@ export default function DashboardSidebar({ collapsed, onToggle }) {
               <p className="text-xs font-bold text-foreground truncate">{displayName}</p>
               <p className="text-[10px] text-muted-foreground truncate">{user?.email}</p>
             </div>
-          </motion.div>
-        )}
-
-        {/* Subscription status pill */}
-        {!collapsed && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mt-2.5"
-          >
-            <Badge
-              variant={status === "active" ? "accent" : "outline"}
-              className="text-[9px] w-full justify-center py-1"
-            >
-              {status === "active" && <ShieldCheck className="w-2.5 h-2.5 mr-1" />}
-              {tierLabel}
-            </Badge>
           </motion.div>
         )}
       </div>
