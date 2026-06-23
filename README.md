@@ -13,6 +13,13 @@ This is a full-stack SaaS platform built for real-world deployment, featuring St
 ---
 
 ## Screenshots
+![LoginPage](public/Screenshot%202026-06-23%20201227.png)
+![DASHBOARD](public/Screenshot%202026-06-23%20203459.png)
+![DRAW PAGE](public/Screenshot%202026-06-23%20203435.png)
+![ADMIN PAGE](public/Screenshot%202026-06-23%20203405.png)
+![LEADERBOARD PAGE](public/Screenshot%202026-06-23%20203531.png)
+![CHARITY PAGE](public/Screenshot%202026-06-23%20203612.png)
+![Score Tracker](public/Screenshot%202026-06-23%20203635.png)
 
 > _A visual walkthrough of the platform's core surfaces._
 
