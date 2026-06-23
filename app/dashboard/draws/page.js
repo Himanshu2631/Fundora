@@ -57,6 +57,9 @@ export default function DrawsPage() {
     draws, 
     userEntries, 
     claims,
+    participations,
+    setParticipationStatus,
+    autoGenerateEntriesIfEligible,
     submitClaim,
     reviewClaim,
     fetchAllClaims,
@@ -112,43 +115,53 @@ export default function DrawsPage() {
     }
   }, [user, isAdmin, fetchAllClaims]);
 
-  // 4. Fetch draw entries counts for odds calculation
-  const [drawCounts, setDrawCounts] = React.useState({});
+  // 3b. Auto-generate entries when page loads or eligibility state changes
+  useEffect(() => {
+    if (isLoaded && subStatus) {
+      autoGenerateEntriesIfEligible(dynamicGivingScore, subscription?.plan_type, subStatus);
+    }
+  }, [isLoaded, subStatus, draws, participations, userEntries, dynamicGivingScore, subscription?.plan_type, autoGenerateEntriesIfEligible]);
+
+  // 4. Fetch draw entries stats for odds calculation
+  const [drawStats, setDrawStats] = React.useState({});
   
   React.useEffect(() => {
-    const fetchCounts = async () => {
+    const fetchStats = async () => {
       const supabase = createClient();
-      const counts = {};
+      const stats = {};
       for (const draw of draws) {
-        const { count, data } = await supabase
+        const { data, error } = await supabase
           .from("draw_entries")
-          .select("id", { count: "exact", head: true })
+          .select("user_id")
           .eq("draw_id", draw.id);
-        counts[draw.id] = count !== null && count !== undefined ? count : (data ? data.length : 0);
+        
+        if (data) {
+          const tickets = data.length;
+          const uniqueUsers = new Set(data.map(d => d.user_id)).size;
+          stats[draw.id] = { tickets, uniqueUsers };
+        } else {
+          stats[draw.id] = { tickets: 0, uniqueUsers: 0 };
+        }
       }
-      setDrawCounts(counts);
+      setDrawStats(stats);
     };
     if (draws.length > 0) {
-      fetchCounts();
+      fetchStats();
     }
   }, [draws, userEntries]);
 
-  const handleJoinDraw = async (drawId) => {
+  const handleSetParticipation = async (drawId, status) => {
     startTransition(async () => {
       try {
-        await registerForDraw(drawId, dynamicGivingScore, subscription?.plan_type, subStatus);
+        await setParticipationStatus(
+          drawId,
+          status,
+          dynamicGivingScore,
+          subscription?.plan_type,
+          subStatus
+        );
       } catch (err) {
-        console.error("Join draw error:", err);
-      }
-    });
-  };
-
-  const handleLeaveDraw = async (drawId) => {
-    startTransition(async () => {
-      try {
-        await unregisterForDraw(drawId);
-      } catch (err) {
-        console.error("Leave draw error:", err);
+        console.error("Set participation error:", err);
       }
     });
   };
@@ -228,9 +241,34 @@ export default function DrawsPage() {
     );
   }
 
-  const activeDraws = draws.filter(d => d.status === "active");
-  const upcomingDraws = draws.filter(d => d.status === "upcoming");
-  const completedDraws = draws.filter(d => d.status === "completed");
+  const sortedDraws = React.useMemo(() => {
+    if (!draws) return [];
+    return [...draws].sort((a, b) => {
+      if (a.status === "active" && b.status !== "active") return -1;
+      if (b.status === "active" && a.status !== "active") return 1;
+
+      const isACompleted = a.status === "completed" || a.status === "drawn";
+      const isBCompleted = b.status === "completed" || b.status === "drawn";
+      if (isACompleted && !isBCompleted) return -1;
+      if (isBCompleted && !isACompleted) return 1;
+      if (isACompleted && isBCompleted) {
+        return new Date(b.draw_date) - new Date(a.draw_date);
+      }
+
+      const isAUpcoming = a.status === "upcoming";
+      const isBUpcoming = b.status === "upcoming";
+      if (isAUpcoming && !isBUpcoming) return -1;
+      if (isBUpcoming && !isAUpcoming) return 1;
+      if (isAUpcoming && isBUpcoming) {
+        return new Date(b.draw_date) - new Date(a.draw_date);
+      }
+      return 0;
+    });
+  }, [draws]);
+
+  const activeDraws = sortedDraws.filter(d => d.status === "active");
+  const upcomingDraws = sortedDraws.filter(d => d.status === "upcoming");
+  const completedDraws = sortedDraws.filter(d => d.status === "completed" || d.status === "drawn");
 
   // Calculate user wins
   const userWins = [];
@@ -451,9 +489,11 @@ export default function DrawsPage() {
                 <div className="space-y-6">
                   {activeDraws.map((draw) => {
                     const tickets = userEntries.filter(e => e.draw_id === draw.id);
-                    const hasJoined = tickets.length > 0;
+                    const drawPart = participations.find(p => p.draw_id === draw.id);
+                    const isParticipating = drawPart?.status === "participating";
+                    const isNotInterested = drawPart?.status === "not_interested";
                     
-                    const totalDrawTickets = drawCounts[draw.id] || 0;
+                    const totalDrawTickets = drawStats[draw.id]?.tickets || 0;
                     const userTicketsCount = tickets.length;
                     const odds = totalDrawTickets > 0 ? ((userTicketsCount / totalDrawTickets) * 100).toFixed(2) : "0.00";
 
@@ -475,8 +515,8 @@ export default function DrawsPage() {
                               </CardDescription>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Badge variant={hasJoined ? "success" : "outline"} className="uppercase font-bold">
-                                {hasJoined ? "✓ Joined" : "Not Participating"}
+                              <Badge variant={isParticipating ? "success" : isNotInterested ? "destructive" : "outline"} className="uppercase font-bold">
+                                {isParticipating ? "✓ Participating" : isNotInterested ? "Not Interested" : "Awaiting Choice"}
                               </Badge>
                               <Badge variant="accent" className="uppercase">
                                 {draw.status}
@@ -486,7 +526,7 @@ export default function DrawsPage() {
                         </CardHeader>
                         <CardContent className="pt-6 space-y-6">
                           {/* Draw Information Grid */}
-                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 text-xs">
                             <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl">
                               <span className="text-[9px] font-bold uppercase text-muted-foreground block">Closing Date</span>
                               <span className="text-xs font-bold text-foreground">
@@ -500,6 +540,14 @@ export default function DrawsPage() {
                             <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl">
                               <span className="text-[9px] font-bold uppercase text-muted-foreground block">Sponsor</span>
                               <span className="text-xs font-bold text-foreground line-clamp-1">{draw.sponsor}</span>
+                            </div>
+                            <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl">
+                              <span className="text-[9px] font-bold uppercase text-muted-foreground block">Registered Users</span>
+                              <span className="text-xs font-bold text-foreground">{(drawStats[draw.id]?.uniqueUsers || 0)} users</span>
+                            </div>
+                            <div className="p-3 bg-secondary/10 border border-border/30 rounded-xl">
+                              <span className="text-[9px] font-bold uppercase text-muted-foreground block">Total Tickets Pool</span>
+                              <span className="text-xs font-bold text-foreground">{(drawStats[draw.id]?.tickets || 0)} tickets</span>
                             </div>
                           </div>
 
@@ -529,7 +577,7 @@ export default function DrawsPage() {
                                 <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center bg-secondary/5 p-4 rounded-xl border border-border/30">
                                   <div>
                                     <span className="text-[10px] text-muted-foreground uppercase font-bold block mb-1">Status</span>
-                                    {hasJoined ? (
+                                    {isParticipating ? (
                                       <p className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
                                         <span className="relative flex h-2 w-2">
                                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -537,34 +585,33 @@ export default function DrawsPage() {
                                         </span>
                                         Participating with {userTicketsCount} {userTicketsCount === 1 ? "ticket" : "tickets"} (Odds: {odds}%)
                                       </p>
+                                    ) : isNotInterested ? (
+                                      <p className="text-xs font-semibold text-destructive">Not interested in this draw</p>
                                     ) : (
-                                      <p className="text-xs font-semibold text-muted-foreground">Not participating yet</p>
+                                      <p className="text-xs font-semibold text-muted-foreground">Select your participation choice</p>
                                     )}
                                   </div>
-                                  <div>
-                                    {hasJoined ? (
-                                      <Button
-                                        onClick={() => handleLeaveDraw(draw.id)}
-                                        variant="destructive"
-                                        size="sm"
-                                        className="font-bold uppercase tracking-wider text-[10px] h-9"
-                                      >
-                                        Leave Draw
-                                      </Button>
-                                    ) : (
-                                      <Button
-                                        onClick={() => handleJoinDraw(draw.id)}
-                                        variant="accent"
-                                        size="sm"
-                                        className="font-bold uppercase tracking-wider text-[10px] h-9"
-                                      >
-                                        Join Draw
-                                      </Button>
-                                    )}
+                                  <div className="flex gap-2">
+                                    <Button
+                                      onClick={() => handleSetParticipation(draw.id, "participating")}
+                                      variant={isParticipating ? "accent" : "outline"}
+                                      size="sm"
+                                      className="font-bold uppercase tracking-wider text-[10px] h-9"
+                                    >
+                                      Participate
+                                    </Button>
+                                    <Button
+                                      onClick={() => handleSetParticipation(draw.id, "not_interested")}
+                                      variant={isNotInterested ? "destructive" : "outline"}
+                                      size="sm"
+                                      className="font-bold uppercase tracking-wider text-[10px] h-9"
+                                    >
+                                      Not Interested
+                                    </Button>
                                   </div>
                                 </div>
 
-                                {hasJoined && (
+                                {isParticipating && tickets.length > 0 && (
                                   <div className="space-y-3">
                                     <div className="flex items-center justify-between text-xs mb-1">
                                       <span className="font-semibold text-muted-foreground">Your Ticket Details:</span>

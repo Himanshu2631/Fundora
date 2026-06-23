@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { createClient } from "@/lib/supabase";
 import { 
   getDraws, 
   getUserEntries, 
@@ -14,7 +15,9 @@ import {
   getWinnerClaims,
   getUserClaims,
   updateDrawStatus,
-  unregisterFromDraw
+  unregisterFromDraw,
+  getDrawParticipations,
+  updateDrawParticipation
 } from "@/services/drawService";
 
 export function useDraws() {
@@ -22,6 +25,7 @@ export function useDraws() {
   const [draws, setDraws] = useState([]);
   const [userEntries, setUserEntries] = useState([]);
   const [claims, setClaims] = useState([]);
+  const [participations, setParticipations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -45,9 +49,13 @@ export function useDraws() {
 
         const claimsData = await getUserClaims(user.id);
         setClaims(claimsData);
+
+        const participationsData = await getDrawParticipations(user.id);
+        setParticipations(participationsData);
       } else {
         setUserEntries([]);
         setClaims([]);
+        setParticipations([]);
       }
     } catch (err) {
       // Silently handle missing-table errors — dashboard degrades gracefully
@@ -69,8 +77,44 @@ export function useDraws() {
       }
     };
     run();
+
+    // Set up Realtime database listener
+    const supabase = createClient();
+    const channel = supabase
+      .channel("draws-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "draws" },
+        () => {
+          if (active) fetchData();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "draw_entries" },
+        () => {
+          if (active) fetchData();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "winner_submissions" },
+        () => {
+          if (active) fetchData();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "draw_participation" },
+        () => {
+          if (active) fetchData();
+        }
+      )
+      .subscribe();
+
     return () => {
       active = false;
+      supabase.removeChannel(channel);
     };
   }, [fetchData]);
 
@@ -122,6 +166,78 @@ export function useDraws() {
       setLoading(false);
     }
   };
+
+  /**
+   * Set user's participation status ('participating' or 'not_interested')
+   */
+  const setParticipationStatus = async (drawId, status, givingScore, subscriptionTier, subscriptionStatus) => {
+    if (!user) throw new Error("Must be logged in to update participation status.");
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await updateDrawParticipation(user.id, drawId, status);
+      const updated = await getDrawParticipations(user.id);
+      setParticipations(updated);
+
+      if (status === "participating") {
+        if (subscriptionStatus === "active" || subscriptionStatus === "trialing") {
+          await generateEntriesForUser(
+            user.id,
+            drawId,
+            givingScore,
+            subscriptionTier,
+            subscriptionStatus
+          );
+          const updatedEntries = await getUserEntries(user.id);
+          setUserEntries(updatedEntries);
+        }
+      } else if (status === "not_interested") {
+        await unregisterFromDraw(user.id, drawId);
+        const updatedEntries = await getUserEntries(user.id);
+        setUserEntries(updatedEntries);
+      }
+      return result;
+    } catch (err) {
+      setError(err.message || "Failed to update participation.");
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Auto-generate entries check if user is participating and eligible but doesn't have entries
+   */
+  const autoGenerateEntriesIfEligible = useCallback(async (
+    givingScore,
+    subscriptionTier,
+    subscriptionStatus
+  ) => {
+    if (!user || draws.length === 0 || participations.length === 0) return;
+    if (subscriptionStatus !== "active" && subscriptionStatus !== "trialing") return;
+
+    for (const draw of draws) {
+      const participation = participations.find(p => p.draw_id === draw.id);
+      if (participation && participation.status === "participating") {
+        const hasEntries = userEntries.some(e => e.draw_id === draw.id);
+        if (!hasEntries) {
+          try {
+            await generateEntriesForUser(
+              user.id,
+              draw.id,
+              givingScore,
+              subscriptionTier,
+              subscriptionStatus
+            );
+            const updatedEntries = await getUserEntries(user.id);
+            setUserEntries(updatedEntries);
+          } catch (e) {
+            console.error("Auto generate entries failed:", e.message);
+          }
+        }
+      }
+    }
+  }, [user, draws, participations, userEntries]);
 
   /**
    * Record winning numbers for a draw (Admin operation).
@@ -266,11 +382,14 @@ export function useDraws() {
     draws,
     userEntries,
     claims,
+    participations,
     loading,
     error,
     refresh: fetchData,
     registerForDraw,
     unregisterForDraw,
+    setParticipationStatus,
+    autoGenerateEntriesIfEligible,
     enterWinningNumbers,
     addNewDraw,
     completeDraw,

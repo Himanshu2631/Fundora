@@ -505,3 +505,43 @@ export async function getWinners(drawId, supabaseClient) {
 
   return entries || [];
 }
+
+/**
+ * Fetch all draw participation records for a user.
+ */
+export async function getDrawParticipations(userId, supabaseClient) {
+  const supabase = supabaseClient || createClient();
+  const { data, error } = await supabase
+    .from("draw_participation")
+    .select("*")
+    .eq("user_id", userId);
+
+  if (error) {
+    console.error(`getDrawParticipations error:`, error.code, error.message);
+    return [];
+  }
+  return data || [];
+}
+
+/**
+ * Update (upsert) draw participation state for a user.
+ */
+export async function updateDrawParticipation(userId, drawId, status, supabaseClient) {
+  const supabase = supabaseClient || createClient();
+  const { data, error } = await supabase
+    .from("draw_participation")
+    .upsert({
+      user_id: userId,
+      draw_id: drawId,
+      status: status,
+      updated_at: new Date().toISOString()
+    }, { onConflict: "user_id,draw_id" })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("updateDrawParticipation error:", error.code, error.message);
+    throw new Error(error.message || "Failed to update participation state");
+  }
+  return data;
+}

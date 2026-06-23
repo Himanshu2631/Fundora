@@ -298,20 +298,44 @@ export default function DashboardOverview() {
     return top3;
   }, [leaderboard]);
 
-  const claims = Array.isArray(rawClaims) && rawClaims.length > 0 ? rawClaims : [
-    { id: "CLM-001", draw_title: "Patagonia Eco Retreat", ticket_number: "TKT-0089", status: "approved", claim_date: "2026-06-12", score: "+100" },
-    { id: "CLM-002", draw_title: "Donation Match Rewards", ticket_number: "TKT-0412", status: "paid", claim_date: "2026-05-18", score: "+250" },
-    { id: "CLM-003", draw_title: "Community Impact Grants", ticket_number: "TKT-0952", status: "pending", claim_date: "2026-06-20", score: "+50" },
-  ];
+  const claims = Array.isArray(rawClaims) ? rawClaims : [];
 
-  const [timeLeft, setTimeLeft] = useState({ days: 4, hours: 11, minutes: 24, seconds: 45 });
-  const activeDraw = draws && draws.length > 0 ? draws[0] : null;
-  const activePrize = activeDraw ? (typeof activeDraw.prize_value === 'number' && activeDraw.prize_value > 0 ? `$${activeDraw.prize_value.toLocaleString()}` : activeDraw.prize || "Exclusive Prize") : "$24,950";
+  const sortedDraws = useMemo(() => {
+    if (!draws) return [];
+    return [...draws].sort((a, b) => {
+      if (a.status === "active" && b.status !== "active") return -1;
+      if (b.status === "active" && a.status !== "active") return 1;
+
+      const isACompleted = a.status === "completed" || a.status === "drawn";
+      const isBCompleted = b.status === "completed" || b.status === "drawn";
+      if (isACompleted && !isBCompleted) return -1;
+      if (isBCompleted && !isACompleted) return 1;
+      if (isACompleted && isBCompleted) {
+        return new Date(b.draw_date) - new Date(a.draw_date);
+      }
+
+      const isAUpcoming = a.status === "upcoming";
+      const isBUpcoming = b.status === "upcoming";
+      if (isAUpcoming && !isBUpcoming) return -1;
+      if (isBUpcoming && !isAUpcoming) return 1;
+      if (isAUpcoming && isBUpcoming) {
+        return new Date(b.draw_date) - new Date(a.draw_date);
+      }
+      return 0;
+    });
+  }, [draws]);
+
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const activeDraw = sortedDraws.length > 0 ? sortedDraws[0] : null;
+  const activePrize = activeDraw ? (typeof activeDraw.prize_value === 'number' && activeDraw.prize_value > 0 ? `$${activeDraw.prize_value.toLocaleString()}` : activeDraw.prize || "Exclusive Prize") : "No Active Draws";
 
   useEffect(() => {
-    const targetDate = activeDraw?.draw_date 
-      ? new Date(activeDraw.draw_date)
-      : new Date(Date.now() + 4 * 24 * 3600000 + 11 * 3600000 + 24 * 60000 + 45000);
+    if (!activeDraw || activeDraw.status === "completed" || activeDraw.status === "drawn") {
+      setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      return;
+    }
+
+    const targetDate = new Date(activeDraw.draw_date);
 
     const timer = setInterval(() => {
       const now = new Date();
@@ -328,7 +352,7 @@ export default function DashboardOverview() {
       setTimeLeft({ days, hours, minutes, seconds });
     }, 1000);
     return () => clearInterval(timer);
-  }, [draws, activeDraw]);
+  }, [activeDraw]);
 
   const monthlyContribution = PLAN_PRICES[subscription?.plan_type] ?? 0;
   const hasActivePlan = status === "active" || status === "cancelled";
