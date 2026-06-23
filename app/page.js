@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, ShieldCheck, Trophy, Sparkles, Heart, Check, HelpCircle, Gift, Users, CreditCard, Activity, Award, Ticket, Zap } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 
 export default function Home() {
+  const { user } = useAuth();
   const [isYearly, setIsYearly] = useState(false);
   const [stats, setStats] = useState({
     activeMembers: 148,
@@ -287,7 +289,7 @@ export default function Home() {
                   className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full sm:w-auto"
                 >
                   <Button asChild variant="accent" size="lg">
-                    <Link href="/signup">
+                    <Link href={user ? "/dashboard" : "/signup"}>
                       Subscribe & Start Winning <ArrowRight className="w-5 h-5" />
                     </Link>
                   </Button>
