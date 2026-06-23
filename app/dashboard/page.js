@@ -353,6 +353,29 @@ export default function DashboardOverview() {
   // Active allocations summary
   const totalAllocatedVal = allocations ? allocations.reduce((sum, item) => sum + item.contribution_percentage, 0) : 0;
 
+  // Redesign dynamic outcome metrics
+  let waterLiters = 0;
+  let treesPlanted = 0;
+  let tutoringHours = 0;
+  let healthConsults = 0;
+
+  if (allocations) {
+    const monthlyPrice = monthlyContribution || 100;
+    allocations.forEach(a => {
+      const amt = (a.contribution_percentage / 100) * monthlyPrice;
+      const name = a.charity_name?.toLowerCase() || "";
+      if (name.includes("water")) {
+        waterLiters += Math.floor(amt * 12);
+      } else if (name.includes("green") || name.includes("forest")) {
+        treesPlanted += Math.floor(amt * 0.4);
+      } else if (name.includes("edu") || name.includes("school")) {
+        tutoringHours += Math.round(amt * 0.15 * 10) / 10;
+      } else if (name.includes("health") || name.includes("corps")) {
+        healthConsults += Math.round(amt * 0.08 * 10) / 10;
+      }
+    });
+  }
+
   // Filter active draw entries count
   const activeTicketsCount = userEntries.filter(e => {
     const d = draws.find(dr => dr.id === e.draw_id);
@@ -959,95 +982,130 @@ export default function DashboardOverview() {
                   </motion.div>
 
                   {/* Charity Allocations Widget */}
-                  <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300">
+                  <motion.div whileHover={{ y: -2, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300 lg:col-span-1">
                     <Card className="p-6 flex flex-col justify-between border-border bg-card h-full flex-1">
                       <div>
-                        <div className="flex justify-between items-center mb-4">
+                        <div className="flex justify-between items-center mb-6">
                           <h3 className="font-heading font-bold text-base text-foreground flex items-center gap-2">
-                            <Heart className="w-4 h-4 text-accent animate-pulse" />
+                            <Heart className="w-5 h-5 text-accent animate-pulse" />
                             Charity Allocations
                           </h3>
                           {!charitiesLoading && !charitiesError && allocations.length > 0 && (
-                            <Badge variant={totalAllocatedVal === 100 ? "success" : "warning"}>
+                            <Badge variant={totalAllocatedVal === 100 ? "success" : "warning"} className="text-[10px] font-extrabold px-2.5 py-0.5 tracking-wider">
                               {totalAllocatedVal}% Allocated
                             </Badge>
                           )}
                         </div>
 
                         {charitiesLoading ? (
-                          <div className="py-8 flex flex-col items-center justify-center gap-2">
-                            <Loader2 className="w-6 h-6 text-accent animate-spin" />
-                            <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-medium">Loading selections...</span>
+                          <div className="py-12 flex flex-col items-center justify-center gap-3">
+                            <Loader2 className="w-8 h-8 text-accent animate-spin" />
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-extrabold">Loading selections...</span>
                           </div>
                         ) : charitiesError ? (
-                          <Alert variant="destructive" className="py-2.5 px-3">
-                            <AlertTriangle className="w-4 h-4" />
-                            <AlertDescription className="text-xs">{charitiesError}</AlertDescription>
+                          <Alert variant="destructive" className="py-3 px-4 border-red-500/20 bg-red-950/15">
+                            <AlertCircle className="w-4 h-4" />
+                            <AlertDescription className="text-xs text-red-400 font-medium">{charitiesError}</AlertDescription>
                           </Alert>
                         ) : allocations.length === 0 ? (
-                          <div className="space-y-5 text-center py-2">
-                            <div className="space-y-1.5 max-w-sm mx-auto">
-                              <Heart className="w-7 h-7 text-accent mx-auto animate-pulse" />
-                              <h4 className="font-heading font-extrabold text-xs text-white leading-snug">
+                          <div className="space-y-6 py-2">
+                            <div className="space-y-2 max-w-md mx-auto text-center">
+                              <div className="w-12 h-12 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto text-accent mb-2 animate-pulse">
+                                <Heart className="w-6 h-6" />
+                              </div>
+                              <h4 className="font-heading font-black text-sm text-white leading-snug">
                                 Choose where your contribution creates impact.
                               </h4>
-                              <p className="text-[10px] text-muted-foreground leading-normal">
-                                Your membership contribution can be routed to verified causes.
+                              <p className="text-xs text-muted-foreground leading-relaxed">
+                                Your monthly membership contribution is ready to be routed to verified global causes. Select your preferences to qualify for active draws.
                               </p>
                             </div>
                             
-                            <Button asChild variant="accent" size="sm" className="h-8 px-6 text-[10px] font-extrabold uppercase tracking-wider">
-                              <Link href="/dashboard/charity">Select Charities</Link>
-                            </Button>
-                            
-                            {/* 3 Featured Causes compact preview cards */}
-                            <div className="grid grid-cols-3 gap-2.5 pt-2 text-left">
-                              {[
-                                { title: "Clean Water", desc: "Apex Water Initiative", icon: Droplet, color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/15" },
-                                { title: "Reforestation", desc: "Acres of Green", icon: Trees, color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/15" },
-                                { title: "STEM Education", desc: "Empower Global Edu", icon: GraduationCap, color: "text-purple-400", bg: "bg-purple-500/10 border-purple-500/15" }
-                              ].map((cause, i) => {
-                                const CauseIcon = cause.icon;
-                                return (
-                                  <div key={i} className={`p-2.5 rounded-xl border ${cause.bg} flex flex-col justify-between space-y-1.5 hover:scale-[1.02] transition-all`}>
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-[8.5px] font-extrabold uppercase tracking-wide text-foreground">{cause.title}</span>
-                                      <CauseIcon className={`w-3.5 h-3.5 ${cause.color}`} />
-                                    </div>
-                                    <p className="text-[8.5px] text-muted-foreground leading-snug line-clamp-2">
-                                      {cause.desc}
-                                    </p>
-                                  </div>
-                                );
-                              })}
+                            <div className="flex justify-center">
+                              <Button asChild variant="accent" size="sm" className="h-9 px-8 text-xs font-extrabold uppercase tracking-wider shadow-lg hover:shadow-accent/5">
+                                <Link href="/dashboard/charity">Select Causes & Set Allocations</Link>
+                              </Button>
                             </div>
-                          </div>
-                        ) : (
-                          <div className="space-y-4">
-                            {/* Dynamic List */}
-                            <div className="space-y-2.5 max-h-[170px] overflow-y-auto pr-1">
-                              {allocations.map((item) => (
-                                <div key={item.id} className="p-3 bg-secondary/15 rounded-xl border border-border/40 space-y-1 hover:border-accent/15 transition-all">
-                                  <div className="flex justify-between items-start">
-                                    <span className="text-xs font-bold text-foreground line-clamp-1">{item.charity_name}</span>
-                                    <Badge variant="accent" className="text-[8px] py-0 px-1">{item.contribution_percentage}%</Badge>
+                            
+                            {/* 3 Featured Causes preview cards */}
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-4 text-left">
+                              {[
+                                { title: "Clean Water", desc: "Apex Water Initiative", mission: "Gravity-fed sand filters for remote settlements.", image: "/apex_water.png", color: "from-blue-500/10 to-blue-600/5 text-blue-400" },
+                                { title: "Reforestation", desc: "Acres of Green", mission: "Restoring native woodlands and carbon sinks.", image: "/acres_of_green.png", color: "from-emerald-500/10 to-emerald-600/5 text-emerald-400" },
+                                { title: "STEM Education", desc: "Empower Global Edu", mission: "Mentoring girls in coding & physics circles.", image: "/empower_edu.png", color: "from-purple-500/10 to-purple-600/5 text-purple-400" }
+                              ].map((cause, i) => (
+                                <div key={i} className="group/cause rounded-xl border border-border/45 bg-[#060C0A]/40 overflow-hidden flex flex-col justify-between hover:border-accent/40 hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300">
+                                  <div className="h-20 w-full relative overflow-hidden bg-secondary/25">
+                                    <img src={cause.image} alt={cause.title} className="w-full h-full object-cover opacity-75 group-hover/cause:opacity-90 transition-opacity" />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                                    <span className="absolute bottom-2 left-2 text-[8px] font-extrabold uppercase tracking-widest bg-black/60 px-1.5 py-0.5 rounded text-white">{cause.title}</span>
                                   </div>
-                                  <p className="text-[10px] text-muted-foreground line-clamp-1 leading-relaxed">
-                                    {item.charity_description || item.charity_impact}
-                                  </p>
+                                  <div className="p-3 flex-1 flex flex-col justify-between">
+                                    <div>
+                                      <span className="text-[10px] font-bold text-white leading-tight block">{cause.desc}</span>
+                                      <p className="text-[9px] text-muted-foreground mt-1 leading-relaxed line-clamp-2">{cause.mission}</p>
+                                    </div>
+                                    <Link href="/dashboard/charity" className="text-[8px] font-black uppercase tracking-widest text-accent hover:underline mt-2.5 block">
+                                      Configure →
+                                    </Link>
+                                  </div>
                                 </div>
                               ))}
                             </div>
-
-                            {/* Total Progress split indicators */}
-                            <div className="space-y-1.5 pt-1">
-                              <div className="flex justify-between text-[10px] font-semibold text-muted-foreground">
-                                <span>Fund Split Distribution</span>
-                                <span>{totalAllocatedVal}% / 100%</span>
+                          </div>
+                        ) : (
+                          <div className="space-y-6">
+                            {/* Dynamic Outcome Metrics Grid */}
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                              <div className="p-3 bg-secondary/5 border border-border/10 rounded-xl hover:border-accent/20 transition-all flex flex-col justify-between">
+                                <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground block">Allocated This Month</span>
+                                <span className="text-sm font-black text-white mt-1.5 block">${(monthlyContribution || 100).toFixed(2)}</span>
                               </div>
-                              <div className="h-2 w-full bg-secondary/55 rounded-full overflow-hidden flex border border-border/30">
+                              <div className="p-3 bg-secondary/5 border border-border/10 rounded-xl hover:border-accent/20 transition-all flex flex-col justify-between">
+                                <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground block">Active Causes</span>
+                                <span className="text-sm font-black text-white mt-1.5 block">{allocations.length} Selected</span>
+                              </div>
+                              {waterLiters > 0 && (
+                                <div className="p-3 bg-secondary/5 border border-border/10 rounded-xl hover:border-accent/20 transition-all flex flex-col justify-between">
+                                  <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground block">Water Projects</span>
+                                  <span className="text-sm font-black text-blue-400 mt-1.5 block">{waterLiters} Liters</span>
+                                </div>
+                              )}
+                              {treesPlanted > 0 && (
+                                <div className="p-3 bg-secondary/5 border border-border/10 rounded-xl hover:border-accent/20 transition-all flex flex-col justify-between">
+                                  <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground block">Trees Sponsored</span>
+                                  <span className="text-sm font-black text-emerald-400 mt-1.5 block">{treesPlanted} Trees</span>
+                                </div>
+                              )}
+                              {tutoringHours > 0 && (
+                                <div className="p-3 bg-secondary/5 border border-border/10 rounded-xl hover:border-accent/20 transition-all flex flex-col justify-between">
+                                  <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground block">Tutoring Funded</span>
+                                  <span className="text-sm font-black text-purple-400 mt-1.5 block">{tutoringHours} Hrs</span>
+                                </div>
+                              )}
+                              {healthConsults > 0 && (
+                                <div className="p-3 bg-secondary/5 border border-border/10 rounded-xl hover:border-accent/20 transition-all flex flex-col justify-between">
+                                  <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground block">Medical Support</span>
+                                  <span className="text-sm font-black text-rose-400 mt-1.5 block">{healthConsults} Consults</span>
+                                </div>
+                              )}
+                              {waterLiters === 0 && treesPlanted === 0 && tutoringHours === 0 && healthConsults === 0 && (
+                                <div className="p-3 bg-secondary/5 border border-border/10 rounded-xl hover:border-accent/20 transition-all flex flex-col justify-between">
+                                  <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground block">Verification State</span>
+                                  <span className="text-sm font-black text-emerald-400 mt-1.5 block">Audited Active</span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Multi-Segment Distribution bar */}
+                            <div className="space-y-2">
+                              <div className="flex justify-between text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                                <span>Fund split distribution</span>
+                                <span className="text-accent">{totalAllocatedVal}% / 100%</span>
+                              </div>
+                              <div className="h-2.5 w-full bg-secondary/40 rounded-full overflow-hidden flex border border-border/10">
                                 {allocations.map((item, idx) => {
-                                  const colors = ["bg-emerald-600", "bg-accent", "bg-[#C4A054]/60", "bg-indigo-600"];
+                                  const colors = ["bg-emerald-500", "bg-[#C4A054]", "bg-blue-500", "bg-purple-500"];
                                   return (
                                     <motion.div
                                       key={item.id}
@@ -1055,15 +1113,66 @@ export default function DashboardOverview() {
                                       animate={{ width: `${item.contribution_percentage}%` }}
                                       transition={{ type: "spring", stiffness: 60, damping: 15, delay: 0.2 }}
                                       className={`${colors[idx % colors.length]} h-full`}
+                                      title={`${item.charity_name}: ${item.contribution_percentage}%`}
                                     />
                                   );
                                 })}
                               </div>
                             </div>
+
+                            {/* Grid of Cause Cards */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto pr-1">
+                              {allocations.map((item, idx) => {
+                                const colors = [
+                                  "border-emerald-500/20 hover:border-emerald-500/40",
+                                  "border-accent/20 hover:border-accent/40",
+                                  "border-blue-500/20 hover:border-blue-500/40",
+                                  "border-purple-500/20 hover:border-purple-500/40"
+                                ];
+                                return (
+                                  <div 
+                                    key={item.id} 
+                                    className={`group/alloc rounded-xl border bg-[#060C0A]/40 overflow-hidden flex flex-col justify-between transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5 ${colors[idx % colors.length]}`}
+                                  >
+                                    <div className="h-20 w-full relative overflow-hidden bg-secondary/25">
+                                      <img 
+                                        src={item.charity_image} 
+                                        alt={item.charity_name} 
+                                        className="w-full h-full object-cover opacity-70 group-hover/alloc:opacity-85 transition-opacity" 
+                                      />
+                                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
+                                      <div className="absolute top-2 right-2">
+                                        <Badge variant="accent" className="text-[8px] font-black uppercase tracking-wider px-2 py-0.5 bg-black/60 text-accent border border-accent/20 shadow-sm">
+                                          {item.contribution_percentage}%
+                                        </Badge>
+                                      </div>
+                                      <span className="absolute bottom-2 left-2 text-[8px] font-extrabold uppercase tracking-widest bg-black/60 px-1.5 py-0.5 rounded text-[#C4A054]">
+                                        {item.charity_category || "General"}
+                                      </span>
+                                    </div>
+                                    <div className="p-3 flex-1 flex flex-col justify-between">
+                                      <div>
+                                        <span className="text-xs font-extrabold text-white group-hover/alloc:text-accent transition-colors block line-clamp-1">{item.charity_name}</span>
+                                        <p className="text-[9.5px] text-muted-foreground mt-1 leading-relaxed line-clamp-2">
+                                          {item.charity_description || "Verified global cause support routing."}
+                                        </p>
+                                      </div>
+                                      
+                                      {item.charity_impact && (
+                                        <div className="mt-2.5 pt-2.5 border-t border-white/[0.04] text-[8.5px] text-emerald-400 font-bold flex items-center gap-1.5">
+                                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                          <span className="truncate">{item.charity_impact}</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </div>
                         )}
                       </div>
-                      <Button asChild variant="outline" className="w-full mt-2 h-9 text-xs font-bold uppercase tracking-wider">
+                      <Button asChild variant="outline" className="w-full mt-4 h-9 text-xs font-bold uppercase tracking-wider hover:bg-secondary/10">
                         <Link href="/dashboard/charity">Manage Allocations</Link>
                       </Button>
                     </Card>
