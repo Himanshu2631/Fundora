@@ -229,6 +229,10 @@ CREATE POLICY "Admins have full access on profiles"
 -- subscriptions
 CREATE POLICY "Users can view their own subscriptions"
   ON public.subscriptions FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert their own subscriptions"
+  ON public.subscriptions FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update their own subscriptions"
+  ON public.subscriptions FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Admins have full access on subscriptions"
   ON public.subscriptions FOR ALL USING (public.is_admin(auth.uid()));
 
@@ -279,6 +283,10 @@ CREATE POLICY "Admins have full access on winner submissions"
 -- payments
 CREATE POLICY "Users can view their own payments"
   ON public.payments FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can insert their own payments"
+  ON public.payments FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update their own payments"
+  ON public.payments FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Admins have full access on payments"
   ON public.payments FOR ALL USING (public.is_admin(auth.uid()));
 
