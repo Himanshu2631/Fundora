@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import * as React from "react";
 import { useEffect, useTransition } from "react";
@@ -425,7 +425,7 @@ export default function DrawsPage() {
                     </span>
                     <CardTitle className="text-base font-extrabold text-foreground flex items-center gap-2">
                       <Ticket className="w-4 h-4 text-accent" />
-                      {activeDraw ? activeDraw.title : "Eco Prize Bracket"}
+                      {activeDraw ? activeDraw.title : "No Active Draw"}
                     </CardTitle>
                     <CardDescription className="text-xs text-muted-foreground mt-1">
                       {activeDraw ? activeDraw.prize : "Draws reset on the 1st of every month."}
