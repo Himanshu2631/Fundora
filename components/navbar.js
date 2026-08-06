@@ -56,7 +56,7 @@ export default function Navbar() {
       { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
       { name: "Subscription", href: "/dashboard/subscription", icon: CreditCard },
       { name: "Billing & History", href: "/dashboard/billing", icon: Receipt },
-      { name: "My Scores", href: "/dashboard/scores", icon: Trophy },
+      { name: "Impact Scores", href: "/dashboard/scores", icon: Trophy },
       { name: "Charities", href: "/dashboard/charity", icon: Heart },
       { name: "Draws", href: "/dashboard/draws", icon: Ticket },
       { name: "Settings", href: "/dashboard/settings", icon: Settings },

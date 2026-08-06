@@ -30,7 +30,7 @@ const BASE_NAV_SECTIONS = [
       { name: "Overview", href: "/dashboard", icon: LayoutDashboard, exact: true },
       { name: "Subscription", href: "/dashboard/subscription", icon: CreditCard },
       { name: "Billing & History", href: "/dashboard/billing", icon: Receipt },
-      { name: "My Scores", href: "/dashboard/scores", icon: Trophy },
+      { name: "Impact Scores", href: "/dashboard/scores", icon: Trophy },
     ],
   },
   {

@@ -12,7 +12,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { LoadingState } from "@/components/ui/loading-state";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
-import { useScores } from "@/hooks/useScores";
+import { useImpactScores } from "@/hooks/useImpactScores";
 import { useCharities } from "@/hooks/useCharities";
 import { useDraws } from "@/hooks/useDraws";
 import { checkEligibility } from "@/lib/drawValidation";
@@ -66,7 +66,7 @@ export default function DrawsPage() {
   } = useDraws();
 
   const { status: subStatus, subscription } = useSubscription();
-  let { scores, loading: scoresLoading } = useScores();
+  let { impactScores: scores, loading: scoresLoading } = useImpactScores();
   let { allocations, loading: charitiesLoading } = useCharities();
 
   draws = draws || [];
@@ -356,7 +356,7 @@ export default function DrawsPage() {
               }`}>
                 <div>
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-[10px] font-bold text-foreground">Log Rounds</span>
+                    <span className="text-[10px] font-bold text-foreground">Submit Impact</span>
                     {scores.length > 0 ? (
                       <CheckCircle className="w-4 h-4 text-emerald-500" />
                     ) : (
@@ -366,13 +366,13 @@ export default function DrawsPage() {
                   <p className="text-[10.5px] text-muted-foreground leading-relaxed">
                     {scores.length > 0 
                       ? `${scores.length} / 5 Logged` 
-                      : "Register at least one golf score."
+                      : "Register at least one impact score."
                     }
                   </p>
                 </div>
                 {scores.length === 0 && (
                   <Button asChild variant="accent" size="xs" className="w-full">
-                    <Link href="/dashboard/scores">Register Score</Link>
+                    <Link href="/dashboard/scores">Submit Impact Score</Link>
                   </Button>
                 )}
               </div>

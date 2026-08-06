@@ -45,10 +45,10 @@ const ROLES = [
     accentColor: "accent",
     badge: "Member Access",
     headline: "Member Sign In",
-    description: "Manage your golf membership, log scorecards, and enter premium reward draws.",
+    description: "Manage your membership, submit impact scores, and enter premium reward draws.",
     features: [
       "Manage membership",
-      "Submit scores",
+      "Submit impact scores",
       "Participate in draws",
       "Track rewards",
     ],
@@ -175,13 +175,13 @@ export default function Login() {
             {/* Giant Title Stack */}
             <h1 className="font-heading text-2xl sm:text-3xl lg:text-[32px] xl:text-[32px] 2xl:text-[40px] font-black text-white tracking-tight leading-[1.1] md:leading-[1.05]">
               <span className="block hover:text-[#C4A054] transition-colors duration-300">Fund Your Impact.</span>
-              <span className="block hover:text-[#C4A054] transition-colors duration-300">Track Your Performance.</span>
+              <span className="block hover:text-[#C4A054] transition-colors duration-300">Track Your Impact.</span>
               <span className="block text-[#C4A054]">Unlock Monthly Rewards.</span>
             </h1>
 
             {/* Subtitle */}
             <p className="text-xs lg:text-sm text-[#8A9690] max-w-2xl mx-auto leading-relaxed font-medium">
-              Fundora combines golf performance tracking, verified charity contributions, and monthly reward draws into a single membership platform.
+              Fundora combines community impact tracking, verified charity contributions, and monthly reward draws into a single membership platform.
             </p>
           </motion.div>
 

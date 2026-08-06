@@ -95,7 +95,7 @@ export default function Home() {
             activities.push({
               type: "score",
               user: userObj?.full_name || "Member",
-              detail: `logged round of ${s.score} Stableford`,
+              detail: `submitted impact score of ${s.score}`,
               time: s.created_at || s.score_date
             });
           });
@@ -274,14 +274,14 @@ export default function Home() {
                   variants={itemVariants}
                   className="font-heading text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.05] mb-6"
                 >
-                  Golf Standings. Vetted Giving. <span className="text-accent">Monthly Rewards.</span>
+                  Impact Standings. Vetted Giving. <span className="text-accent">Monthly Rewards.</span>
                 </motion.h1>
  
                 <motion.p
                   variants={itemVariants}
                   className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl mb-8"
                 >
-                  Fundora is a member-driven platform where your passion for golf fuels global change. Subscribe to a tax-deductible giving plan, log your golf Stableford rounds to earn entry tickets, and win premium monthly rewards—while 100% of your subscription flows directly to audited, vetted charities.
+                  Fundora is a member-driven platform where your passion for giving fuels global change. Subscribe to a tax-deductible giving plan, log your impact scores to earn entry tickets, and win premium monthly rewards—while 100% of your subscription flows directly to audited, vetted charities.
                 </motion.p>
 
                 <motion.div
@@ -361,7 +361,7 @@ export default function Home() {
                         <p className="text-sm font-extrabold text-foreground mt-0.5">{stats.totalCharitiesSupported}</p>
                       </div>
                       <div className="bg-[#0A1C16]/20 border border-border/40 rounded-xl py-2 px-3">
-                        <p className="text-[9px] font-semibold text-muted-foreground uppercase">Rounds Submitted</p>
+                        <p className="text-[9px] font-semibold text-muted-foreground uppercase">Impact Submissions</p>
                         <p className="text-sm font-extrabold text-foreground mt-0.5">{stats.totalScores}</p>
                       </div>
                     </div>
@@ -391,7 +391,7 @@ export default function Home() {
                     ) : (
                       <div className="bg-[#0A1C16]/10 border border-border/30 rounded-xl p-3 text-center">
                         <p className="text-[11px] text-muted-foreground leading-relaxed">
-                          No recent activity logged in this audit window. Platform activity feed will compile dynamically as new members subscribe and submit rounds.
+                          No recent activity logged in this audit window. Platform activity feed will compile dynamically as new members subscribe and submit impact scores.
                         </p>
                         <Link href="/signup" className="inline-flex items-center gap-1 text-[10px] font-bold text-accent uppercase tracking-wider mt-1.5 hover:underline">
                           Be among the first members to participate <ArrowRight className="w-3 h-3" />
@@ -414,7 +414,7 @@ export default function Home() {
                 How Fundora Works
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground mt-4 leading-relaxed">
-                We bridge your passion for golf with verified global impact. Follow this simple 5-step progression to start giving and winning.
+                We bridge your passion for giving with verified global impact. Follow this simple 5-step progression to start giving and winning.
               </p>
             </div>
  
@@ -431,11 +431,11 @@ export default function Home() {
                 },
                 {
                   step: "02",
-                  title: "2. Enter Scores",
+                  title: "2. Submit Impact Score",
                   icon: Trophy,
-                  category: "Log rounds",
-                  desc: "Log your weekly Stableford golf scores directly in the portal. Your logged scores determine your giving score multiplier.",
-                  tag: "Stableford Points"
+                  category: "Log impact",
+                  desc: "Log your weekly impact scores directly in the portal. Your logged scores determine your giving score multiplier.",
+                  tag: "Impact Points"
                 },
                 {
                   step: "03",
@@ -450,7 +450,7 @@ export default function Home() {
                   title: "4. Receive Draw Tickets",
                   icon: Ticket,
                   category: "Get Entries",
-                  desc: "Your subscription tier and logged golf scores automatically calculate your active tickets for the monthly drawings.",
+                  desc: "Your subscription tier and logged impact scores automatically calculate your active tickets for the monthly drawings.",
                   tag: "Automated Multipliers"
                 },
                 {
@@ -536,16 +536,16 @@ export default function Home() {
                 {
                   step: "02",
                   title: "Scores Are Tracked",
-                  subtitle: "Stableford Score Logs",
+                  subtitle: "Impact Score Logs",
                   icon: Activity,
-                  desc: "Connect your round history or log your golf Stableford score cards. Our system automatically processes your performance and updates leaderboards."
+                  desc: "Connect your impact history or submit your impact scores. Our system automatically processes your activity and updates leaderboards."
                 },
                 {
                   step: "03",
                   title: "Draw Eligibility Begins",
                   subtitle: "Reward Pool Integration",
                   icon: Award,
-                  desc: "Your subscription tier combined with your logged golf scores calculates and registers your entries into the upcoming premium reward pools."
+                  desc: "Your subscription tier combined with your logged impact scores calculates and registers your entries into the upcoming premium reward pools."
                 },
                 {
                   step: "04",
@@ -597,7 +597,7 @@ export default function Home() {
                 Why Members Join Fundora
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground mt-4 leading-relaxed">
-                We bridge the gap between premium rewards and global impact, powered by your passion for golf.
+                We bridge the gap between premium rewards and global impact, powered by your passion for giving.
               </p>
             </div>
 
@@ -640,10 +640,10 @@ export default function Home() {
                 </div>
                 <h3 className="font-heading text-xl font-bold text-foreground mb-4 group-hover:text-accent transition-colors">Community Competition</h3>
                 <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed flex-1 mb-6">
-                  Compete on global performance and giving leaderboards. Log Stableford golf rounds, track detailed game statistics, and connect with a dedicated community of golfers who care.
+                  Compete on global community impact and giving leaderboards. Log impact scores, track detailed impact analytics, and connect with a dedicated community of members who care.
                 </p>
                 <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-wider text-accent">
-                  <span>Leaderboards & Score Tracking</span>
+                  <span>Leaderboards & Impact Tracking</span>
                 </div>
               </div>
             </div>
@@ -810,10 +810,10 @@ export default function Home() {
               <div className="max-w-3xl mx-auto flex flex-col items-center">
                 <Trophy className="w-12 h-12 text-accent mb-8" />
                 <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl font-extrabold text-foreground tracking-tight mb-6">
-                  Ready to Play, Give, and Win?
+                  Ready to Impact, Give, and Win?
                 </h2>
                 <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-xl mb-10">
-                  Choose your subscription level. Route 100% of your contributions to audited charities. Log your golf Stableford scores to multiply your entries, and stand a chance to win monthly premium rewards.
+                  Choose your subscription level. Route 100% of your contributions to audited charities. Log your impact scores to multiply your entries, and stand a chance to win monthly premium rewards.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 w-full justify-center sm:w-auto">
                   <Button asChild variant="accent" size="lg">

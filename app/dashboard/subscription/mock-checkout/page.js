@@ -15,6 +15,7 @@ import {
   Sparkles,
   AlertTriangle
 } from "lucide-react";
+import { useImpactScores } from "@/hooks/useImpactScores";
 
 const PLAN_MAP = {
   price_scout_monthly: { name: "Eco Scout", price: "$10.00", cycle: "monthly", desc: "Automate contributions targeting forest preservation." },
@@ -29,6 +30,7 @@ function MockCheckoutForm() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const priceId = searchParams.get("price_id") || "price_scout_monthly";
+  const { awardActionPoints } = useImpactScores();
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -56,6 +58,11 @@ function MockCheckoutForm() {
 
       if (response.ok) {
         setSuccess(true);
+        try {
+          await awardActionPoints("start_membership");
+        } catch (evtErr) {
+          console.warn("Failed to trigger start_membership points in client:", evtErr);
+        }
         setTimeout(() => {
           router.push(`/dashboard/subscription/success?session_id=mock-session-${Math.random().toString(36).substring(2, 10)}`);
         }, 1500);

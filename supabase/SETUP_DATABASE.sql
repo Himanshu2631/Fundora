@@ -71,6 +71,8 @@ CREATE TABLE IF NOT EXISTS public.scores (
   id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
   user_id uuid REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL,
   score integer NOT NULL DEFAULT 0,
+  action text DEFAULT 'manual_log',
+  description text DEFAULT '',
   score_date date NOT NULL DEFAULT current_date,
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL

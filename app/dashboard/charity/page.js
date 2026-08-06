@@ -4,6 +4,7 @@ import * as React from "react";
 import { useState, useTransition } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCharities } from "@/hooks/useCharities";
+import { useImpactScores } from "@/hooks/useImpactScores";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -57,6 +58,8 @@ export default function CharityDashboard() {
     allocate, 
     removeAllocation 
   } = useCharities();
+  const { awardActionPoints, lastNotification } = useImpactScores();
+  const [actionAlert, setActionAlert] = useState(null);
 
   charities = charities || [];
   allocations = allocations || [];
@@ -252,13 +255,22 @@ export default function CharityDashboard() {
 
       {/* Notifications and errors */}
       <AnimatePresence>
-        {(hookError || feedback) && (
+        {(actionAlert || lastNotification || hookError || feedback) && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="w-full"
+            className="w-full space-y-3"
           >
+            {(actionAlert || lastNotification) && (
+              <Alert variant="success" className="border-accent/40 bg-accent/10">
+                <Sparkles className="w-4 h-4 text-accent" />
+                <AlertTitle>Impact Points Awarded</AlertTitle>
+                <AlertDescription>
+                  {(actionAlert || lastNotification).message || `Action Completed! Earned +${(actionAlert || lastNotification).pointsEarned} pts. Total Impact Score: ${(actionAlert || lastNotification).totalImpactScore} pts.`}
+                </AlertDescription>
+              </Alert>
+            )}
             {hookError && (
               <Alert variant="destructive">
                 <AlertTriangle className="w-4 h-4" />
@@ -628,16 +640,47 @@ export default function CharityDashboard() {
                         )}
                       </div>
 
-                      {/* Auditor efficiency values */}
-                      <div className="grid grid-cols-2 gap-2 bg-secondary/15 p-2 rounded-xl border border-border/40 text-[10.5px]">
-                        <div className="text-center border-r border-border/40">
-                          <span className="text-muted-foreground block text-[8px] uppercase font-bold">Auditor score</span>
-                          <span className="font-bold text-foreground">{charity.auditor_score || charity.auditorScore}/10</span>
-                        </div>
-                        <div className="text-center">
-                          <span className="text-muted-foreground block text-[8px] uppercase font-bold">Efficiency ratio</span>
-                          <span className="font-bold text-foreground">{charity.spending_ratio || charity.spendingRatio}</span>
-                        </div>
+                      {/* Quick Impact Score Actions */}
+                      <div className="flex gap-1.5 pt-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={async () => {
+                            const res = await awardActionPoints("donate_100", { description: `Donated ₹100 to ${charity.name}` });
+                            setActionAlert(res);
+                          }}
+                          className="flex-1 h-7 text-[10px] font-bold bg-accent/10 text-accent hover:bg-accent/20 border border-accent/20"
+                          title="Donate ₹100 to earn +10 Impact Score pts"
+                        >
+                          Donate ₹100 (+10 pts)
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={async () => {
+                            const res = await awardActionPoints("volunteer_campaign", { description: `Volunteered for ${charity.name}` });
+                            setActionAlert(res);
+                          }}
+                          className="h-7 text-[10px] font-bold bg-secondary/30 text-foreground hover:bg-secondary/50 border border-border/40 px-2"
+                          title="Volunteer for campaign to earn +30 Impact Score pts"
+                        >
+                          Volunteer (+30)
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={async () => {
+                            if (typeof navigator !== "undefined" && navigator.clipboard) {
+                              navigator.clipboard.writeText(window.location.href);
+                            }
+                            const res = await awardActionPoints("share_campaign", { description: `Shared campaign ${charity.name}` });
+                            setActionAlert(res);
+                          }}
+                          className="h-7 text-[10px] font-bold bg-secondary/30 text-foreground hover:bg-secondary/50 border border-border/40 px-2"
+                          title="Share campaign link to earn +5 Impact Score pts"
+                        >
+                          Share (+5)
+                        </Button>
                       </div>
 
                       {/* Info & allocate button */}

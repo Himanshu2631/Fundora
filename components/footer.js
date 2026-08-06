@@ -45,7 +45,7 @@ export default function Footer() {
             </li>
             <li>
               <Link href="/dashboard" className="hover:text-accent transition-colors">
-                Score Leaderboard
+                Impact Leaderboard
               </Link>
             </li>
           </ul>

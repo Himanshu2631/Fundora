@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
-import { useScores } from "@/hooks/useScores";
+import { useImpactScores } from "@/hooks/useImpactScores";
 import { useSubscription } from "@/hooks/useSubscription";
 import { createClient } from "@/lib/supabase";
 
 export function useLeaderboard() {
   const { user: authUser, profile } = useAuth();
-  const { scores } = useScores();
+  const { impactScores: scores } = useImpactScores();
   const { subscription } = useSubscription();
 
   const [leaderboard, setLeaderboard] = useState([]);
@@ -78,8 +78,8 @@ export function useLeaderboard() {
           let computedScore = 0;
           
           if (userScores.length > 0) {
-            const totalGolfScore = userScores.reduce((sum, s) => sum + s.score, 0);
-            computedScore = totalGolfScore + 25;
+            const totalImpactScore = userScores.reduce((sum, s) => sum + s.score, 0);
+            computedScore = totalImpactScore + 25;
           } else {
             // Predefined static competitor values
             const staticComp = STATIC_COMPETITORS.find(c => c.id === p.id || c.name === p.full_name);

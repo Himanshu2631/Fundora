@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useImpactScores } from "@/hooks/useImpactScores";
 import { createClient, isPlaceholder } from "@/lib/supabase";
 import {
   User,
@@ -47,6 +49,7 @@ const SETTING_SECTIONS = [
 export default function SettingsPage() {
   const { user, profile, updateProfile, signOut } = useAuth();
   const [activeSection, setActiveSection] = useState("profile");
+  const { awardActionPoints, lastNotification } = useImpactScores();
   
   // Profile Form States
   const [name, setName] = useState("");
@@ -105,6 +108,11 @@ export default function SettingsPage() {
     setProfileLoading(true);
     try {
       await updateProfile({ full_name: name.trim() });
+      try {
+        await awardActionPoints("complete_profile");
+      } catch (evtErr) {
+        console.warn("Failed to award profile completion points:", evtErr);
+      }
       setProfileSuccess(true);
       setTimeout(() => setProfileSuccess(false), 4000);
     } catch (err) {
@@ -276,7 +284,13 @@ export default function SettingsPage() {
                     <Alert variant="success" className="animate-in fade-in slide-in-from-top-2">
                       <CheckCircle2 className="w-4 h-4" />
                       <AlertTitle>Profile Updated</AlertTitle>
-                      <AlertDescription>Your display name was changed successfully.</AlertDescription>
+                      <AlertDescription>
+                        {lastNotification?.awarded
+                          ? `Action Completed: ${lastNotification.actionLabel}! Earned +${lastNotification.pointsEarned} pts. Total Impact Score: ${lastNotification.totalImpactScore} pts.`
+                          : lastNotification?.alreadyAwarded
+                          ? `Profile details saved. (${lastNotification.message})`
+                          : "Your profile details have been updated successfully."}
+                      </AlertDescription>
                     </Alert>
                   )}
                   {profileError && (

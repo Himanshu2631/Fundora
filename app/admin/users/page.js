@@ -526,7 +526,7 @@ export default function AdminUsersPage() {
                     <div className="grid grid-cols-2 gap-3">
                       {[
                         { label: "Giving Score", value: `${selectedUser.score} pts`, icon: Trophy, color: "text-amber-400" },
-                        { label: "Golf Scores", value: `${selectedUser.scores} / 5`, icon: Trophy, color: "text-blue-400" },
+                        { label: "Impact Scores", value: `${selectedUser.scores} / 5`, icon: Trophy, color: "text-blue-400" },
                         { label: "Charities", value: String(selectedUser.charities), icon: Heart, color: "text-rose-400" },
                         { label: "Draw Tickets", value: String(selectedUser.tickets), icon: Ticket, color: "text-emerald-400" },
                       ].map((metric) => (

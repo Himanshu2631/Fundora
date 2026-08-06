@@ -42,7 +42,7 @@ const STEPS = [
   {
     number: "2",
     title: "Enter Scores",
-    description: "Track your golf performance.",
+    description: "Track your community impact.",
   },
   {
     number: "3",
@@ -167,12 +167,12 @@ export default function ForgotPassword() {
             <h2 className="text-3xl sm:text-4xl font-heading font-black text-white leading-tight">
               Fund Your Impact.
               <br />
-              Track Your Performance.
+              Track Your Impact.
               <br />
               <span className="text-[#C4A054]">Unlock Monthly Rewards.</span>
             </h2>
             <p className="text-xs sm:text-sm text-[#8A9690] leading-relaxed max-w-sm">
-              Fundora combines golf performance tracking, verified charity contributions, and monthly reward draws into a single membership platform.
+              Fundora combines community impact tracking, verified charity contributions, and monthly reward draws into a single membership platform.
             </p>
           </div>
 

@@ -19,7 +19,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Modal } from "@/components/ui/modal";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription, PLAN_LABELS } from "@/hooks/useSubscription";
-import { useScores } from "@/hooks/useScores";
+import { useImpactScores } from "@/hooks/useImpactScores";
 import { useCharities } from "@/hooks/useCharities";
 import { useDraws } from "@/hooks/useDraws";
 import { useLeaderboard } from "@/hooks/useLeaderboard";
@@ -267,12 +267,12 @@ function RecentWinnerCard({ winner }) {
 
 export default function DashboardOverview() {
   const [activeTab, setActiveTab] = useState("overview");
-  const [rewardTab, setRewardTab] = useState("tickets");
+    const [rewardTab, setRewardTab] = useState("tickets");
   const { user: authUser, profile } = useAuth();
   const { subscription, status } = useSubscription();
 
   // Day 3 Real Data integration via custom hooks
-  let { scores, loading: scoresLoading, error: scoresError } = useScores();
+  let { impactScores: scores, totalImpactScore, loading: scoresLoading, error: scoresError } = useImpactScores();
   let { allocations, loading: charitiesLoading, error: charitiesError } = useCharities();
   let { userEntries, draws, claims: rawClaims, loading: drawsLoading } = useDraws();
   let { leaderboard, rank: leaderboardRank, loading: leaderboardLoading, error: leaderboardError } = useLeaderboard();
@@ -357,8 +357,8 @@ export default function DashboardOverview() {
   const monthlyContribution = PLAN_PRICES[subscription?.plan_type] ?? 0;
   const hasActivePlan = status === "active" || status === "cancelled";
 
-  // Calculate user performance score from recorded golf scores in Supabase
-  const totalScorePoints = scores ? scores.reduce((sum, s) => sum + s.score, 0) : 0;
+  // Calculate user total score from recorded impact score events in Supabase
+  const totalScorePoints = totalImpactScore !== undefined ? totalImpactScore : (scores ? scores.reduce((sum, s) => sum + (parseInt(s.score, 10) || 0), 0) : 0);
   const averageScoreVal = scores && scores.length > 0 ? (totalScorePoints / scores.length).toFixed(1) : "0.0";
 
   // Giving score composite calculations
@@ -608,7 +608,7 @@ export default function DashboardOverview() {
                   <p className="text-[10px] text-muted-foreground flex items-center gap-1.5 leading-none">
                     {scores?.length === 5 
                       ? "✓ All weekly scores logged! Max multipliers and bonus tickets are active." 
-                      : `Log ${5 - (scores?.length || 0)} more golf Stableford score${5 - (scores?.length || 0) > 1 ? "s" : ""} to unlock maximum draw entry bonuses.`}
+                      : `Log ${5 - (scores?.length || 0)} more impact score${5 - (scores?.length || 0) > 1 ? "s" : ""} to unlock maximum draw entry bonuses.`}
                   </p>
                 </div>
               </div>
@@ -685,7 +685,7 @@ export default function DashboardOverview() {
                       {displayUser.rank}
                     </span>
                     <span className="text-[9px] text-emerald-400 font-semibold block mt-1">
-                      Top 25% of global golfers
+                      Top 25% of global members
                     </span>
                   </div>
                   <div className="w-11 h-11 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-xl text-emerald-400 group-hover:scale-105 transition-transform shadow-inner">
@@ -744,7 +744,7 @@ export default function DashboardOverview() {
                 </div>
                 <h3 className="font-heading text-lg font-bold text-foreground">Compete</h3>
                 <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold ml-auto">
-                  Golf Standings & Leaderboard
+                  Impact Standings & Leaderboard
                 </span>
               </div>
 
@@ -756,7 +756,7 @@ export default function DashboardOverview() {
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="font-heading font-bold text-base text-foreground flex items-center gap-2">
                           <Trophy className="w-4 h-4 text-accent" />
-                          Golf Scores Overview
+                          Impact Scores Overview
                         </h3>
                         {!scoresLoading && !scoresError && scores.length > 0 && (
                           <Badge variant="outline" className="text-[9px]">
@@ -780,10 +780,10 @@ export default function DashboardOverview() {
                           <Trophy className="w-7 h-7 text-muted-foreground/35 mx-auto mb-2" />
                           <p className="text-xs font-semibold text-foreground/80">No Scores Registered</p>
                           <p className="text-[10.5px] text-muted-foreground mt-1 mb-4">
-                            Log up to 5 scores to calculate performance statistics and boost your profile.
+                            Submit up to 5 impact scores to calculate community statistics and boost your profile.
                           </p>
                           <Button asChild variant="accent" size="sm" className="h-8 text-xs font-bold uppercase tracking-wider">
-                            <Link href="/dashboard/scores">Log a Score</Link>
+                            <Link href="/dashboard/scores">Submit Impact Score</Link>
                           </Button>
                         </div>
                       ) : (
@@ -842,7 +842,7 @@ export default function DashboardOverview() {
                           { name: "First Draw Entry", desc: "Registered your first ticket", unlocked: true, icon: Check },
                           { name: "Top 25% Standing", desc: leaderboardRank === "Rank unavailable" || leaderboardRank === "Loading..." ? "Climbed the leaderboard" : `Climbed leaderboard to ${leaderboardRank}`, unlocked: true, icon: Trophy },
                           { name: "Global Advocate", desc: "Active Advocate tier selected", unlocked: true, icon: ShieldCheck },
-                          { name: "5 Draw Streak", desc: "Log rounds consistently (3/5)", unlocked: false, progress: 60, icon: Flame }
+                          { name: "5 Draw Streak", desc: "Submit impact scores consistently (3/5)", unlocked: false, progress: 60, icon: Flame }
                         ].map((ach, idx) => (
                           <div key={idx} className="flex items-start gap-2.5 p-2 rounded-xl bg-secondary/5 border border-border/20">
                             <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${ach.unlocked ? "bg-emerald-950/45 text-emerald-500 border border-emerald-800/40" : "bg-secondary/15 text-muted-foreground border border-border/30"}`}>
@@ -874,7 +874,7 @@ export default function DashboardOverview() {
                   <Card className="p-6 flex flex-col justify-between border-border bg-card h-full">
                     <div>
                       <h3 className="font-heading font-bold text-sm text-foreground mb-6 flex justify-between items-center">
-                        <span>Score Leaderboard</span>
+                        <span>Impact Score Leaderboard</span>
                         <span className="text-xs font-normal text-muted-foreground">
                           Your rank: {displayUser.rank}
                         </span>
@@ -1483,7 +1483,7 @@ export default function DashboardOverview() {
                           { text: "Sam Whitfield joined June's Eco Retreat draw", time: "2m ago", type: "draw" },
                           { text: "Apex Water Initiative reached milestone", time: "1h ago", type: "charity" },
                           { text: "Alicia Torres claimed Eco Retreat prize", time: "1d ago", type: "winner" },
-                          { text: "Hiro Nakamura logged a 42 Stableford score", time: "3h ago", type: "score" }
+                          { text: "Hiro Nakamura submitted a 42 impact score", time: "3h ago", type: "score" }
                         ].map((act, idx) => (
                           <div key={idx} className="flex items-start justify-between text-xs border-b border-border/20 pb-3 last:border-0 last:pb-0">
                             <div className="flex items-start gap-2.5">

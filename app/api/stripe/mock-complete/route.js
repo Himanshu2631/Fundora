@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createServer } from "@/lib/supabase-server";
 import { syncStripeSubscriptionToDatabase } from "@/services/subscriptionService";
 import { sendSystemUpdateEmail } from "@/lib/email";
+import { recordImpactEvent } from "@/services/impactScoreService";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +64,21 @@ export async function POST(req) {
         "4242",
         stripeCustomerId
       );
+
+      // Award +50 pts Impact Score event for starting monthly membership
+      try {
+        await recordImpactEvent(
+          user.id,
+          {
+            action: "start_membership",
+            points: 50,
+            description: "Started a monthly membership tier"
+          },
+          supabase
+        );
+      } catch (evtErr) {
+        console.warn("Failed to award membership impact points:", evtErr);
+      }
 
       // Log a simulated payment succeeded record
       let amount = 10.00;

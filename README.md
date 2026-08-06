@@ -1,12 +1,12 @@
 # Fundora — Gamified Philanthropy & Exclusive Reward Draws
 
-> A member-driven platform where your passion for golf fuels global change. Subscribe to a giving plan, log Stableford rounds to earn a Giving Score, and enter exclusive monthly prize draws — while 100% of your subscription flows to audited, vetted charities.
+> A member-driven platform where your passion for community impact fuels global change. Subscribe to a giving plan, log Impact Scores to earn a Giving Score, and enter exclusive monthly prize draws — while 100% of your subscription flows to audited, vetted charities.
 
 ---
 
 ## Overview
 
-Fundora bridges the gap between competitive sport and meaningful philanthropy. Golfers subscribe to one of three giving tiers, each routing funds directly to verified global causes — environmental conservation, clean water access, education, and healthcare. As members log their rounds, they accumulate a Giving Score that determines eligibility and ticket weight for monthly prize draws. Winners are determined by lottery-style number matching, with the entire process tracked transparently through a real-time admin dashboard.
+Fundora bridges the gap between community participation and meaningful philanthropy. Members, contributors, donors, volunteers, and community participants subscribe to one of three giving tiers, each routing funds directly to verified global causes — environmental conservation, clean water access, education, and healthcare. As members log their impact scores, they accumulate a Giving Score that determines eligibility and ticket weight for monthly prize draws. Winners are determined by lottery-style number matching, with the entire process tracked transparently through a real-time admin dashboard.
 
 This is a full-stack SaaS platform built for real-world deployment, featuring Stripe-powered subscription billing, Supabase as the backend, transactional email via Resend, and a polished dark-mode UI crafted with Next.js 16 and Framer Motion.
 
@@ -24,22 +24,22 @@ This is a full-stack SaaS platform built for real-world deployment, featuring St
 > _A visual walkthrough of the platform's core surfaces._
 
 ### 🏠 Homepage — Hero & Live Platform Stats
-The homepage dynamically pulls live stats from Supabase: active member count, total contributions, rounds submitted, and the current reward pool. The hero CTA routes authenticated users directly to their dashboard.
+The homepage dynamically pulls live stats from Supabase: active member count, total contributions, impact submissions logged, and the current reward pool. The hero CTA routes authenticated users directly to their dashboard.
 
 ### 📊 User Dashboard — Overview
 A personalised command centre showing the member's subscription status, Giving Score, recent activity, and contribution breakdown across their allocated charities.
 
 ### 🎟️ Draws Dashboard — Active Draw & Ticket Entries
-Displays the current monthly draw, the member's automatically generated lottery tickets, and their eligibility checklist (active tier + logged rounds + charity allocation). Shows ticket numbers, win history, and a claim submission panel for matched entries.
+Displays the current monthly draw, the member's automatically generated lottery tickets, and their eligibility checklist (active tier + logged impact scores + charity allocation). Shows ticket numbers, win history, and a claim submission panel for matched entries.
 
-### 🏆 Leaderboard & Score Tracker
-Members see their rank among all platform participants, broken down by Giving Score. Encourages competitive engagement with the charity mission.
+### 🏆 Leaderboard & Impact Tracker
+Members see their rank among all platform participants, broken down by Giving Score and Community Impact. Encourages active engagement with the charity mission.
 
 ### ⚙️ Admin Dashboard — Draw Management
 Admins can create draws with custom titles, prize descriptions, minimum score thresholds, sponsor attribution, and draw dates. Once live, the draw is immediately visible to all eligible users.
 
 ### 👥 Admin — User & Subscription Management
-A full CRM-style view of all registered members, their subscription plan, payment status, score history, and charity allocations.
+A full CRM-style view of all registered members, their subscription plan, payment status, impact score history, and charity allocations.
 
 ---
 
@@ -50,7 +50,7 @@ A full CRM-style view of all registered members, their subscription plan, paymen
 | Feature | Description |
 |---|---|
 | **Tiered Subscriptions** | Three giving plans — Eco Scout ($10/mo), Global Advocate ($25/mo), Legacy Builder ($100/mo) — each routing 100% of funds to verified charities |
-| **Giving Score System** | Members earn points based on their tier, Stableford rounds logged, and activity streaks |
+| **Giving Score System** | Members earn points based on their tier, Impact Scores logged, and activity streaks |
 | **Automatic Draw Entry** | Eligible members are automatically entered into the active monthly draw — no manual opt-in required |
 | **Lottery Ticket Display** | Each draw entry generates unique lottery numbers displayed in the member's dashboard |
 | **Win Claim Portal** | Members matching 3+ numbers can submit a screenshot verification link to initiate prize claims |
@@ -66,8 +66,8 @@ A full CRM-style view of all registered members, their subscription plan, paymen
 | **Real-time User Sync** | Newly created draws appear instantly in all user dashboards without requiring a page reload |
 | **Claim Review Panel** | Admins approve or reject submitted prize claims with a single action |
 | **Draw Completion** | Trigger draw completion, which generates winning numbers and notifies eligible users via email |
-| **Platform Analytics** | Live member counts, total contributions, rounds submitted, and charity performance metrics |
-| **User Management** | View all profiles, subscription tiers, score history, and payment records |
+| **Platform Analytics** | Live member counts, total contributions, impact submissions, and charity performance metrics |
+| **User Management** | View all profiles, subscription tiers, impact score history, and payment records |
 | **Charity Management** | Add and manage verified charities with auditor scores and impact descriptions |
 
 ---
@@ -78,9 +78,9 @@ A full CRM-style view of all registered members, their subscription plan, paymen
 
 1. **Sign Up** — Create an account and verify your email address.
 2. **Choose a Tier** — Subscribe to Eco Scout, Global Advocate, or Legacy Builder via Stripe Checkout.
-3. **Log Your Rounds** — Submit Stableford scores from your rounds. Each round logged builds your Giving Score.
+3. **Log Your Impact Scores** — Submit Impact Scores from your community contributions. Each score logged builds your Giving Score.
 4. **Set Charity Allocations** — Decide how your subscription is split across the supported causes.
-5. **Earn Eligibility** — Once you have an active subscription, at least one logged round, and at least one charity allocation, you're automatically eligible for the active draw.
+5. **Earn Eligibility** — Once you have an active subscription, at least one logged impact score, and at least one charity allocation, you're automatically eligible for the active draw.
 6. **Get Your Tickets** — Eligible members are automatically entered with unique lottery ticket numbers.
 7. **Check Results** — When the draw closes, your ticket numbers are compared against the drawn winning numbers.
 8. **Claim Your Prize** — Match 3 or more numbers? Submit a screenshot receipt via the claim portal. Admins review and approve.
@@ -120,7 +120,7 @@ app/
 ├── dashboard/               # Authenticated member area
 │   ├── page.js              # Overview dashboard
 │   ├── draws/               # Draw eligibility, tickets, history
-│   ├── scores/              # Stableford round submission
+│   ├── scores/              # Impact Score submission
 │   ├── charity/             # Allocation management
 │   ├── subscription/        # Plan & billing management
 │   └── settings/            # Profile settings
@@ -137,8 +137,8 @@ app/
     ├── admin/draws/         # Draw completion & result publishing
     └── notify/              # Email notification triggers
 
-hooks/                       # React data hooks (useDraws, useScores, useCharities, etc.)
-services/                    # Supabase query layer (drawService, scoreService, etc.)
+hooks/                       # React data hooks (useDraws, useImpactScores, useCharities, etc.)
+services/                    # Supabase query layer (drawService, impactService, etc.)
 lib/                         # Supabase client, draw validation, utilities
 components/                  # Shared UI components and layout wrappers
 supabase/                    # SQL migrations and database setup
@@ -152,7 +152,7 @@ supabase/                    # SQL migrations and database setup
 |---|---|
 | `profiles` | Extended user data linked to Supabase Auth |
 | `subscriptions` | Stripe subscription records per user |
-| `scores` | Stableford round submissions per user |
+| `scores` | Impact Score submissions per user |
 | `charities` | Verified charity directory with impact data |
 | `charity_allocations` | User's percentage split across charities |
 | `draws` | Monthly prize draws (title, prize, status, dates) |
@@ -216,7 +216,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 Requiring members to manually opt into each draw creates unnecessary friction and drops participation rates. Fundora automatically enters every eligible member, ensuring the platform's core value proposition — "subscribe and start winning" — holds true without extra steps.
 
 **Why Giving Score over flat eligibility?**
-A flat "subscribed = eligible" model doesn't incentivise engagement. The Giving Score rewards consistent behaviour: logging rounds, maintaining an active tier, allocating to charities. Higher-tier plans and streaks produce larger scores, which in turn unlock draws with higher minimum thresholds (i.e., premium draws for premium givers).
+A flat "subscribed = eligible" model doesn't incentivise engagement. The Giving Score rewards consistent behaviour: logging impact scores, maintaining an active tier, allocating to charities. Higher-tier plans and streaks produce larger scores, which in turn unlock draws with higher minimum thresholds (i.e., premium draws for premium givers).
 
 **Why Supabase over a traditional backend?**
 Supabase's Row Level Security allows per-user data isolation without a custom API layer for every query. Combined with its real-time capabilities, it reduces infrastructure complexity while keeping the data model transparent and auditable.

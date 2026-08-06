@@ -22,13 +22,13 @@ export async function POST(req) {
         subject = "Welcome to Fundora!";
         bodyHtml = `
           <p>Hello ${userName || "Member"},</p>
-          <p>We are thrilled to welcome you to <strong>Fundora</strong> — the provably fair giving & golf reward platform!</p>
+          <p>We are thrilled to welcome you to <strong>Fundora</strong> — the provably fair giving & charity reward platform!</p>
           <div style="background-color: rgba(255,255,255,0.03); border: 1px solid rgba(212,185,147,0.15); border-radius: 8px; padding: 16px; margin: 16px 0;">
             <p style="margin: 0 0 8px 0; color: #FFFFFF;"><strong>Account Status:</strong> Registered Successfully</p>
             <p style="margin: 0 0 8px 0; color: #B2C0B9;"><strong>Registered At:</strong> ${timestamp}</p>
             <p style="margin: 0; color: #B2C0B9;"><strong>Security Note:</strong> Account created via secure credentials.</p>
           </div>
-          <p>Your giving journey starts now. Upgrade to a membership tier to start routing contributions to vetted causes, log your golf scores to boost entry multipliers, and stand a chance to win monthly rewards.</p>
+          <p>Your giving journey starts now. Upgrade to a membership tier to start routing contributions to vetted causes, log your impact scores to boost entry multipliers, and stand a chance to win monthly rewards.</p>
         `;
         break;
 
