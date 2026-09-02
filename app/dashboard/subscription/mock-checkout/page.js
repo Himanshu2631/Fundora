@@ -18,12 +18,12 @@ import {
 import { useImpactScores } from "@/hooks/useImpactScores";
 
 const PLAN_MAP = {
-  price_scout_monthly: { name: "Eco Scout", price: "$10.00", cycle: "monthly", desc: "Automate contributions targeting forest preservation." },
-  price_scout_yearly: { name: "Eco Scout", price: "$96.00", cycle: "yearly", desc: "Automate contributions targeting forest preservation." },
-  price_advocate_monthly: { name: "Global Advocate", price: "$25.00", cycle: "monthly", desc: "Allocation to verified clean water & basic healthcare." },
-  price_advocate_yearly: { name: "Global Advocate", price: "$240.00", cycle: "yearly", desc: "Allocation to verified clean water & basic healthcare." },
-  price_builder_monthly: { name: "Legacy Builder", price: "$100.00", cycle: "monthly", desc: "Sponsor advanced STEM fellowships and emergency grids." },
-  price_builder_yearly: { name: "Legacy Builder", price: "$960.00", cycle: "yearly", desc: "Sponsor advanced STEM fellowships and emergency grids." },
+  price_scout_monthly: { name: "Eco Scout", price: "₹499.00", cycle: "monthly", desc: "Automate contributions targeting forest preservation." },
+  price_scout_yearly: { name: "Eco Scout", price: "₹4,788.00", cycle: "yearly", desc: "Automate contributions targeting forest preservation." },
+  price_advocate_monthly: { name: "Global Advocate", price: "₹1,299.00", cycle: "monthly", desc: "Allocation to verified clean water & basic healthcare." },
+  price_advocate_yearly: { name: "Global Advocate", price: "₹11,988.00", cycle: "yearly", desc: "Allocation to verified clean water & basic healthcare." },
+  price_builder_monthly: { name: "Legacy Builder", price: "₹4,999.00", cycle: "monthly", desc: "Sponsor advanced STEM fellowships and emergency grids." },
+  price_builder_yearly: { name: "Legacy Builder", price: "₹47,988.00", cycle: "yearly", desc: "Sponsor advanced STEM fellowships and emergency grids." },
 };
 
 function MockCheckoutForm() {
@@ -41,7 +41,7 @@ function MockCheckoutForm() {
 
   const plan = PLAN_MAP[priceId] || {
     name: priceId.includes("builder") ? "Legacy Builder" : priceId.includes("advocate") ? "Global Advocate" : "Eco Scout",
-    price: priceId.includes("yearly") ? "$96.00" : "$10.00",
+    price: priceId.includes("yearly") ? "₹4,788.00" : "₹499.00",
     cycle: priceId.includes("yearly") ? "yearly" : "monthly",
     desc: "Vetted charity routing and impact score bonuses."
   };

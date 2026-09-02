@@ -29,36 +29,30 @@ export function useDraws() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch all draws & user registered entries
+  // Fetch all draws & user registered entries concurrently
   const fetchData = useCallback(async () => {
     setError(null);
     try {
-      const drawsData = await getDraws();
-      if (drawsData) {
-        console.log("=== [useDraws] FETCHED DRAWS ===");
-        drawsData.forEach(d => {
-          console.log(`Draw ID: ${d.id} | Title: ${d.title} | Status: ${d.status}`);
-        });
-        console.log("=================================");
-      }
-      setDraws(drawsData);
-
       if (user) {
-        const entriesData = await getUserEntries(user.id);
-        setUserEntries(entriesData);
+        const [drawsData, entriesData, claimsData, participationsData] = await Promise.all([
+          getDraws().catch(() => []),
+          getUserEntries(user.id).catch(() => []),
+          getUserClaims(user.id).catch(() => []),
+          getDrawParticipations(user.id).catch(() => [])
+        ]);
 
-        const claimsData = await getUserClaims(user.id);
-        setClaims(claimsData);
-
-        const participationsData = await getDrawParticipations(user.id);
-        setParticipations(participationsData);
+        setDraws(drawsData || []);
+        setUserEntries(entriesData || []);
+        setClaims(claimsData || []);
+        setParticipations(participationsData || []);
       } else {
+        const drawsData = await getDraws().catch(() => []);
+        setDraws(drawsData || []);
         setUserEntries([]);
         setClaims([]);
         setParticipations([]);
       }
     } catch (err) {
-      // Silently handle missing-table errors — dashboard degrades gracefully
       if (err.code !== "PGRST205" && err.code !== "42P01") {
         console.error("useDraws fetch error:", err.code || "", err.message);
       }
@@ -78,43 +72,36 @@ export function useDraws() {
     };
     run();
 
-    // Set up Realtime database listener
-    const supabase = createClient();
-    const channel = supabase
-      .channel("draws-realtime")
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "draws" },
-        () => {
-          if (active) fetchData();
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "draw_entries" },
-        () => {
-          if (active) fetchData();
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "winner_submissions" },
-        () => {
-          if (active) fetchData();
-        }
-      )
-      .on(
-        "postgres_changes",
-        { event: "*", schema: "public", table: "draw_participation" },
-        () => {
-          if (active) fetchData();
-        }
-      )
-      .subscribe();
+    // Set up Realtime database listener with error boundary
+    let channel;
+    const timer = setTimeout(() => {
+      try {
+        const supabase = createClient();
+        channel = supabase
+          .channel("draws-realtime")
+          .on("postgres_changes", { event: "*", schema: "public", table: "draws" }, () => { if (active) fetchData(); })
+          .on("postgres_changes", { event: "*", schema: "public", table: "draw_entries" }, () => { if (active) fetchData(); })
+          .on("postgres_changes", { event: "*", schema: "public", table: "winner_submissions" }, () => { if (active) fetchData(); })
+          .on("postgres_changes", { event: "*", schema: "public", table: "draw_participation" }, () => { if (active) fetchData(); })
+          .subscribe((status) => {
+            if (status === "CHANNEL_ERROR") {
+              console.warn("useDraws: realtime channel error — live updates disabled");
+            }
+          });
+      } catch (err) {
+        console.warn("useDraws: failed to set up realtime channel:", err.message);
+      }
+    }, 0);
 
     return () => {
       active = false;
-      supabase.removeChannel(channel);
+      clearTimeout(timer);
+      if (channel) {
+        try {
+          const supabase = createClient();
+          supabase.removeChannel(channel);
+        } catch {}
+      }
     };
   }, [fetchData]);
 

@@ -104,7 +104,7 @@ export default function AdminDashboard() {
 
     // Charity Contribution Totals (sum of raised field across all charities)
     const charityContributions = data.charities.reduce((sum, c) => {
-      const raw = (c.raised || "").replace(/[$,]/g, "");
+      const raw = (c.raised || "").replace(/[₹$,]/g, "");
       return sum + (parseFloat(raw) || 0);
     }, 0);
 
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
             },
             {
               label: "Total Prize Pool",
-              value: `$${metrics.totalPrizePool.toLocaleString()}`,
+              value: `₹${metrics.totalPrizePool.toLocaleString("en-IN")}`,
               icon: DollarSign,
               color: "text-emerald-400",
               bg: "bg-emerald-500/10",
@@ -242,7 +242,7 @@ export default function AdminDashboard() {
             },
             {
               label: "Charity Contributions",
-              value: `$${metrics.charityContributions.toLocaleString()}`,
+              value: `₹${metrics.charityContributions.toLocaleString("en-IN")}`,
               icon: Heart,
               color: "text-purple-400",
               bg: "bg-purple-500/10",

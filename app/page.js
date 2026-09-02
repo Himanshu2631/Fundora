@@ -31,12 +31,21 @@ export default function Home() {
       try {
         const { createClient } = await import("@/lib/supabase");
         const supabase = createClient();
+
+        // Batch all platform stats queries in parallel
+        const [
+          charitiesRes,
+          drawsRes,
+          profilesRes,
+          scoresRes
+        ] = await Promise.all([
+          supabase.from("charities").select("id, name, raised").catch(() => ({ data: null })),
+          supabase.from("draws").select("id, title, status").catch(() => ({ data: null })),
+          supabase.from("profiles").select("id, full_name, created_at").catch(() => ({ data: null })),
+          supabase.from("scores").select("id, score, score_date, user_id, created_at").catch(() => ({ data: null })),
+        ]);
         
-        // 1. Fetch charities (publicly readable)
-        const { data: charities } = await supabase
-          .from("charities")
-          .select("id, name, raised");
-        
+        const charities = charitiesRes?.data;
         let charitiesCount = 4;
         let contributionsSum = 422900;
         if (charities && charities.length > 0) {
@@ -47,11 +56,7 @@ export default function Home() {
           }, 0);
         }
 
-        // 2. Fetch active draws
-        const { data: draws } = await supabase
-          .from("draws")
-          .select("id, title, status");
-        
+        const draws = drawsRes?.data;
         let drawsCount = 1;
         if (draws && draws.length > 0) {
           drawsCount = draws.filter(d => d.status === "active" || d.status === "upcoming").length;
@@ -61,13 +66,7 @@ export default function Home() {
         let membersCount = 148;
         let scoresCount = 412;
 
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        // Fetch profiles and scores (authenticated or mock client only)
-        const { data: profiles } = await supabase
-          .from("profiles")
-          .select("id, full_name, created_at");
-        
+        const profiles = profilesRes?.data;
         if (profiles && profiles.length > 0) {
           membersCount = profiles.filter(p => p.role !== "admin").length;
           
@@ -83,10 +82,7 @@ export default function Home() {
           });
         }
 
-        const { data: scores } = await supabase
-          .from("scores")
-          .select("id, score, score_date, user_id, created_at");
-        
+        const scores = scoresRes?.data;
         if (scores && scores.length > 0) {
           scoresCount = scores.length;
           
@@ -186,29 +182,29 @@ export default function Home() {
       category: "Environment",
       impact: "7,400+ hectares of ancient forests protected this quarter",
       rating: "9.8 Auditor Score",
-      raised: "$145,300 raised",
+      raised: "₹14,53,000 raised",
     },
     {
       name: "Apex Water Initiative",
       category: "Clean Water",
       impact: "Direct access filtration installed for 12,000 villagers",
       rating: "9.9 Auditor Score",
-      raised: "$98,400 raised",
+      raised: "₹9,84,000 raised",
     },
     {
       name: "Empower Global Edu",
       category: "Education",
       impact: "Coding and engineering fellowships for 340 women in STEM",
       rating: "9.7 Auditor Score",
-      raised: "$112,000 raised",
+      raised: "₹11,20,000 raised",
     },
   ];
 
   const pricingTiers = [
     {
       name: "Eco Scout",
-      monthlyPrice: 10,
-      yearlyPrice: 8,
+      monthlyPrice: 499,
+      yearlyPrice: 399,
       score: "+10 Giving Score",
       description: "Automate core contributions targeting forest preservation.",
       features: [
@@ -220,8 +216,8 @@ export default function Home() {
     },
     {
       name: "Global Advocate",
-      monthlyPrice: 25,
-      yearlyPrice: 20,
+      monthlyPrice: 1299,
+      yearlyPrice: 999,
       score: "+30 Giving Score",
       description: "Direct allocation to verified clean water & basic healthcare.",
       features: [
@@ -234,8 +230,8 @@ export default function Home() {
     },
     {
       name: "Legacy Builder",
-      monthlyPrice: 100,
-      yearlyPrice: 80,
+      monthlyPrice: 4999,
+      yearlyPrice: 3999,
       score: "+150 Giving Score",
       description: "Sponsor advanced STEM fellowships and emergency humanitarian grids.",
       features: [
@@ -313,7 +309,7 @@ export default function Home() {
                         <Gift className="w-3 h-3 text-accent" /> Monthly Reward Pool
                       </p>
                       <h3 className="font-heading text-3xl font-extrabold text-foreground">
-                        ${stats.rewardPool.toLocaleString("en-US")}
+                        ₹{stats.rewardPool.toLocaleString("en-IN")}
                       </h3>
                     </div>
                     <Badge variant="accent" className="font-semibold text-[10px]">
@@ -337,7 +333,7 @@ export default function Home() {
                         />
                       </div>
                       <p className="text-[9px] text-muted-foreground mt-0.5">
-                        Target: ${(500000).toLocaleString("en-US")} raised via member subscriptions.
+                        Target: ₹{(5000000).toLocaleString("en-IN")} raised via member subscriptions.
                       </p>
                     </div>
 
@@ -350,7 +346,7 @@ export default function Home() {
                     <div className="grid grid-cols-2 gap-3 mb-3">
                       <div className="bg-[#0A1C16]/20 border border-border/40 rounded-xl py-2 px-3">
                         <p className="text-[9px] font-semibold text-muted-foreground uppercase">Contributions</p>
-                        <p className="text-sm font-extrabold text-foreground mt-0.5">${stats.totalCharityContributions.toLocaleString("en-US")}</p>
+                        <p className="text-sm font-extrabold text-foreground mt-0.5">₹{stats.totalCharityContributions.toLocaleString("en-IN")}</p>
                       </div>
                       <div className="bg-[#0A1C16]/20 border border-border/40 rounded-xl py-2 px-3">
                         <p className="text-[9px] font-semibold text-muted-foreground uppercase">Active Members</p>
@@ -758,8 +754,8 @@ export default function Home() {
                     </div>
                     
                     <div className="mb-6 flex items-baseline gap-1.5">
-                      <span className="font-heading text-4xl font-extrabold text-foreground">
-                        ${isYearly ? tier.yearlyPrice : tier.monthlyPrice}
+                      <span className="font-heading text-3xl sm:text-4xl font-extrabold text-foreground">
+                        ₹{(isYearly ? tier.yearlyPrice : tier.monthlyPrice).toLocaleString("en-IN")}
                       </span>
                       <span className="text-xs text-muted-foreground">/ month</span>
                     </div>

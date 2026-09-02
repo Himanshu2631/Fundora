@@ -346,7 +346,7 @@ function PlanCard({ plan, isYearly, onSubscribe, activeStatus, currentPlanKey, i
         {isYearly && savedAmount > 0 && (
           <div className="absolute top-4 right-4">
             <span className="bg-accent text-[#060C0A] text-[9px] font-extrabold uppercase tracking-wider px-2 py-1 rounded-xl">
-              Save ${savedAmount}/yr
+              Save ₹{savedAmount.toLocaleString("en-IN")}/yr
             </span>
           </div>
         )}
@@ -386,23 +386,23 @@ function PlanCard({ plan, isYearly, onSubscribe, activeStatus, currentPlanKey, i
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 12 }}
                   transition={{ duration: 0.2 }}
-                  className="font-heading text-5xl font-extrabold text-foreground tracking-tight"
+                  className="font-heading text-4xl sm:text-5xl font-extrabold text-foreground tracking-tight"
                 >
-                  ${displayPrice}
+                  ₹{displayPrice.toLocaleString("en-IN")}
                 </motion.span>
               </AnimatePresence>
               <div className="flex flex-col">
                 <span className="text-xs text-muted-foreground">/mo</span>
                 {isYearly && (
                   <span className="text-[10px] text-muted-foreground/70 line-through">
-                    ${plan.monthlyPrice}/mo
+                    ₹{plan.monthlyPrice.toLocaleString("en-IN")}/mo
                   </span>
                 )}
               </div>
             </div>
             {isYearly && (
               <p className="text-[10px] text-muted-foreground mt-1">
-                Billed ${plan.yearlyTotal}/year · 2 months free
+                Billed ₹{plan.yearlyTotal.toLocaleString("en-IN")}/year · 2 months free
               </p>
             )}
           </div>
@@ -751,18 +751,17 @@ export default function PricingPage() {
                       </span>
                       <div className="flex items-baseline gap-1 mt-1.5">
                         <span className={`text-xl font-extrabold ${isFeatured ? "text-accent" : "text-foreground"}`}>
-                          ${isYearly ? p.yearlyPrice : p.monthlyPrice}
+                          ₹{(isYearly ? p.yearlyPrice : p.monthlyPrice).toLocaleString("en-IN")}
                         </span>
                         <span className="text-[10px] text-muted-foreground">/mo</span>
                       </div>
                       <PlanHeaderButton
                         planKey={p.key}
                         recommended={isFeatured}
-                        user={user}
-                        subscription={subscription}
-                        status={status}
-                        isYearly={isYearly}
-                        handleSubscribe={handleSubscribe}
+                        activeStatus={activeStatus}
+                        currentPlanKey={currentPlanKey}
+                        isLoggedIn={isLoggedIn}
+                        onSubscribe={onSubscribe}
                       />
                     </div>
                   );
@@ -1064,7 +1063,7 @@ export default function PricingPage() {
         <div className="fixed bottom-0 left-0 right-0 z-40 md:hidden border-t border-border bg-background/95 backdrop-blur-md px-5 py-4 flex gap-3 items-center">
           <div className="flex-1">
             <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-              Start from $8/month
+              Start from ₹399/month
             </p>
             <p className="text-[10px] text-muted-foreground/60">Cancel anytime · 100% audited</p>
           </div>

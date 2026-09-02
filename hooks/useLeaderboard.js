@@ -34,16 +34,19 @@ export function useLeaderboard() {
       setLoading(true);
       const supabase = createClient();
 
-      // 1. Fetch profiles
-      const { data: profiles, error: pError } = await supabase
-        .from("profiles")
-        .select("id, full_name, email");
-      // PGRST205 = table missing, non-fatal
+      // Fetch profiles and scores concurrently in parallel
+      const [profilesRes, scoresRes] = await Promise.all([
+        supabase.from("profiles").select("id, full_name, email"),
+        supabase.from("scores").select("user_id, score")
+      ]);
+
+      const profiles = profilesRes.data;
+      const allScores = scoresRes.data;
+
+      const pError = profilesRes.error;
       if (pError && pError.code !== "PGRST205") throw pError;
 
-      const { data: allScores, error: sError } = await supabase
-        .from("scores")
-        .select("user_id, score");
+      const sError = scoresRes.error;
       if (sError && sError.code !== "PGRST205") throw sError;
 
       // 2. Map static competitors to default values (fallback seed)
@@ -139,37 +142,34 @@ export function useLeaderboard() {
     fetchLeaderboard();
   }, [fetchLeaderboard]);
 
-  // Real-time Postgres changes listener for dynamic rank changes
+  // Real-time Postgres changes listener for dynamic rank changes with error boundary
   useEffect(() => {
-    const supabase = createClient();
-    let scoresChannel, profilesChannel, subscriptionsChannel;
+    let scoresChannel;
 
     const timer = setTimeout(() => {
       try {
+        const supabase = createClient();
         scoresChannel = supabase
-          .channel("scores-leaderboard")
+          .channel("leaderboard-realtime")
           .on("postgres_changes", { event: "*", schema: "public", table: "scores" }, () => { fetchLeaderboard(); })
-          .subscribe((s) => { if (s === "CHANNEL_ERROR") console.warn("leaderboard scores channel error"); });
-
-        profilesChannel = supabase
-          .channel("profiles-leaderboard")
-          .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => { fetchLeaderboard(); })
-          .subscribe((s) => { if (s === "CHANNEL_ERROR") console.warn("leaderboard profiles channel error"); });
-
-        subscriptionsChannel = supabase
-          .channel("subscriptions-leaderboard")
-          .on("postgres_changes", { event: "*", schema: "public", table: "subscriptions" }, () => { fetchLeaderboard(); })
-          .subscribe((s) => { if (s === "CHANNEL_ERROR") console.warn("leaderboard subscriptions channel error"); });
+          .subscribe((s) => {
+            if (s === "CHANNEL_ERROR") {
+              console.warn("useLeaderboard: realtime channel error");
+            }
+          });
       } catch (err) {
-        console.warn("useLeaderboard: failed to set up realtime channels:", err.message);
+        console.warn("useLeaderboard: failed to set up realtime channel:", err.message);
       }
     }, 0);
 
     return () => {
       clearTimeout(timer);
-      if (scoresChannel) supabase.removeChannel(scoresChannel);
-      if (profilesChannel) supabase.removeChannel(profilesChannel);
-      if (subscriptionsChannel) supabase.removeChannel(subscriptionsChannel);
+      if (scoresChannel) {
+        try {
+          const supabase = createClient();
+          supabase.removeChannel(scoresChannel);
+        } catch {}
+      }
     };
   }, [fetchLeaderboard]);
 

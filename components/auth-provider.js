@@ -72,15 +72,17 @@ export function AuthProvider({ children }) {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           setUser(session.user);
-          const userProfile = await ensureProfileExists(session.user);
-          setProfile(userProfile);
+          setLoading(false);
+          ensureProfileExists(session.user).then(userProfile => {
+            if (userProfile) setProfile(userProfile);
+          }).catch(console.error);
         } else {
           setUser(null);
           setProfile(null);
+          setLoading(false);
         }
       } catch (err) {
         console.error("Error retrieving initial session:", err);
-      } finally {
         setLoading(false);
       }
     };
@@ -88,17 +90,18 @@ export function AuthProvider({ children }) {
     getInitialSession();
 
     // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setLoading(true);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
         setUser(session.user);
-        const userProfile = await ensureProfileExists(session.user);
-        setProfile(userProfile);
+        setLoading(false);
+        ensureProfileExists(session.user).then(userProfile => {
+          if (userProfile) setProfile(userProfile);
+        }).catch(console.error);
       } else {
         setUser(null);
         setProfile(null);
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => {

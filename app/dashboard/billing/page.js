@@ -78,9 +78,9 @@ export default function BillingPage() {
     const amt = parseFloat(payment.amount);
     const priceId = payment.stripe_price_id || "";
     
-    if (priceId.includes("scout") || amt === 10 || amt === 96) return "Eco Scout";
-    if (priceId.includes("advocate") || amt === 25 || amt === 240) return "Global Advocate";
-    if (priceId.includes("builder") || amt === 100 || amt === 960) return "Legacy Builder";
+    if (priceId.includes("scout") || amt === 499 || amt === 4788 || amt === 10 || amt === 96) return "Eco Scout";
+    if (priceId.includes("advocate") || amt === 1299 || amt === 11988 || amt === 25 || amt === 240) return "Global Advocate";
+    if (priceId.includes("builder") || amt === 4999 || amt === 47988 || amt === 100 || amt === 960) return "Legacy Builder";
     return "Fundora Support";
   };
 
@@ -192,8 +192,7 @@ export default function BillingPage() {
                   Total Contributions
                 </span>
                 <h3 className="font-heading text-2xl font-extrabold text-accent mt-1.5 flex items-center">
-                  <DollarSign className="w-5 h-5 -mr-1 text-accent" />
-                  {totalContributions.toFixed(2)}
+                  ₹{totalContributions.toLocaleString("en-IN")}
                 </h3>
               </div>
               <div className="mt-4 flex items-center gap-1.5 text-[10px] text-emerald-500 font-bold">
@@ -230,21 +229,21 @@ export default function BillingPage() {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[700px] border-collapse text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-border/60 bg-secondary/15 text-[10px] font-extrabold uppercase tracking-widest text-muted-foreground">
-                      <th className="py-4 px-6">Transaction Date</th>
-                      <th className="py-4 px-6">Plan Tier</th>
-                      <th className="py-4 px-6">Amount</th>
-                      <th className="py-4 px-6">Status</th>
-                      <th className="py-4 px-6 text-right">Receipt Actions</th>
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-secondary/20 text-muted-foreground uppercase text-[10px] font-bold tracking-wider border-b border-border/60">
+                    <tr>
+                      <th className="py-3.5 px-6">Transaction Date</th>
+                      <th className="py-3.5 px-6">Tier Level</th>
+                      <th className="py-3.5 px-6">Amount Paid</th>
+                      <th className="py-3.5 px-6">Status</th>
+                      <th className="py-3.5 px-6 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border/30">
+                  <tbody className="divide-y divide-border/40">
                     {payments.map((payment) => (
-                      <tr key={payment.id} className="hover:bg-secondary/5 transition-colors">
+                      <tr key={payment.id} className="hover:bg-secondary/10 transition-colors">
                         {/* Date */}
-                        <td className="py-4.5 px-6 font-semibold text-foreground/90">
+                        <td className="py-4.5 px-6 text-foreground font-medium">
                           {new Date(payment.created_at).toLocaleDateString(undefined, {
                             month: "short",
                             day: "numeric",
@@ -259,7 +258,7 @@ export default function BillingPage() {
                         </td>
                         {/* Amount */}
                         <td className="py-4.5 px-6 font-mono font-bold text-accent">
-                          ${parseFloat(payment.amount).toFixed(2)}
+                          ₹{parseFloat(payment.amount).toLocaleString("en-IN")}
                         </td>
                         {/* Status */}
                         <td className="py-4.5 px-6">

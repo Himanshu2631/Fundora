@@ -16,17 +16,20 @@ export function useCharities() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch all vetted charities & user selections
+  // Fetch all vetted charities & user selections in parallel
   const fetchData = useCallback(async () => {
     setError(null);
     try {
-      const charData = await getCharities();
-      setCharities(charData);
-
       if (user) {
-        const allocData = await getUserAllocations(user.id);
-        setAllocations(allocData);
+        const [charData, allocData] = await Promise.all([
+          getCharities().catch(() => []),
+          getUserAllocations(user.id).catch(() => [])
+        ]);
+        setCharities(charData || []);
+        setAllocations(allocData || []);
       } else {
+        const charData = await getCharities().catch(() => []);
+        setCharities(charData || []);
         setAllocations([]);
       }
     } catch (err) {

@@ -280,14 +280,14 @@ export default function SubscriptionWidget() {
               </div>
               <div className="text-right">
                 <span className="text-[9px] uppercase tracking-widest font-bold text-muted-foreground block">Monthly Contribution</span>
-                <span className="text-2xl font-black text-accent block mt-1">${monthlyPrice.toFixed(2)}</span>
+                <span className="text-2xl font-black text-accent block mt-1">₹{monthlyPrice.toLocaleString("en-IN")}</span>
               </div>
             </div>
 
             {/* Grid of Metric Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
               {[
-                { label: "Total Contributions", value: `$${totalContributions.toFixed(2)}`, desc: `${totalMonths} billing cycles` },
+                { label: "Total Contributions", value: `₹${totalContributions.toLocaleString("en-IN")}`, desc: `${totalMonths} billing cycles` },
                 { label: "Reward Multiplier", value: multiplier, desc: "On reward draws" },
                 { label: "Active Draw Entries", value: activeEntries, desc: "In upcoming pools" },
                 { label: "Giving Score Increment", value: impactScoreRate, desc: "Points added monthly" },
@@ -551,7 +551,7 @@ export default function SubscriptionWidget() {
                   </div>
 
                   <div className="flex items-center justify-between pt-3 border-t border-white/[0.04] mt-auto">
-                    <span className="text-xs font-black text-accent">${p.price}/mo</span>
+                    <span className="text-xs font-black text-accent">₹{p.price.toLocaleString("en-IN")}/mo</span>
                     <Button 
                       onClick={() => handleSubscribe(key)} 
                       variant={isRecommended ? "accent" : "outline"} 
@@ -599,7 +599,7 @@ export default function SubscriptionWidget() {
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">{p.description}</p>
                     </div>
-                    <span className="text-sm font-bold text-accent">${p.price}/mo</span>
+                    <span className="text-sm font-bold text-accent">₹{p.price.toLocaleString("en-IN")}/mo</span>
                   </div>
 
                   <div className="flex flex-wrap gap-2">

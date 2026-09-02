@@ -72,7 +72,7 @@ export default function SubscriptionTimeline({ subscription, status }) {
         id: `pay-success-${payment.id}`,
         type: "payment_success",
         title: "Contribution Received",
-        description: `Successfully processed billing invoice of $${parseFloat(payment.amount).toFixed(2)}.`,
+        description: `Successfully processed billing invoice of ₹${parseFloat(payment.amount).toLocaleString("en-IN")}.`,
         date: new Date(payment.created_at),
         icon: CheckCircle2,
         color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/30"
@@ -82,7 +82,7 @@ export default function SubscriptionTimeline({ subscription, status }) {
         id: `pay-failed-${payment.id}`,
         type: "payment_failed",
         title: "Billing Transaction Failed",
-        description: `Invoice collection of $${parseFloat(payment.amount).toFixed(2)} was declined.`,
+        description: `Invoice collection of ₹${parseFloat(payment.amount).toLocaleString("en-IN")} was declined.`,
         date: new Date(payment.created_at),
         icon: AlertTriangle,
         color: "text-rose-500 bg-rose-500/10 border-rose-500/30"

@@ -29,20 +29,20 @@ import {
 const PLAN_DETAILS = {
   scout: {
     name: "Eco Scout",
-    price: 10,
-    yearlyPrice: 8,
+    price: 499,
+    yearlyPrice: 399,
     perks: ["1× draw entry", "+10 score/mo", "Audit receipts", "Community rank"],
   },
   advocate: {
     name: "Global Advocate",
-    price: 25,
-    yearlyPrice: 20,
+    price: 1299,
+    yearlyPrice: 999,
     perks: ["3× draw multiplier", "+30 score/mo", "Priority draws", "Cause rotation"],
   },
   builder: {
     name: "Legacy Builder",
-    price: 100,
-    yearlyPrice: 80,
+    price: 4999,
+    yearlyPrice: 3999,
     perks: ["10× draw multiplier", "+150 score/mo", "On-chain receipts", "NGO access"],
   },
 };
@@ -390,7 +390,7 @@ export default function SubscriptionPage() {
                     Unlock more impact with Global Advocate
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1 max-w-md">
-                    Get 3× draw entries, priority corporate draw access, and rotating NGO allocation lists for just $25/mo.
+                    Get 3× draw entries, priority corporate draw access, and rotating NGO allocation lists for just ₹1,299/mo.
                   </p>
                 </div>
                 <Button asChild variant="accent" className="shrink-0 font-bold">
@@ -434,7 +434,7 @@ export default function SubscriptionPage() {
                   <div>
                     <h4 className="font-heading font-bold text-base text-foreground mb-1">{p.name}</h4>
                     <div className="flex items-baseline gap-1 my-3">
-                      <span className="text-2xl font-extrabold text-foreground">${p.price}</span>
+                      <span className="text-2xl font-extrabold text-foreground">₹{p.price.toLocaleString("en-IN")}</span>
                       <span className="text-[10px] text-muted-foreground font-semibold">/ month</span>
                     </div>
                     <ul className="space-y-3 my-5">

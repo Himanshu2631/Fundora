@@ -44,7 +44,7 @@ import {
   GraduationCap,
 } from "lucide-react";
 
-const PLAN_PRICES = { scout: 10, advocate: 25, builder: 100 };
+const PLAN_PRICES = { scout: 499, advocate: 1299, builder: 4999 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 16 },
@@ -327,7 +327,7 @@ export default function DashboardOverview() {
 
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const activeDraw = sortedDraws.length > 0 ? sortedDraws[0] : null;
-  const activePrize = activeDraw ? (typeof activeDraw.prize_value === 'number' && activeDraw.prize_value > 0 ? `$${activeDraw.prize_value.toLocaleString()}` : activeDraw.prize || "Exclusive Prize") : "No Active Draws";
+  const activePrize = activeDraw ? (typeof activeDraw.prize_value === 'number' && activeDraw.prize_value > 0 ? `₹${activeDraw.prize_value.toLocaleString("en-IN")}` : activeDraw.prize || "Exclusive Prize") : "No Active Draws";
 
   useEffect(() => {
     if (!activeDraw || activeDraw.status === "completed" || activeDraw.status === "drawn") {
