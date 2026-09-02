@@ -25,12 +25,12 @@ CREATE POLICY "Subscription plans are viewable by everyone"
 -- Insert Default Plan Seeds
 INSERT INTO public.subscription_plans (stripe_price_id, plan_name, billing_cycle, amount)
 VALUES
-  ('price_scout_monthly', 'scout', 'monthly', 10.00),
-  ('price_scout_yearly', 'scout', 'yearly', 96.00),
-  ('price_advocate_monthly', 'advocate', 'monthly', 25.00),
-  ('price_advocate_yearly', 'advocate', 'yearly', 240.00),
-  ('price_builder_monthly', 'builder', 'monthly', 100.00),
-  ('price_builder_yearly', 'builder', 'yearly', 960.00)
+  ('price_scout_monthly', 'scout', 'monthly', 499.00),
+  ('price_scout_yearly', 'scout', 'yearly', 4788.00),
+  ('price_advocate_monthly', 'advocate', 'monthly', 1299.00),
+  ('price_advocate_yearly', 'advocate', 'yearly', 11988.00),
+  ('price_builder_monthly', 'builder', 'monthly', 4999.00),
+  ('price_builder_yearly', 'builder', 'yearly', 47988.00)
 ON CONFLICT (stripe_price_id) DO NOTHING;
 
 -- 2. Add Stripe Customer column to profiles

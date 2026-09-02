@@ -81,10 +81,10 @@ export async function POST(req) {
       }
 
       // Log a simulated payment succeeded record
-      let amount = 10.00;
-      if (priceId.includes("scout")) amount = priceId.includes("yearly") ? 96.00 : 10.00;
-      else if (priceId.includes("advocate")) amount = priceId.includes("yearly") ? 240.00 : 25.00;
-      else if (priceId.includes("builder")) amount = priceId.includes("yearly") ? 960.00 : 100.00;
+      let amount = 499.00;
+      if (priceId.includes("scout")) amount = priceId.includes("yearly") ? 4788.00 : 499.00;
+      else if (priceId.includes("advocate")) amount = priceId.includes("yearly") ? 11988.00 : 1299.00;
+      else if (priceId.includes("builder")) amount = priceId.includes("yearly") ? 47988.00 : 4999.00;
 
       const stripeInvoiceId = "mock-in-" + Math.random().toString(36).substring(2, 15);
       await supabase.from("payments").insert({
@@ -181,10 +181,10 @@ export async function POST(req) {
       }
 
       const priceId = currentSub.stripe_price_id || "price_scout_monthly";
-      let amount = 10.00;
-      if (priceId.includes("scout")) amount = priceId.includes("yearly") ? 96.00 : 10.00;
-      else if (priceId.includes("advocate")) amount = priceId.includes("yearly") ? 240.00 : 25.00;
-      else if (priceId.includes("builder")) amount = priceId.includes("yearly") ? 960.00 : 100.00;
+      let amount = 499.00;
+      if (priceId.includes("scout")) amount = priceId.includes("yearly") ? 4788.00 : 499.00;
+      else if (priceId.includes("advocate")) amount = priceId.includes("yearly") ? 11988.00 : 1299.00;
+      else if (priceId.includes("builder")) amount = priceId.includes("yearly") ? 47988.00 : 4999.00;
 
       // Extend renewal date
       const currentRenewal = new Date(currentSub.renewal_date);
@@ -221,7 +221,7 @@ export async function POST(req) {
       sendSystemUpdateEmail(user.email, {
         userName,
         updateTitle: "Subscription Renewed",
-        updateDetails: `Your Fundora subscription was successfully renewed at ${timestamp}.<br/><br/>Amount charged: <strong>$${amount.toFixed(2)}</strong>.<br/>Thank you for your continued support in backing verified environmental and education initiatives.`,
+        updateDetails: `Your Fundora subscription was successfully renewed at ${timestamp}.<br/><br/>Amount charged: <strong>₹${amount.toLocaleString("en-IN")}</strong>.<br/>Thank you for your continued support in backing verified environmental and education initiatives.`,
       }).catch(err => console.error("Error sending renewal email:", err));
 
       return NextResponse.json({ success: true, action: "payment_succeeded" });
@@ -233,10 +233,10 @@ export async function POST(req) {
       }
 
       const priceId = currentSub.stripe_price_id || "price_scout_monthly";
-      let amount = 10.00;
-      if (priceId.includes("scout")) amount = priceId.includes("yearly") ? 96.00 : 10.00;
-      else if (priceId.includes("advocate")) amount = priceId.includes("yearly") ? 240.00 : 25.00;
-      else if (priceId.includes("builder")) amount = priceId.includes("yearly") ? 960.00 : 100.00;
+      let amount = 499.00;
+      if (priceId.includes("scout")) amount = priceId.includes("yearly") ? 4788.00 : 499.00;
+      else if (priceId.includes("advocate")) amount = priceId.includes("yearly") ? 11988.00 : 1299.00;
+      else if (priceId.includes("builder")) amount = priceId.includes("yearly") ? 47988.00 : 4999.00;
 
       const stripeInvoiceId = "mock-in-" + Math.random().toString(36).substring(2, 15);
       await supabase.from("payments").insert({
