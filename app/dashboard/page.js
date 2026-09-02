@@ -384,7 +384,7 @@ export default function DashboardOverview() {
   let healthConsults = 0;
 
   if (allocations) {
-    const monthlyPrice = monthlyContribution || 100;
+    const monthlyPrice = monthlyContribution || 1299;
     allocations.forEach(a => {
       const amt = (a.contribution_percentage / 100) * monthlyPrice;
       const name = a.charity_name?.toLowerCase() || "";
