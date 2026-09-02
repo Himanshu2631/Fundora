@@ -755,14 +755,14 @@ export default function PricingPage() {
                         </span>
                         <span className="text-[10px] text-muted-foreground">/mo</span>
                       </div>
-                      <PlanHeaderButton
-                        planKey={p.key}
-                        recommended={isFeatured}
-                        activeStatus={activeStatus}
-                        currentPlanKey={currentPlanKey}
-                        isLoggedIn={isLoggedIn}
-                        onSubscribe={onSubscribe}
-                      />
+                      <Button
+                        variant={isFeatured ? "accent" : "outline"}
+                        size="xs"
+                        className="mt-3 py-1 text-[10px] h-7 w-full font-extrabold uppercase tracking-wider"
+                        onClick={() => handleSubscribe(p.key)}
+                      >
+                        Activate
+                      </Button>
                     </div>
                   );
                 })}
