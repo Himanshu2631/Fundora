@@ -423,11 +423,11 @@ export default function DashboardOverview() {
   };
 
   const receipts = [
-    { id: "TXN-8840", date: "Jun 15, 2026", amount: "$25.00", charity: "Apex Water Initiative", status: "Audited", docUrl: "#" },
-    { id: "TXN-7412", date: "May 15, 2026", amount: "$25.00", charity: "Apex Water Initiative", status: "Audited", docUrl: "#" },
-    { id: "TXN-6395", date: "Apr 15, 2026", amount: "$25.00", charity: "Acres of Green", status: "Audited", docUrl: "#" },
-    { id: "TXN-5211", date: "Mar 15, 2026", amount: "$25.00", charity: "Acres of Green", status: "Audited", docUrl: "#" },
-    { id: "TXN-4019", date: "Feb 15, 2026", amount: "$25.00", charity: "Empower Global Edu", status: "Audited", docUrl: "#" },
+    { id: "TXN-8840", date: "Jun 15, 2026", amount: "₹1,299.00", charity: "Apex Water Initiative", status: "Audited", docUrl: "#" },
+    { id: "TXN-7412", date: "May 15, 2026", amount: "₹1,299.00", charity: "Apex Water Initiative", status: "Audited", docUrl: "#" },
+    { id: "TXN-6395", date: "Apr 15, 2026", amount: "₹1,299.00", charity: "Acres of Green", status: "Audited", docUrl: "#" },
+    { id: "TXN-5211", date: "Mar 15, 2026", amount: "₹1,299.00", charity: "Acres of Green", status: "Audited", docUrl: "#" },
+    { id: "TXN-4019", date: "Feb 15, 2026", amount: "₹1,299.00", charity: "Empower Global Edu", status: "Audited", docUrl: "#" },
   ];
 
   // Map user entries using real Supabase draw relations

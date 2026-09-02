@@ -49,7 +49,7 @@ A full CRM-style view of all registered members, their subscription plan, paymen
 
 | Feature | Description |
 |---|---|
-| **Tiered Subscriptions** | Three giving plans — Eco Scout ($10/mo), Global Advocate ($25/mo), Legacy Builder ($100/mo) — each routing 100% of funds to verified charities |
+| **Tiered Subscriptions** | Three giving plans — Eco Scout (₹499/mo), Global Advocate (₹1,299/mo), Legacy Builder (₹4,999/mo) — each routing 100% of funds to verified charities |
 | **Giving Score System** | Members earn points based on their tier, Impact Scores logged, and activity streaks |
 | **Automatic Draw Entry** | Eligible members are automatically entered into the active monthly draw — no manual opt-in required |
 | **Lottery Ticket Display** | Each draw entry generates unique lottery numbers displayed in the member's dashboard |
