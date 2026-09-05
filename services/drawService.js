@@ -161,6 +161,7 @@ export async function updateDrawStatus(drawId, status, supabaseClient) {
  * @returns {Promise<Array>} List of draw entries.
  */
 export async function getUserEntries(userId, supabaseClient) {
+  if (!userId) return [];
   const supabase = supabaseClient || createClient();
   const { data, error } = await supabase
     .from("draw_entries")
@@ -182,6 +183,7 @@ export async function getUserEntries(userId, supabaseClient) {
  * @returns {Promise<Array>} List of user draw entries.
  */
 export async function getUserEntriesForDraw(userId, drawId, supabaseClient) {
+  if (!userId || !drawId) return [];
   const supabase = supabaseClient || createClient();
   const { data, error } = await supabase
     .from("draw_entries")
@@ -429,6 +431,7 @@ export async function submitWinnerClaim(userId, drawId, entryId, screenshotUrl, 
  * Retrieve claim submissions for a specific user (from winner_submissions).
  */
 export async function getUserClaims(userId, supabaseClient) {
+  if (!userId) return [];
   const supabase = supabaseClient || createClient();
   const { data, error } = await supabase
     .from("winner_submissions")
@@ -510,6 +513,7 @@ export async function getWinners(drawId, supabaseClient) {
  * Fetch all draw participation records for a user.
  */
 export async function getDrawParticipations(userId, supabaseClient) {
+  if (!userId) return [];
   const supabase = supabaseClient || createClient();
   const { data, error } = await supabase
     .from("draw_participation")

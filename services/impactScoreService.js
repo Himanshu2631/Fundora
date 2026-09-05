@@ -110,11 +110,10 @@ export async function calculateTotalImpactScore(userId, supabaseClient) {
 export async function recordImpactEvent(userId, eventData = {}, supabaseClient) {
   const supabase = supabaseClient || createClient();
 
-  let targetUserId = userId;
-  if (!targetUserId) {
-    const { data: authData } = await supabase.auth.getUser();
-    targetUserId = authData?.user?.id;
-  }
+  const { data: authData } = await supabase.auth.getUser();
+  const sessionUserId = authData?.user?.id;
+  let targetUserId = sessionUserId || userId;
+
   if (!targetUserId) {
     throw new Error("User ID is required to record an impact event.");
   }

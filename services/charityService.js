@@ -34,6 +34,7 @@ export async function getCharities(supabaseClient) {
  * @returns {Promise<Array>} User allocations merged with charity details.
  */
 export async function getUserAllocations(userId, supabaseClient) {
+  if (!userId) return [];
   const supabase = supabaseClient || createClient();
   
   // 1. Fetch selections — gracefully handle table not yet migrated
@@ -71,7 +72,7 @@ export async function getUserAllocations(userId, supabaseClient) {
 }
 
 /**
- * Add or update an allocation percentage for a charity selection.
+ * Allocate subscription contribution percentage to a charity.
  * @param {string} userId - The user's ID.
  * @param {string} charityId - The charity ID to select.
  * @param {number|string} percentage - Percentage (integer 10-100).
@@ -79,6 +80,10 @@ export async function getUserAllocations(userId, supabaseClient) {
  */
 export async function allocateCharity(userId, charityId, percentage, supabaseClient) {
   const supabase = supabaseClient || createClient();
+  const { data: authData } = await supabase.auth.getUser();
+  const targetUserId = authData?.user?.id || userId;
+  if (!targetUserId) throw new Error("User ID is required to allocate charity.");
+
   const percentNum = parseInt(percentage, 10);
 
   // 1. Validate individual limits
@@ -93,7 +98,7 @@ export async function allocateCharity(userId, charityId, percentage, supabaseCli
   const { data: existing, error: fetchError } = await supabase
     .from("user_charity_selections")
     .select("*")
-    .eq("user_id", userId);
+    .eq("user_id", targetUserId);
 
   if (fetchError) {
     if (fetchError.code === "PGRST205" || fetchError.code === "42P01") {
@@ -116,7 +121,7 @@ export async function allocateCharity(userId, charityId, percentage, supabaseCli
   const { data, error } = await supabase
     .from("user_charity_selections")
     .insert({
-      user_id: userId,
+      user_id: targetUserId,
       charity_id: charityId,
       contribution_percentage: percentNum
     })
@@ -138,9 +143,14 @@ export async function allocateCharity(userId, charityId, percentage, supabaseCli
  */
 export async function removeAllocation(userId, charityId, supabaseClient) {
   const supabase = supabaseClient || createClient();
+  const { data: authData } = await supabase.auth.getUser();
+  const targetUserId = authData?.user?.id || userId;
+  if (!targetUserId) throw new Error("User ID is required to remove allocation.");
+
   const { error } = await supabase
     .from("user_charity_selections")
     .delete()
+    .eq("user_id", targetUserId)
     .eq("charity_id", charityId);
 
   if (error) {

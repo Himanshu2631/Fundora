@@ -74,7 +74,6 @@ export default function DrawsPage() {
   claims = claims || [];
   scores = scores || [];
   allocations = allocations || [];
-  const [isPending, startTransition] = useTransition();
 
   // Claims UI states
   const [claimUrls, setClaimUrls] = React.useState({});
@@ -119,14 +118,9 @@ export default function DrawsPage() {
         const hasTickets = userEntries.some(e => e.draw_id === draw.id);
         
         if (!hasTickets) {
-          startTransition(async () => {
-            try {
-              console.log(`[Auto-Registration] Registering entries for draw: ${draw.title}`);
-              await registerForDraw(draw.id, dynamicGivingScore, subscription?.plan_type, subStatus);
-            } catch (err) {
-              console.error("[Auto-Registration] Failure:", err);
-            }
-          });
+          console.log(`[Auto-Registration] Registering entries for draw: ${draw.title}`);
+          registerForDraw(draw.id, dynamicGivingScore, subscription?.plan_type, subStatus)
+            .catch((err) => console.error("[Auto-Registration] Failure:", err));
         }
       });
     }
@@ -199,7 +193,7 @@ export default function DrawsPage() {
   };
 
   // Loading state
-  if (!isLoaded || isPending) {
+  if (!isLoaded) {
     return (
       <div className="min-h-[70vh] flex items-center justify-center p-6">
         <LoadingState message="Auditing draw entries..." />
