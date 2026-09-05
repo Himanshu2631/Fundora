@@ -1,20 +1,11 @@
 """
 Early Behavioral Feature Extractor Module
 Enforces strict temporal leakage prevention by extracting features ONLY from the first 24-48 hours.
-Prediction Window W = 48.0 hours post campaign launch.
+In the real MDCC dataset, donation_time, update_time, and comment_time represent seconds elapsed since launch_date.
+Prediction Window W = 48.0 hours (172,800 seconds).
 """
 
-from datetime import datetime, timedelta
 from typing import List, Dict, Any, Tuple
-
-def parse_dt(ts_str: str) -> datetime:
-    cleaned = ts_str.rstrip("Z")
-    for fmt in ("%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M:%S.%f", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d"):
-        try:
-            return datetime.strptime(cleaned, fmt)
-        except ValueError:
-            continue
-    return datetime(2023, 1, 1, 12, 0, 0)
 
 def extract_early_behavior_features(
     records: List[Dict[str, Any]], window_hours: float = 48.0
@@ -44,62 +35,60 @@ def extract_early_behavior_features(
         "early_update_frequency",
     ]
 
+    cutoff_24_sec = 24.0 * 3600.0   # 86,400s
+    cutoff_48_sec = window_hours * 3600.0 # 172,800s
+
     matrix = []
     for rec in records:
-        launch_dt = parse_dt(str(rec.get("launch_time", "")))
-        cutoff_24h = launch_dt + timedelta(hours=24)
-        cutoff_window = launch_dt + timedelta(hours=window_hours)
+        donation_times = rec.get("donation_time", [])
+        donation_amts = rec.get("donation_amount", [])
+        update_times = rec.get("update_time", [])
+        comment_times = rec.get("comment_time", [])
 
-        # 1. Process Donations
-        donations = rec.get("donations", [])
+        # 1. Process Early Donations
         d_24_cnt = 0
         d_24_amt = 0.0
         d_48_cnt = 0
         d_48_amt = 0.0
 
-        for d in donations:
-            d_time_str = d.get("time", "") if isinstance(d, dict) else ""
-            if not d_time_str:
+        for idx, t in enumerate(donation_times):
+            try:
+                sec = float(t)
+                amt = float(donation_amts[idx]) if idx < len(donation_amts) else 0.0
+                if sec <= cutoff_48_sec:
+                    d_48_cnt += 1
+                    d_48_amt += amt
+                    if sec <= cutoff_24_sec:
+                        d_24_cnt += 1
+                        d_24_amt += amt
+            except (ValueError, TypeError):
                 continue
-            d_dt = parse_dt(d_time_str)
-
-            # Strictly enforce temporal boundary
-            if d_dt <= cutoff_window:
-                amt = float(d.get("amount", 0.0) or 0.0) if isinstance(d, dict) else 0.0
-                d_48_cnt += 1
-                d_48_amt += amt
-
-                if d_dt <= cutoff_24h:
-                    d_24_cnt += 1
-                    d_24_amt += amt
 
         donation_velocity = d_48_amt / window_hours
 
-        # 2. Process Comments
-        comments = rec.get("comments", [])
-        c_48_cnt = 0
-        for c in comments:
-            c_time_str = c.get("time", "") if isinstance(c, dict) else ""
-            if not c_time_str:
-                continue
-            c_dt = parse_dt(c_time_str)
-            if c_dt <= cutoff_window:
-                c_48_cnt += 1
-
-        comment_density = (float(c_48_cnt) / float(max(1, d_48_cnt)))
-
-        # 3. Process Creator Updates
-        updates = rec.get("updates", [])
+        # 2. Process Early Updates
         u_48_cnt = 0
-        for u in updates:
-            u_time_str = u.get("time", "") if isinstance(u, dict) else ""
-            if not u_time_str:
+        for t in update_times:
+            try:
+                sec = float(t)
+                if sec <= cutoff_48_sec:
+                    u_48_cnt += 1
+            except (ValueError, TypeError):
                 continue
-            u_dt = parse_dt(u_time_str)
-            if u_dt <= cutoff_window:
-                u_48_cnt += 1
 
         update_freq = float(u_48_cnt) / window_hours
+
+        # 3. Process Early Comments
+        c_48_cnt = 0
+        for t in comment_times:
+            try:
+                sec = float(t)
+                if sec <= cutoff_48_sec:
+                    c_48_cnt += 1
+            except (ValueError, TypeError):
+                continue
+
+        comment_density = (float(c_48_cnt) / float(max(1, d_48_cnt)))
 
         row = [
             float(d_24_cnt),

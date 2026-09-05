@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ML raw and large datasets
+ml/data/*.csv
+ml/data/*.json
+ml/data/*.pickle
+ml/data/*.pkl
+ml/data/processed/
+ml/data/raw/

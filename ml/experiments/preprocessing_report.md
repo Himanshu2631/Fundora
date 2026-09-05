@@ -1,37 +1,30 @@
 # Sahayata Research Phase 3 — Step 2: Data Preprocessing & Feature Extraction Report
 
 ## Executive Summary
-This report details the data preprocessing, target formulation, feature engineering, temporal leakage prevention, and dataset splitting pipeline for **Sahayata's** research component:
+This report presents the verified data preprocessing, target formulation, feature engineering, temporal leakage prevention, and dataset splitting results for **Sahayata's** AI research component:
 > **"Explainable AI-Based Campaign Viability Risk and Trust Score Estimation"**
 
-The model predicts the probability of **Campaign Viability Risk** (\(y=1\): High risk of underfunding / failing to reach funding goal) using information available during the **first 48 hours post launch**.
+The pipeline evaluates real GoFundMe crowdfunding campaigns from the peer-reviewed **MDCC dataset** (CIKM 2023).
 
 ---
 
-## 1. Dataset Overview & Cleaning Audit
+## PART A: REAL MDCC DATASET EXECUTION RESULTS
 
-### 1.1 Initial vs. Cleaned Dataset Size
-* **Source Dataset**: MDCC (Multimodal Dynamic Dataset for Donation-based Crowdfunding Campaigns)
-* **Initial Records Ingested**: 14,961 (Full MDCC Benchmark) / 1,000 (Sample Execution Verification)
-* **Final Cleaned Records**: 1,000 (0 records removed under validated synthetic benchmark, 0% loss)
+### 1. Real Dataset Ingestion & Quality Audit
+The real MDCC dataset (`raw_data.csv`, 75.1 MB) was ingested and audited:
 
-### 1.2 Record Removal Breakdown & Validation Rules
-| Filtering Criterion | Rule / Action | Removed Count | Reason |
-| :--- | :--- | :---: | :--- |
-| **Duplicate Campaign IDs** | Keep first instance, discard duplicates | 0 | Prevents duplicate sample contamination |
-| **Missing Essential Metadata** | Discard if `title`, `goal`, `raised`, or `launch_time` is missing | 0 | Ensures required metadata is available |
-| **Invalid Goal Values** | Discard if \(\text{goal} \le 0\) or non-numeric | 0 | Financial targets must be strictly positive |
-| **Invalid Raised Amounts** | Discard if \(\text{raised} < 0\) or non-numeric | 0 | Raised amounts cannot be negative |
-| **Malformed Timestamps** | Discard if `launch_time` ISO format fails parsing | 0 | Ensures temporal alignment reliability |
-| **Empty Text Fields** | Discard if both `title` and `description` are empty | 0 | Narrative features require text content |
-| **Total Records Removed** | — | **0** | **100% Data Integrity Retained** |
+| Metric | Real MDCC Count | Percentage |
+| :--- | :---: | :---: |
+| **Total Raw Campaigns Ingested** | **14,961** | 100.0% |
+| **Duplicate Campaign IDs Discarded** | **102** | 0.68% |
+| **Missing/Invalid Target Goals** | **0** | 0.0% |
+| **Missing/Invalid Raised Amounts** | **0** | 0.0% |
+| **Missing/Malformed Launch Dates** | **0** | 0.0% |
+| **Empty Text Records** | **0** | 0.0% |
+| **Total Clean Usable Records** | **14,859** | **99.32%** |
 
----
-
-## 2. Target Variable Formulation & Class Distribution
-
-### 2.1 Target Definition
-The target variable \(y \in \{0, 1\}\) is constructed directly from verified financial metadata:
+### 2. Real Ground-Truth Target Distribution
+Target is defined strictly from verified financial fields:
 \[
 y = \begin{cases}
 1 & \text{if } \text{raised} < \text{goal} \quad (\text{High Viability Risk / Underfunded}) \\
@@ -39,91 +32,101 @@ y = \begin{cases}
 \end{cases}
 \]
 
-### 2.2 Class Distribution
-* **\(y = 0\) (Successful / Funded)**: 450 records (**45.0%**)
-* **\(y = 1\) (High Risk / Underfunded)**: 550 records (**55.0%**)
-* **Target Balance**: The class ratio is well-balanced (~45:55), avoiding severe class imbalance issues and eliminating the need for synthetic oversampling (SMOTE).
+* **\(y = 0\) (Successful / Funded, \(\text{raised} \ge \text{goal}\))**: **3,291 campaigns (22.15%)**
+* **\(y = 1\) (Failed / Viability Risk, \(\text{raised} < \text{goal}\))**: **11,568 campaigns (77.85%)**
+* **Class Imbalance Note**: In real-world donation-based crowdfunding, ~78% of campaigns fail to meet their target goal. This realistic distribution matches empirical crowdfunding benchmarks.
+
+### 3. Category & Geographic Distributions
+* **Top Categories**:
+  * Memorial: 4,589 (30.9%)
+  * Medical: 3,580 (24.1%)
+  * Animals: 2,875 (19.3%)
+  * Emergency: 2,499 (16.8%)
+  * Financial Emergency: 1,316 (8.9%)
+* **Top Countries**:
+  * United States (US): 14,568 (98.0%)
+  * Canada (CA): 130 (0.9%)
+  * Great Britain (GB): 68 (0.5%)
+  * Australia (AU): 46 (0.3%)
+  * Ireland (IE) & Germany (DE): 22 (0.2%)
+
+### 4. 48-Hour Early Behavioral Feature Feasibility
+In MDCC, dynamic events (`donation_time`, `update_time`, `comment_time`) record the exact **number of seconds elapsed since `launch_date`**.
+
+* **24-Hour Cutoff**: \(t \le 86,400\text{ seconds}\)
+* **48-Hour Cutoff**: \(t \le 172,800\text{ seconds}\)
+
+**Empirical Dynamic Coverage**:
+* **Campaigns with dynamic donation sequences**: **14,859 / 14,859 (100.0%)**
+* **Campaigns with donations in first 24 hours**: **14,131 (95.1%)**
+* **Campaigns with donations in first 48 hours**: **14,494 (97.5%)**
+* **Total donations captured in early 24 hours**: **475,958 donations ($42,051,441)**
+* **Total donations captured in early 48 hours**: **681,869 donations ($60,781,916)**
+* **Campaigns with creator updates**: **6,181 (41.6%)** (3,429 updates in early 48h)
+* **Campaigns with supporter comments**: **10,606 (71.4%)** (28,655 comments in early 48h)
+
+### 5. Real Engineered Feature Groups (56 Usable Features)
+1. **Metadata Features (16 features)**:
+   * `goal` ($)
+   * `log_goal` (\(\log(1 + \text{goal})\))
+   * `launch_day` (0 = Monday, 6 = Sunday)
+   * `launch_hour` (0 - 23)
+   * `is_weekend` (1/0)
+   * Category One-Hot (6 features): `cat_memorial`, `cat_medical`, `cat_animals`, `cat_emergency`, `cat_financial_emergency`, `cat_other`
+   * Country One-Hot (5 features): `country_us`, `country_ca`, `country_gb`, `country_au`, `country_other`
+2. **Text Narrative Features (28 features)**:
+   * `description_length` & `description_word_count`
+   * `sentence_count`
+   * `avg_word_length`
+   * `readability_score` (ARI metric)
+   * `sentiment_pos_ratio`, `sentiment_neg_ratio`, `sentiment_polarity_net`
+   * Top 20 TF-IDF narrative terms (`tfidf_*`)
+3. **Early Behavioral Features (9 features — Strict 48h Window)**:
+   * `donations_first_24h_count`
+   * `donations_first_24h_amount` ($)
+   * `donations_first_48h_count`
+   * `donations_first_48h_amount` ($)
+   * `early_donation_velocity` ($/hour)
+   * `early_comment_count`
+   * `early_comment_density`
+   * `early_update_count`
+   * `early_update_frequency`
+4. **Image Metadata Features (3 features)**:
+   * `has_cover_photo` (1.0 for 14,854 campaigns)
+   * `num_body_photos` (6,023 total body photos in dataset)
+   * `total_photo_count`
+
+**Total Feature Matrix Dimension**: \(14,859 \times 56\)
+
+### 6. Chronological (Temporal) Dataset Splitting
+To replicate real-world deployment where future campaigns are evaluated using models trained on historical campaigns, the 14,859 clean records were sorted chronologically by `launch_date`:
+
+| Partition | Record Count | Ratio | Date Range | Successful (\(y=0\)) | Failed (\(y=1\)) | Failure Rate |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Training Set** | **10,401** | **70.0%** | 2022-10-15 to 2022-11-08 | 2,290 | 8,111 | **77.98%** |
+| **Validation Set** | **2,228** | **15.0%** | 2022-11-08 to 2022-11-14 | 472 | 1,756 | **78.82%** |
+| **Test Set** | **2,230** | **15.0%** | 2022-11-14 to 2022-11-20 | 529 | 1,701 | **76.28%** |
+
+*Failure rates remain remarkably stable (~76% - 78%) across all three chronological periods.*
+
+### 7. Temporal Leakage Prevention Audit
+* [x] **Final Raised Amount**: Strictly excluded from input feature matrix \(X\). Used exclusively to derive target label \(y\).
+* [x] **Post-48h Dynamic Activity**: Filtered out completely. Any donation, update, or comment occurring with `seconds > 172800` is discarded from feature calculations.
+* [x] **Temporal Split**: Chronological sorting prevents future data from leaking into training splits.
 
 ---
 
-## 3. Feature Engineering & Feature Matrix Structure
+## PART B: SYNTHETIC/SAMPLE BENCHMARK TEST (HISTORICAL REFERENCE)
 
-A total of **44 explicit features** were engineered across 4 modular feature domains:
+For development and modular pipeline unit testing, a 1,000-sample generator (`sample_generator.py`) was originally used to verify module interfaces:
+* Sample records: 1,000
+* Sample target distribution: 45.0% Successful (\(y=0\)), 55.0% Failed (\(y=1\))
+* Sample feature dimension: \(1,000 \times 44\)
+* Split: 700 Train / 150 Val / 150 Test
 
-### 3.1 Metadata Features (16 Features)
-* `goal`: Target monetary goal requested ($).
-* `log_goal`: Log-transformed goal \(\log(1 + \text{goal})\).
-* `launch_day`: Day of week launched (0 = Monday, 6 = Sunday).
-* `launch_hour`: Hour of day launched (0 - 23).
-* `is_weekend`: Binary flag for weekend launch (Saturday/Sunday).
-* `cat_*` (10 One-Hot Features): Medical, Memorial, Emergency, Financial, Animal, Education, Community, Family, Events, Uncategorized.
-* `country_*` (6 One-Hot Features): US, CA, GB, AU, DE, OTHER.
-
-### 3.2 Text Features (30 Features)
-* `title_length` & `title_word_count`: Title character & word count.
-* `description_length` & `description_word_count`: Description character & word count.
-* `sentence_count`: Number of sentences in narrative.
-* `avg_word_length`: Average character count per word.
-* `readability_score`: Automated Readability Index (ARI) score approximation.
-* `sentiment_pos_ratio`, `sentiment_neg_ratio`, `sentiment_polarity_net`: Lexicon-based sentiment polarities.
-* `tfidf_*` (20 Vocabulary Features): Term frequency-inverse document frequency weights for top corpus terms.
-
-### 3.3 Early Behavioral Features (9 Features — Strict 48h Window)
-* `donations_first_24h_count`: Number of donations received within 24 hours of launch.
-* `donations_first_24h_amount`: Total monetary amount raised within 24 hours of launch.
-* `donations_first_48h_count`: Number of donations received within 48 hours of launch.
-* `donations_first_48h_amount`: Total monetary amount raised within 48 hours of launch.
-* `early_donation_velocity`: Average hourly funding rate (\(\text{amount\_48h} / 48.0\)).
-* `early_comment_count`: Number of supporter comments within 48 hours.
-* `early_comment_density`: Ratio of comments to donations within 48 hours.
-* `early_update_count`: Number of campaign updates posted by creator within 48 hours.
-* `early_update_frequency`: Creator update posting rate (\(\text{updates\_48h} / 48.0\)).
-
-### 3.4 Image Metadata Features (5 Features)
-* `has_cover_photo`: Binary indicator of campaign cover image presence (1.0 / 0.0).
-* `image_width` & `image_height`: Image resolution dimensions in pixels.
-* `aspect_ratio`: Image width-to-height aspect ratio.
-* `total_image_count`: Total number of images (cover photo + body text photos).
-
-**Total Feature Matrix Dimension**: \(N \times 44\)
+*The real MDCC dataset (Part A) supersedes all synthetic tests and constitutes the definitive basis for model training and research evaluation.*
 
 ---
 
-## 4. Prediction Point & Temporal Leakage Prevention
-
-### 4.1 Prediction Point Definition
-* **Prediction Window (\(W\))**: **First 48.0 Hours Post Campaign Launch**.
-* All input features represent information available to Sahayata's AI system exactly 48 hours after a creator publishes their campaign.
-
-### 4.2 Strict Leakage Prevention Safeguards
-1. **Exclusion of Final Outcome Features**: The campaign's final total `raised` amount is strictly excluded from input feature matrix \(X\). It is used **only** to derive target \(y\).
-2. **Temporal Window Truncation**: All dynamic lists (`donations`, `updates`, `comments`) are filtered using timestamp cutoffs \(\text{timestamp} \le \text{launch\_time} + 48.0 \text{ hours}\). Any donation, comment, or update occurring after hour 48 is discarded from input feature calculation.
-3. **No Target-in-Feature Contamination**: No derived feature uses target \(y\) or post-window funding progress.
-
----
-
-## 5. Dataset Splitting Strategy
-
-### 5.1 Chronological / Temporal Split
-To evaluate model performance realistically in production conditions, dataset records are sorted chronologically by `launch_time`:
-* **Training Set (70%)**: 700 oldest campaigns.
-* **Validation Set (15%)**: 150 middle campaigns.
-* **Test Set (15%)**: 150 newest campaigns.
-
-### 5.2 Split Distribution Audit
-| Dataset Partition | Record Count | Successful (\(y=0\)) | Failed (\(y=1\)) | Failure Rate (%) |
-| :--- | :---: | :---: | :---: | :---: |
-| **Training Set** | 700 | 315 | 385 | 55.0% |
-| **Validation Set** | 150 | 67 | 83 | 55.3% |
-| **Test Set** | 150 | 68 | 82 | 54.7% |
-
-*The failure rate remains consistently ~55% across all three temporal splits.*
-
----
-
-## 6. Limitations & Next Steps
-* **Visual Features**: Currently limited to safe image metadata (presence, resolution, aspect ratio, image count). Deep visual feature extraction (e.g., pre-trained MobileNet/ResNet feature vectors) can be integrated in subsequent feature enhancement steps.
-* **Text Embeddings**: Standard TF-IDF and lexicon sentiment are implemented for reproducibility; pre-trained transformer embeddings (e.g., MiniLM) can be explored if higher text representation capacity is required.
-
-### Recommended Next Step
-Proceed to **Phase 3 — Step 3: Baseline Model Training, Cross-Validation & Metric Evaluation** (training benchmark classifiers e.g. Logistic Regression, Random Forest, XGBoost, and evaluating ROC-AUC, PR-AUC, F1-Score, and Log Loss).
+## 8. Dataset Readiness
+The real MDCC dataset is **fully downloaded, cleaned, audited, feature-engineered, and split**. It is completely ready for model training in Step 3.

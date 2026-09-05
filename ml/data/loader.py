@@ -8,57 +8,55 @@ Source: Jiayang-L1/mdcc (Zenodo DOI: 10.5281/zenodo.8287320)
 import json
 import csv
 import os
-import pickle
+import ast
 from typing import List, Dict, Any, Optional
 
-# Standard MDCC Schema Definition
+# Verified Real MDCC Schema (18 Columns)
 MDCC_SCHEMA = {
-    "campaign_id": str,          # Unique campaign identifier URL slug
-    "title": str,                # Campaign title
-    "description": str,          # Narrative campaign description
-    "category": str,             # Campaign category (Medical, Memorial, Emergency, etc.)
-    "country": str,              # Geographical country/location code
-    "goal": float,               # Financial goal requested (USD/local currency)
-    "raised": float,             # Total amount raised at dataset snapshot
-    "launch_time": str,          # ISO timestamp or datetime string
-    "donations": list,           # List of donation dicts: [{"time": str, "amount": float}]
-    "updates": list,             # List of update dicts: [{"time": str, "text": str}]
-    "comments": list,            # List of comment dicts: [{"time": str, "text": str}]
-    "comment_cor_time": list,    # Donation timestamps corresponding to comments
-    "cover_photo": str,          # Path/filename for campaign homepage image
-    "body_photos": list          # Paths/filenames for body images
+    "campaign_id": str,
+    "category": str,
+    "goal": float,
+    "launch_date": str,
+    "country": str,
+    "city": str,
+    "raw_description": str,
+    "clean_description": str,
+    "cover_photo": str,
+    "num_photo_main_body": int,
+    "raised": float,
+    "donation_time": list,        # List of integer seconds elapsed since launch_date
+    "donation_amount": list,      # List of float donation amounts
+    "comment_time": list,        # List of integer seconds elapsed since launch_date
+    "comment_cor_time": list,
+    "comment_text": list,
+    "update_time": list,         # List of integer seconds elapsed since launch_date
+    "update_text": list
 }
+
+def parse_list_field(val: Any) -> list:
+    """Safely parses stringified Python list literals or JSON arrays."""
+    if not val:
+        return []
+    if isinstance(val, list):
+        return val
+    s = str(val).strip()
+    if s == "[]" or s == "":
+        return []
+    try:
+        return json.loads(s.replace("'", '"'))
+    except Exception:
+        try:
+            return ast.literal_eval(s)
+        except Exception:
+            return []
 
 class MDCCDataLoader:
     """
-    Data loader for MDCC raw dataset files (JSON, CSV, or Pickle).
+    Data loader for MDCC raw dataset files (CSV, JSON, or Pickle).
     """
 
     def __init__(self, data_dir: Optional[str] = None):
         self.data_dir = data_dir or os.path.dirname(os.path.abspath(__file__))
-
-    def load_json(self, file_path: str) -> List[Dict[str, Any]]:
-        """
-        Loads raw_data.json and returns a list of normalized campaign records.
-        """
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"MDCC dataset JSON file not found at: {file_path}")
-        
-        with open(file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        if isinstance(data, dict):
-            # If JSON is keyed by campaign_id
-            records = []
-            for cid, obj in data.items():
-                if isinstance(obj, dict):
-                    obj["campaign_id"] = obj.get("campaign_id", cid)
-                    records.append(obj)
-            return records
-        elif isinstance(data, list):
-            return data
-        else:
-            raise ValueError("Unexpected JSON root format. Expected dict or list.")
 
     def load_csv(self, file_path: str) -> List[Dict[str, Any]]:
         """
@@ -68,57 +66,49 @@ class MDCCDataLoader:
             raise FileNotFoundError(f"MDCC dataset CSV file not found at: {file_path}")
 
         records = []
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, "r", encoding="utf-8", errors="replace") as f:
             reader = csv.DictReader(f)
             for row in reader:
+                desc = row.get("clean_description") or row.get("raw_description") or ""
                 record = {
-                    "campaign_id": row.get("campaign_id", ""),
-                    "title": row.get("title", ""),
-                    "description": row.get("description", ""),
-                    "category": row.get("category", "Uncategorized"),
-                    "country": row.get("country", "US"),
+                    "campaign_id": row.get("campaign_id", "").strip(),
+                    "category": row.get("category", "Uncategorized").strip(),
                     "goal": float(row.get("goal", 0.0) or 0.0),
+                    "launch_date": row.get("launch_date", "").strip(),
+                    "country": row.get("country", "US").strip(),
+                    "city": row.get("city", "").strip(),
+                    "description": desc.strip(),
+                    "cover_photo": row.get("cover_photo", "").strip(),
+                    "num_photo_main_body": int(float(row.get("num_photo_main_body", 0) or 0)),
                     "raised": float(row.get("raised", 0.0) or 0.0),
-                    "launch_time": row.get("launch_time", ""),
-                    "donations": json.loads(row.get("donations", "[]")) if row.get("donations") else [],
-                    "updates": json.loads(row.get("updates", "[]")) if row.get("updates") else [],
-                    "comments": json.loads(row.get("comments", "[]")) if row.get("comments") else [],
-                    "comment_cor_time": json.loads(row.get("comment_cor_time", "[]")) if row.get("comment_cor_time") else [],
-                    "cover_photo": row.get("cover_photo", ""),
-                    "body_photos": json.loads(row.get("body_photos", "[]")) if row.get("body_photos") else [],
+                    "donation_time": parse_list_field(row.get("donation_time")),
+                    "donation_amount": parse_list_field(row.get("donation_amount")),
+                    "comment_time": parse_list_field(row.get("comment_time")),
+                    "comment_cor_time": parse_list_field(row.get("comment_cor_time")),
+                    "comment_text": parse_list_field(row.get("comment_text")),
+                    "update_time": parse_list_field(row.get("update_time")),
+                    "update_text": parse_list_field(row.get("update_text")),
                 }
                 records.append(record)
         return records
 
-    def load_pickle(self, file_path: str) -> List[Dict[str, Any]]:
-        """
-        Loads raw_data.pickle or experimental_data.pickle.
-        """
+    def load_json(self, file_path: str) -> List[Dict[str, Any]]:
+        """Loads raw_data.json and returns normalized records."""
         if not os.path.exists(file_path):
-            raise FileNotFoundError(f"MDCC pickle file not found at: {file_path}")
-        
-        with open(file_path, "rb") as f:
-            data = pickle.load(f)
-        
+            raise FileNotFoundError(f"MDCC dataset JSON file not found at: {file_path}")
+        with open(file_path, "r", encoding="utf-8", errors="replace") as f:
+            data = json.load(f)
         if isinstance(data, list):
             return data
-        elif hasattr(data, "to_dict"):
-            return data.to_dict(orient="records")
         elif isinstance(data, dict):
             return list(data.values())
-        else:
-            raise ValueError(f"Unsupported pickle content type: {type(data)}")
+        raise ValueError("Invalid JSON dataset format.")
 
     def load_dataset(self, file_path: str) -> List[Dict[str, Any]]:
-        """
-        Auto-detects file extension and loads dataset.
-        """
         ext = os.path.splitext(file_path)[1].lower()
-        if ext == ".json":
-            return self.load_json(file_path)
-        elif ext == ".csv":
+        if ext == ".csv":
             return self.load_csv(file_path)
-        elif ext in [".pickle", ".pkl"]:
-            return self.load_pickle(file_path)
+        elif ext == ".json":
+            return self.load_json(file_path)
         else:
             raise ValueError(f"Unsupported file format: {ext}")

@@ -1,0 +1,707 @@
+{
+  "Exp A (Metadata only)": {
+    "feature_dim": 16,
+    "models": {
+      "Logistic Regression": {
+        "val_metrics": {
+          "accuracy": 0.6355,
+          "precision": 0.8894,
+          "recall": 0.6139,
+          "f1_score": 0.7264,
+          "roc_auc": 0.738,
+          "pr_auc": 0.9052,
+          "log_loss": 0.6359,
+          "brier_score": 0.2226,
+          "cm": {
+            "TP": 1078,
+            "FP": 134,
+            "TN": 338,
+            "FN": 678
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.6283,
+          "precision": 0.8615,
+          "recall": 0.6108,
+          "f1_score": 0.7148,
+          "roc_auc": 0.7173,
+          "pr_auc": 0.8815,
+          "log_loss": 0.6404,
+          "brier_score": 0.2248,
+          "cm": {
+            "TP": 1039,
+            "FP": 167,
+            "TN": 362,
+            "FN": 662
+          }
+        }
+      },
+      "Random Forest": {
+        "val_metrics": {
+          "accuracy": 0.6692,
+          "precision": 0.8828,
+          "recall": 0.6691,
+          "f1_score": 0.7613,
+          "roc_auc": 0.7534,
+          "pr_auc": 0.9149,
+          "log_loss": 0.5799,
+          "brier_score": 0.1985,
+          "cm": {
+            "TP": 1175,
+            "FP": 156,
+            "TN": 316,
+            "FN": 581
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.6713,
+          "precision": 0.8607,
+          "recall": 0.679,
+          "f1_score": 0.7591,
+          "roc_auc": 0.7256,
+          "pr_auc": 0.8814,
+          "log_loss": 0.5951,
+          "brier_score": 0.2046,
+          "cm": {
+            "TP": 1155,
+            "FP": 187,
+            "TN": 342,
+            "FN": 546
+          }
+        }
+      },
+      "XGBoost": {
+        "val_metrics": {
+          "accuracy": 0.711,
+          "precision": 0.8787,
+          "recall": 0.7346,
+          "f1_score": 0.8002,
+          "roc_auc": 0.7547,
+          "pr_auc": 0.9148,
+          "log_loss": 0.6601,
+          "brier_score": 0.2336,
+          "cm": {
+            "TP": 1290,
+            "FP": 178,
+            "TN": 294,
+            "FN": 466
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.687,
+          "precision": 0.8461,
+          "recall": 0.7208,
+          "f1_score": 0.7784,
+          "roc_auc": 0.719,
+          "pr_auc": 0.8807,
+          "log_loss": 0.6631,
+          "brier_score": 0.2351,
+          "cm": {
+            "TP": 1226,
+            "FP": 223,
+            "TN": 306,
+            "FN": 475
+          }
+        }
+      },
+      "SVM": {
+        "val_metrics": {
+          "accuracy": 0.7913,
+          "precision": 0.7906,
+          "recall": 1,
+          "f1_score": 0.8831,
+          "roc_auc": 0.7237,
+          "pr_auc": 0.9015,
+          "log_loss": 0.5347,
+          "brier_score": 0.174,
+          "cm": {
+            "TP": 1756,
+            "FP": 465,
+            "TN": 7,
+            "FN": 0
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.7691,
+          "precision": 0.7676,
+          "recall": 1,
+          "f1_score": 0.8685,
+          "roc_auc": 0.6974,
+          "pr_auc": 0.8732,
+          "log_loss": 0.5507,
+          "brier_score": 0.1817,
+          "cm": {
+            "TP": 1701,
+            "FP": 515,
+            "TN": 14,
+            "FN": 0
+          }
+        }
+      }
+    }
+  },
+  "Exp B (Text only)": {
+    "feature_dim": 28,
+    "models": {
+      "Logistic Regression": {
+        "val_metrics": {
+          "accuracy": 0.535,
+          "precision": 0.8291,
+          "recall": 0.5165,
+          "f1_score": 0.6365,
+          "roc_auc": 0.5817,
+          "pr_auc": 0.8276,
+          "log_loss": 0.6853,
+          "brier_score": 0.2459,
+          "cm": {
+            "TP": 907,
+            "FP": 187,
+            "TN": 285,
+            "FN": 849
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.5332,
+          "precision": 0.8022,
+          "recall": 0.515,
+          "f1_score": 0.6273,
+          "roc_auc": 0.581,
+          "pr_auc": 0.8082,
+          "log_loss": 0.6853,
+          "brier_score": 0.2461,
+          "cm": {
+            "TP": 876,
+            "FP": 216,
+            "TN": 313,
+            "FN": 825
+          }
+        }
+      },
+      "Random Forest": {
+        "val_metrics": {
+          "accuracy": 0.583,
+          "precision": 0.8198,
+          "recall": 0.6036,
+          "f1_score": 0.6953,
+          "roc_auc": 0.5804,
+          "pr_auc": 0.8315,
+          "log_loss": 0.6661,
+          "brier_score": 0.2368,
+          "cm": {
+            "TP": 1060,
+            "FP": 233,
+            "TN": 239,
+            "FN": 696
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.5785,
+          "precision": 0.7956,
+          "recall": 0.602,
+          "f1_score": 0.6854,
+          "roc_auc": 0.5841,
+          "pr_auc": 0.8172,
+          "log_loss": 0.6681,
+          "brier_score": 0.2378,
+          "cm": {
+            "TP": 1024,
+            "FP": 263,
+            "TN": 266,
+            "FN": 677
+          }
+        }
+      },
+      "XGBoost": {
+        "val_metrics": {
+          "accuracy": 0.5274,
+          "precision": 0.83,
+          "recall": 0.5034,
+          "f1_score": 0.6267,
+          "roc_auc": 0.5766,
+          "pr_auc": 0.8306,
+          "log_loss": 0.6897,
+          "brier_score": 0.2483,
+          "cm": {
+            "TP": 884,
+            "FP": 181,
+            "TN": 291,
+            "FN": 872
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.5265,
+          "precision": 0.8022,
+          "recall": 0.5032,
+          "f1_score": 0.6185,
+          "roc_auc": 0.5833,
+          "pr_auc": 0.8167,
+          "log_loss": 0.6896,
+          "brier_score": 0.2482,
+          "cm": {
+            "TP": 856,
+            "FP": 211,
+            "TN": 318,
+            "FN": 845
+          }
+        }
+      },
+      "SVM": {
+        "val_metrics": {
+          "accuracy": 0.7729,
+          "precision": 0.7891,
+          "recall": 0.9715,
+          "f1_score": 0.8709,
+          "roc_auc": 0.5078,
+          "pr_auc": 0.7971,
+          "log_loss": 0.5875,
+          "brier_score": 0.1986,
+          "cm": {
+            "TP": 1706,
+            "FP": 456,
+            "TN": 16,
+            "FN": 50
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.7534,
+          "precision": 0.7634,
+          "recall": 0.9806,
+          "f1_score": 0.8585,
+          "roc_auc": 0.533,
+          "pr_auc": 0.7902,
+          "log_loss": 0.593,
+          "brier_score": 0.2013,
+          "cm": {
+            "TP": 1668,
+            "FP": 517,
+            "TN": 12,
+            "FN": 33
+          }
+        }
+      }
+    }
+  },
+  "Exp C (Metadata + Text)": {
+    "feature_dim": 44,
+    "models": {
+      "Logistic Regression": {
+        "val_metrics": {
+          "accuracy": 0.6472,
+          "precision": 0.895,
+          "recall": 0.6259,
+          "f1_score": 0.7366,
+          "roc_auc": 0.7353,
+          "pr_auc": 0.9037,
+          "log_loss": 0.6308,
+          "brier_score": 0.2202,
+          "cm": {
+            "TP": 1099,
+            "FP": 129,
+            "TN": 343,
+            "FN": 657
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.6251,
+          "precision": 0.8601,
+          "recall": 0.6073,
+          "f1_score": 0.7119,
+          "roc_auc": 0.7183,
+          "pr_auc": 0.8818,
+          "log_loss": 0.6355,
+          "brier_score": 0.2226,
+          "cm": {
+            "TP": 1033,
+            "FP": 168,
+            "TN": 361,
+            "FN": 668
+          }
+        }
+      },
+      "Random Forest": {
+        "val_metrics": {
+          "accuracy": 0.724,
+          "precision": 0.8771,
+          "recall": 0.7557,
+          "f1_score": 0.8119,
+          "roc_auc": 0.7575,
+          "pr_auc": 0.9171,
+          "log_loss": 0.5861,
+          "brier_score": 0.1992,
+          "cm": {
+            "TP": 1327,
+            "FP": 186,
+            "TN": 286,
+            "FN": 429
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.7081,
+          "precision": 0.85,
+          "recall": 0.7496,
+          "f1_score": 0.7966,
+          "roc_auc": 0.7268,
+          "pr_auc": 0.8849,
+          "log_loss": 0.5978,
+          "brier_score": 0.2046,
+          "cm": {
+            "TP": 1275,
+            "FP": 225,
+            "TN": 304,
+            "FN": 426
+          }
+        }
+      },
+      "XGBoost": {
+        "val_metrics": {
+          "accuracy": 0.6997,
+          "precision": 0.8685,
+          "recall": 0.7295,
+          "f1_score": 0.7929,
+          "roc_auc": 0.7411,
+          "pr_auc": 0.9076,
+          "log_loss": 0.6663,
+          "brier_score": 0.2367,
+          "cm": {
+            "TP": 1281,
+            "FP": 194,
+            "TN": 278,
+            "FN": 475
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.6892,
+          "precision": 0.8476,
+          "recall": 0.7225,
+          "f1_score": 0.7801,
+          "roc_auc": 0.7107,
+          "pr_auc": 0.8794,
+          "log_loss": 0.6689,
+          "brier_score": 0.238,
+          "cm": {
+            "TP": 1229,
+            "FP": 221,
+            "TN": 308,
+            "FN": 472
+          }
+        }
+      },
+      "SVM": {
+        "val_metrics": {
+          "accuracy": 0.7783,
+          "precision": 0.8034,
+          "recall": 0.9516,
+          "f1_score": 0.8712,
+          "roc_auc": 0.6454,
+          "pr_auc": 0.8642,
+          "log_loss": 0.5662,
+          "brier_score": 0.189,
+          "cm": {
+            "TP": 1671,
+            "FP": 409,
+            "TN": 63,
+            "FN": 85
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.7592,
+          "precision": 0.7758,
+          "recall": 0.9624,
+          "f1_score": 0.8591,
+          "roc_auc": 0.651,
+          "pr_auc": 0.8481,
+          "log_loss": 0.572,
+          "brier_score": 0.1917,
+          "cm": {
+            "TP": 1637,
+            "FP": 473,
+            "TN": 56,
+            "FN": 64
+          }
+        }
+      }
+    }
+  },
+  "Exp D (Metadata + Text + Early Behaviour)": {
+    "feature_dim": 53,
+    "models": {
+      "Logistic Regression": {
+        "val_metrics": {
+          "accuracy": 0.7433,
+          "precision": 0.9309,
+          "recall": 0.7284,
+          "f1_score": 0.8173,
+          "roc_auc": 0.8313,
+          "pr_auc": 0.9397,
+          "log_loss": 0.5924,
+          "brier_score": 0.1981,
+          "cm": {
+            "TP": 1279,
+            "FP": 95,
+            "TN": 377,
+            "FN": 477
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.7188,
+          "precision": 0.9359,
+          "recall": 0.6778,
+          "f1_score": 0.7862,
+          "roc_auc": 0.8492,
+          "pr_auc": 0.9432,
+          "log_loss": 0.5946,
+          "brier_score": 0.2021,
+          "cm": {
+            "TP": 1153,
+            "FP": 79,
+            "TN": 450,
+            "FN": 548
+          }
+        }
+      },
+      "Random Forest": {
+        "val_metrics": {
+          "accuracy": 0.811,
+          "precision": 0.9332,
+          "recall": 0.8189,
+          "f1_score": 0.8723,
+          "roc_auc": 0.8773,
+          "pr_auc": 0.9574,
+          "log_loss": 0.4522,
+          "brier_score": 0.142,
+          "cm": {
+            "TP": 1438,
+            "FP": 103,
+            "TN": 369,
+            "FN": 318
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.8054,
+          "precision": 0.9433,
+          "recall": 0.7925,
+          "f1_score": 0.8613,
+          "roc_auc": 0.9062,
+          "pr_auc": 0.9625,
+          "log_loss": 0.4518,
+          "brier_score": 0.1421,
+          "cm": {
+            "TP": 1348,
+            "FP": 81,
+            "TN": 448,
+            "FN": 353
+          }
+        }
+      },
+      "XGBoost": {
+        "val_metrics": {
+          "accuracy": 0.7697,
+          "precision": 0.9283,
+          "recall": 0.7671,
+          "f1_score": 0.84,
+          "roc_auc": 0.8561,
+          "pr_auc": 0.945,
+          "log_loss": 0.6307,
+          "brier_score": 0.2192,
+          "cm": {
+            "TP": 1347,
+            "FP": 104,
+            "TN": 368,
+            "FN": 409
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.7659,
+          "precision": 0.9436,
+          "recall": 0.7372,
+          "f1_score": 0.8277,
+          "roc_auc": 0.8913,
+          "pr_auc": 0.9577,
+          "log_loss": 0.6277,
+          "brier_score": 0.2178,
+          "cm": {
+            "TP": 1254,
+            "FP": 75,
+            "TN": 454,
+            "FN": 447
+          }
+        }
+      },
+      "SVM": {
+        "val_metrics": {
+          "accuracy": 0.7931,
+          "precision": 0.8201,
+          "recall": 0.9448,
+          "f1_score": 0.878,
+          "roc_auc": 0.7183,
+          "pr_auc": 0.8913,
+          "log_loss": 0.5447,
+          "brier_score": 0.1779,
+          "cm": {
+            "TP": 1659,
+            "FP": 364,
+            "TN": 108,
+            "FN": 97
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.778,
+          "precision": 0.807,
+          "recall": 0.9318,
+          "f1_score": 0.8649,
+          "roc_auc": 0.7608,
+          "pr_auc": 0.8992,
+          "log_loss": 0.5428,
+          "brier_score": 0.1783,
+          "cm": {
+            "TP": 1585,
+            "FP": 379,
+            "TN": 150,
+            "FN": 116
+          }
+        }
+      }
+    }
+  },
+  "Exp E (All Features)": {
+    "feature_dim": 56,
+    "models": {
+      "Logistic Regression": {
+        "val_metrics": {
+          "accuracy": 0.7428,
+          "precision": 0.9321,
+          "recall": 0.7267,
+          "f1_score": 0.8166,
+          "roc_auc": 0.8305,
+          "pr_auc": 0.9398,
+          "log_loss": 0.5956,
+          "brier_score": 0.1988,
+          "cm": {
+            "TP": 1276,
+            "FP": 93,
+            "TN": 379,
+            "FN": 480
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.7161,
+          "precision": 0.9334,
+          "recall": 0.6761,
+          "f1_score": 0.7842,
+          "roc_auc": 0.8481,
+          "pr_auc": 0.9428,
+          "log_loss": 0.5958,
+          "brier_score": 0.2026,
+          "cm": {
+            "TP": 1150,
+            "FP": 82,
+            "TN": 447,
+            "FN": 551
+          }
+        }
+      },
+      "Random Forest": {
+        "val_metrics": {
+          "accuracy": 0.8223,
+          "precision": 0.9331,
+          "recall": 0.8343,
+          "f1_score": 0.8809,
+          "roc_auc": 0.8878,
+          "pr_auc": 0.9617,
+          "log_loss": 0.4375,
+          "brier_score": 0.1357,
+          "cm": {
+            "TP": 1465,
+            "FP": 105,
+            "TN": 367,
+            "FN": 291
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.8161,
+          "precision": 0.9436,
+          "recall": 0.8072,
+          "f1_score": 0.8701,
+          "roc_auc": 0.9106,
+          "pr_auc": 0.9644,
+          "log_loss": 0.4398,
+          "brier_score": 0.1374,
+          "cm": {
+            "TP": 1373,
+            "FP": 82,
+            "TN": 447,
+            "FN": 328
+          }
+        }
+      },
+      "XGBoost": {
+        "val_metrics": {
+          "accuracy": 0.7787,
+          "precision": 0.9352,
+          "recall": 0.7728,
+          "f1_score": 0.8463,
+          "roc_auc": 0.8659,
+          "pr_auc": 0.949,
+          "log_loss": 0.6269,
+          "brier_score": 0.2173,
+          "cm": {
+            "TP": 1357,
+            "FP": 94,
+            "TN": 378,
+            "FN": 399
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.7726,
+          "precision": 0.9482,
+          "recall": 0.7425,
+          "f1_score": 0.8328,
+          "roc_auc": 0.8965,
+          "pr_auc": 0.9586,
+          "log_loss": 0.6238,
+          "brier_score": 0.2159,
+          "cm": {
+            "TP": 1263,
+            "FP": 69,
+            "TN": 460,
+            "FN": 438
+          }
+        }
+      },
+      "SVM": {
+        "val_metrics": {
+          "accuracy": 0.7949,
+          "precision": 0.8201,
+          "recall": 0.9476,
+          "f1_score": 0.8793,
+          "roc_auc": 0.7162,
+          "pr_auc": 0.8905,
+          "log_loss": 0.5448,
+          "brier_score": 0.178,
+          "cm": {
+            "TP": 1664,
+            "FP": 365,
+            "TN": 107,
+            "FN": 92
+          }
+        },
+        "test_metrics": {
+          "accuracy": 0.7767,
+          "precision": 0.8061,
+          "recall": 0.9312,
+          "f1_score": 0.8642,
+          "roc_auc": 0.7596,
+          "pr_auc": 0.8983,
+          "log_loss": 0.5432,
+          "brier_score": 0.1784,
+          "cm": {
+            "TP": 1584,
+            "FP": 381,
+            "TN": 148,
+            "FN": 117
+          }
+        }
+      }
+    }
+  }
+}
