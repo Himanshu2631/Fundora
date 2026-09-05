@@ -128,7 +128,7 @@ export default function SubscriptionPage() {
     const now = new Date();
     const diffTime = Math.abs(now - created);
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) {
       return "Started today";
     }
@@ -137,7 +137,7 @@ export default function SubscriptionPage() {
     }
     const diffMonths = Math.floor(diffDays / 30);
     const remainingDays = diffDays % 30;
-    
+
     if (diffMonths < 12) {
       return `${diffMonths} ${diffMonths === 1 ? "month" : "months"}${remainingDays > 0 ? ` and ${remainingDays} ${remainingDays === 1 ? "day" : "days"}` : ""}`;
     }
@@ -301,7 +301,7 @@ export default function SubscriptionPage() {
                   No Active Giving Tier
                 </h4>
                 <p className="text-xs text-muted-foreground leading-relaxed max-w-xs mx-auto">
-                  Subscribe to a giving tier to participate in secure charity routing, gain Giving Score rankings, and enter eco-retreat prize draws.
+                  Subscribe to a giving tier to participate in secure charity routing, gain Impact Score rankings, and enter eco-retreat prize draws.
                 </p>
               </div>
               <Button asChild variant="accent" size="sm" className="font-bold shadow-sm">
@@ -356,10 +356,10 @@ export default function SubscriptionPage() {
                   <span className="font-bold text-foreground block mt-0.5">
                     {subscription.renewal_date && status !== "expired"
                       ? new Date(subscription.renewal_date).toLocaleDateString(undefined, {
-                          month: "long",
-                          day: "numeric",
-                          year: "numeric",
-                        })
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric",
+                      })
                       : "—"}
                   </span>
                 </div>
@@ -418,13 +418,12 @@ export default function SubscriptionPage() {
             {Object.entries(PLAN_DETAILS).map(([key, p]) => {
               const isCurrent = subscription?.plan_type === key && (status === "active" || status === "cancelled");
               return (
-                <Card 
-                  key={key} 
-                  className={`p-6 border relative overflow-hidden flex flex-col justify-between transition-all hover:shadow-md ${
-                    isCurrent 
-                      ? "border-accent bg-accent/5 ring-1 ring-accent/20" 
+                <Card
+                  key={key}
+                  className={`p-6 border relative overflow-hidden flex flex-col justify-between transition-all hover:shadow-md ${isCurrent
+                      ? "border-accent bg-accent/5 ring-1 ring-accent/20"
                       : "border-border bg-card"
-                  }`}
+                    }`}
                 >
                   {isCurrent && (
                     <div className="absolute top-0 right-0 bg-accent text-accent-foreground text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-bl-sm">
@@ -475,7 +474,7 @@ export default function SubscriptionPage() {
               </p>
               <p className="leading-relaxed mt-1">
                 Stripe payment integration is active in sandbox mode. You can fully test subscription upgrades, renewals, and cancellations using our mock-gateway client. If you encounter any billing queries, please contact our administrator dashboard or email support at{" "}
-                <span className="text-accent font-semibold hover:underline cursor-pointer">billing@fundora.org</span>.
+                <span className="text-accent font-semibold hover:underline cursor-pointer">billing@sahayata.org</span>.
               </p>
             </div>
           </div>

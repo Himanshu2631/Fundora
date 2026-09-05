@@ -100,13 +100,13 @@ export async function POST(req) {
       // Send appropriate email notification
       const oldPlan = currentSub?.stripe_price_id;
       const hasActiveSub = currentSub && (currentSub.status === "active" || currentSub.status === "trialing");
-      
-      const newPlanName = priceId.includes("scout") 
-        ? "Eco Scout" 
-        : priceId.includes("advocate") 
-          ? "Global Advocate" 
-          : priceId.includes("builder") 
-            ? "Legacy Builder" 
+
+      const newPlanName = priceId.includes("scout")
+        ? "Eco Scout"
+        : priceId.includes("advocate")
+          ? "Global Advocate"
+          : priceId.includes("builder")
+            ? "Legacy Builder"
             : "Giving Plan";
 
       const timestamp = new Date().toLocaleString("en-US", { timeZone: "UTC" }) + " UTC";
@@ -123,9 +123,9 @@ export async function POST(req) {
         };
         const oldType = getPlanType(oldPlan);
         const newType = getPlanType(priceId);
-        
+
         const isUpgrade = planLevels[newType] > planLevels[oldType];
-        
+
         if (isUpgrade) {
           sendSystemUpdateEmail(user.email, {
             userName,
@@ -144,7 +144,7 @@ export async function POST(req) {
         sendSystemUpdateEmail(user.email, {
           userName,
           updateTitle: "Subscription Activated",
-          updateDetails: `Thank you for starting your active giving journey on Fundora!<br/><br/>Your membership plan <strong>${newPlanName}</strong> has been activated at ${timestamp}.<br/><br/>Your monthly contributions are now active. Head over to your dashboard to configure which vetted local charities receive your allocations.`,
+          updateDetails: `Thank you for starting your active giving journey on Sahayata!<br/><br/>Your membership plan <strong>${newPlanName}</strong> has been activated at ${timestamp}.<br/><br/>Your monthly contributions are now active. Head over to your dashboard to configure which vetted local charities receive your allocations.`,
         }).catch(err => console.error("Error sending purchase email:", err));
       }
 
@@ -208,20 +208,20 @@ export async function POST(req) {
 
       await supabase
         .from("subscriptions")
-        .update({ 
+        .update({
           status: "active",
-          renewal_date: newRenewal.toISOString() 
+          renewal_date: newRenewal.toISOString()
         })
         .eq("user_id", user.id);
 
       console.log(`[Stripe Mock webhook simulator] Processed successful renewal payment for user ${user.id}. Renewal extended to ${newRenewal.toISOString()}`);
-      
+
       const timestamp = new Date().toLocaleString("en-US", { timeZone: "UTC" }) + " UTC";
       const userName = user.user_metadata?.full_name || "Member";
       sendSystemUpdateEmail(user.email, {
         userName,
         updateTitle: "Subscription Renewed",
-        updateDetails: `Your Fundora subscription was successfully renewed at ${timestamp}.<br/><br/>Amount charged: <strong>₹${amount.toLocaleString("en-IN")}</strong>.<br/>Thank you for your continued support in backing verified environmental and education initiatives.`,
+        updateDetails: `Your Sahayata subscription was successfully renewed at ${timestamp}.<br/><br/>Amount charged: <strong>₹${amount.toLocaleString("en-IN")}</strong>.<br/>Thank you for your continued support in backing verified environmental and education initiatives.`,
       }).catch(err => console.error("Error sending renewal email:", err));
 
       return NextResponse.json({ success: true, action: "payment_succeeded" });
@@ -267,14 +267,14 @@ export async function POST(req) {
       const endedAt = new Date(Date.now() - 5000).toISOString(); // 5 seconds ago
       await supabase
         .from("subscriptions")
-        .update({ 
+        .update({
           status: "canceled",
           renewal_date: endedAt
         })
         .eq("user_id", user.id);
 
       console.log(`[Stripe Mock webhook simulator] Processed immediate subscription deletion for user ${user.id}.`);
-      
+
       const timestamp = new Date().toLocaleString("en-US", { timeZone: "UTC" }) + " UTC";
       const userName = user.user_metadata?.full_name || "Member";
       sendSystemUpdateEmail(user.email, {

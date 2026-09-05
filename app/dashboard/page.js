@@ -63,7 +63,7 @@ function AnimatedCounter({ value, duration = 800 }) {
     const strVal = String(value);
     const cleanVal = strVal.replace(/,/g, "");
     const match = cleanVal.match(/^([^\d\.]*)([\d\.]+)([^\d\.]*)$/);
-    
+
     if (!match) {
       setCount(value);
       return;
@@ -87,7 +87,7 @@ function AnimatedCounter({ value, duration = 800 }) {
       const progress = timestamp - startTime;
       const progressRatio = Math.min(progress / duration, 1);
       const easedProgress = progressRatio * (2 - progressRatio); // easeOutQuad
-      
+
       const current = easedProgress * end;
       const parts = current.toFixed(decimalPlaces).split(".");
       const integerPart = parseInt(parts[0], 10).toLocaleString();
@@ -101,7 +101,7 @@ function AnimatedCounter({ value, duration = 800 }) {
         setCount(value);
       }
     };
-    
+
     animationFrameId = window.requestAnimationFrame(animate);
     return () => window.cancelAnimationFrame(animationFrameId);
   }, [value, duration]);
@@ -116,7 +116,7 @@ function RecentWinnerCard({ winner }) {
     <Card className="p-6 flex flex-col justify-between border-border bg-gradient-to-b from-[#0A1C16] to-[#040D09] hover:border-accent/60 hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden group shadow-lg hover:shadow-accent/5">
       {/* Premium accent border on hover */}
       <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-accent via-accent-foreground to-accent opacity-20 group-hover:opacity-100 transition-opacity" />
-      
+
       {/* Glowing background bubble */}
       <div className="absolute -top-10 -right-10 w-24 h-24 bg-accent/5 rounded-full blur-2xl group-hover:bg-accent/10 transition-colors pointer-events-none" />
 
@@ -197,7 +197,7 @@ function RecentWinnerCard({ winner }) {
                 Submission Approved
               </Badge>
             </div>
-            
+
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground font-semibold">Approved By:</span>
               <span className="font-bold text-foreground">Platform Admin (Vetted Account)</span>
@@ -214,7 +214,7 @@ function RecentWinnerCard({ winner }) {
                 <Check className="w-3.5 h-3.5" /> Payout Disbursed
               </span>
             </div>
-            
+
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground font-semibold">Draw Sweepstakes:</span>
               <span className="font-bold text-foreground text-right truncate max-w-[150px]">
@@ -267,7 +267,7 @@ function RecentWinnerCard({ winner }) {
 
 export default function DashboardOverview() {
   const [activeTab, setActiveTab] = useState("overview");
-    const [rewardTab, setRewardTab] = useState("tickets");
+  const [rewardTab, setRewardTab] = useState("tickets");
   const { user: authUser, profile } = useAuth();
   const { subscription, status } = useSubscription();
 
@@ -362,14 +362,14 @@ export default function DashboardOverview() {
   const averageScoreVal = scores && scores.length > 0 ? (totalScorePoints / scores.length).toFixed(1) : "0.0";
 
   // Giving score composite calculations
-  const tierBasePoints = subscription?.plan_type === "scout" 
-    ? 100 
-    : subscription?.plan_type === "advocate" 
-      ? 250 
-      : subscription?.plan_type === "builder" 
-        ? 1000 
+  const tierBasePoints = subscription?.plan_type === "scout"
+    ? 100
+    : subscription?.plan_type === "advocate"
+      ? 250
+      : subscription?.plan_type === "builder"
+        ? 1000
         : 0;
-  
+
   const streakMultiplier = 5; // static streak tracking
   const streakBonus = streakMultiplier * 5; // 25 bonus points
   const dynamicGivingScore = tierBasePoints + totalScorePoints + streakBonus;
@@ -401,8 +401,8 @@ export default function DashboardOverview() {
   }
 
   // Filter active draw entries count
-  const activeTicketsCount = activeDraw 
-    ? userEntries.filter(e => e.draw_id === activeDraw.id).length 
+  const activeTicketsCount = activeDraw
+    ? userEntries.filter(e => e.draw_id === activeDraw.id).length
     : 0;
 
   const activeDrawSub = activeDraw ? activeDraw.title : "No active draws";
@@ -433,7 +433,7 @@ export default function DashboardOverview() {
   // Map user entries using real Supabase draw relations
   const currentDrawEntries = userEntries.map(entry => {
     const matchingDraw = draws.find(d => d.id === entry.draw_id);
-    const drawDateStr = matchingDraw 
+    const drawDateStr = matchingDraw
       ? new Date(matchingDraw.draw_date).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
       : "—";
     return {
@@ -467,7 +467,7 @@ export default function DashboardOverview() {
     },
     {
       label: "Contribution Amount",
-      value: hasActivePlan ? `$${monthlyContribution}.00` : "Awaiting subscription",
+      value: hasActivePlan ? `₹${monthlyContribution.toLocaleString("en-IN")}` : "Awaiting subscription",
       desc: hasActivePlan ? "Routed to selected causes" : "Select a plan to start giving",
       icon: Heart,
       color: "text-rose-400",
@@ -491,7 +491,7 @@ export default function DashboardOverview() {
       }
     ]),
     {
-      label: "Current Giving Score",
+      label: "Current Impact Score",
       value: hasAllocations
         ? `${dynamicGivingScore} pts`
         : "Awaiting charity selection",
@@ -513,7 +513,7 @@ export default function DashboardOverview() {
           <Card className="bg-gradient-to-br from-[#061511] via-[#0A1C16] to-[#040D09] border-accent/25 relative overflow-hidden shadow-[0_0_50px_rgba(212,185,147,0.06)] rounded-3xl p-8 md:p-10 transition-all duration-300 hover:border-accent/40">
             {/* Glowing top line */}
             <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-accent/35 to-transparent" />
-            
+
             {/* Ambient Background Glows */}
             <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-accent/5 blur-[120px] rounded-full pointer-events-none -z-10" />
             <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-emerald-800/5 blur-[100px] rounded-full pointer-events-none -z-10" />
@@ -532,7 +532,7 @@ export default function DashboardOverview() {
                       Welcome back, <strong className="text-white">{displayUser.name.split(" ")[0]}</strong>
                     </span>
                   </div>
-                  
+
                   <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight tracking-tight mb-8">
                     What are you <span className="text-accent">working toward?</span>
                   </h1>
@@ -606,8 +606,8 @@ export default function DashboardOverview() {
                     />
                   </div>
                   <p className="text-[10px] text-muted-foreground flex items-center gap-1.5 leading-none">
-                    {scores?.length === 5 
-                      ? "✓ All weekly scores logged! Max multipliers and bonus tickets are active." 
+                    {scores?.length === 5
+                      ? "✓ All weekly scores logged! Max multipliers and bonus tickets are active."
                       : `Log ${5 - (scores?.length || 0)} more impact score${5 - (scores?.length || 0) > 1 ? "s" : ""} to unlock maximum draw entry bonuses.`}
                   </p>
                 </div>
@@ -625,12 +625,12 @@ export default function DashboardOverview() {
                       {displayUser.tier}
                     </span>
                     <span className="text-[9px] text-[#8a9690] font-semibold block mt-1">
-                      {subscription?.plan_type === "builder" 
-                        ? "10x entries ticket multiplier active" 
-                        : subscription?.plan_type === "advocate" 
-                          ? "3x entries ticket multiplier active" 
-                          : subscription?.plan_type === "scout" 
-                            ? "Base draw entries active" 
+                      {subscription?.plan_type === "builder"
+                        ? "10x entries ticket multiplier active"
+                        : subscription?.plan_type === "advocate"
+                          ? "3x entries ticket multiplier active"
+                          : subscription?.plan_type === "scout"
+                            ? "Base draw entries active"
                             : "No active giving plan"}
                     </span>
                   </div>
@@ -704,9 +704,8 @@ export default function DashboardOverview() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`pb-3 capitalize font-bold text-xs uppercase tracking-wider relative whitespace-nowrap ${
-                  activeTab === tab ? "text-accent" : "text-muted-foreground hover:text-foreground"
-                }`}
+                className={`pb-3 capitalize font-bold text-xs uppercase tracking-wider relative whitespace-nowrap ${activeTab === tab ? "text-accent" : "text-muted-foreground hover:text-foreground"
+                  }`}
               >
                 {tab.replace("-", " ")}
                 {activeTab === tab && (
@@ -731,7 +730,7 @@ export default function DashboardOverview() {
             className="space-y-12"
           >
             {/* Section 1: Compete */}
-            <motion.div 
+            <motion.div
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 14 } }
@@ -892,11 +891,10 @@ export default function DashboardOverview() {
                           displayLeaderboard.map((entry, i) => (
                             <div
                               key={i}
-                              className={`flex items-center justify-between text-xs py-2 px-3 rounded-xl ${
-                                entry.isYou
+                              className={`flex items-center justify-between text-xs py-2 px-3 rounded-xl ${entry.isYou
                                   ? "bg-accent/10 border border-accent/30 text-foreground"
                                   : "border border-transparent text-muted-foreground"
-                              }`}
+                                }`}
                             >
                               <div className="flex items-center gap-3 min-w-0 flex-1">
                                 <span className={`w-6 font-bold shrink-0 ${entry.isYou ? "text-accent" : "text-muted-foreground/60"}`}>
@@ -921,7 +919,7 @@ export default function DashboardOverview() {
             </motion.div>
 
             {/* Section 2: Impact */}
-            <motion.div 
+            <motion.div
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 14 } }
@@ -956,10 +954,10 @@ export default function DashboardOverview() {
                         {/* Contribution Breakdown */}
                         <div className="space-y-3 mb-5">
                           {[
-                            { label: "Monthly Contribution", value: `$${monthlyContribution}.00`, accent: true },
+                            { label: "Monthly Contribution", value: `₹${monthlyContribution.toLocaleString("en-IN")}`, accent: true },
                             { label: "Charity Routing", value: `${totalAllocatedVal}% Allocated`, accent: totalAllocatedVal === 100 },
                             { label: "Active Draw Tickets", value: `${activeTicketsCount || 6} Entries`, accent: activeTicketsCount > 0 },
-                            { label: "Giving Score", value: `${dynamicGivingScore} pts`, accent: true },
+                            { label: "Impact Score", value: `${dynamicGivingScore} pts`, accent: true },
                           ].map((row, idx) => (
                             <div key={idx} className="flex justify-between items-center text-xs border-b border-border/25 pb-2 last:border-0 last:pb-0">
                               <span className="text-muted-foreground font-semibold">{row.label}</span>
@@ -1042,13 +1040,13 @@ export default function DashboardOverview() {
                                 Your monthly membership contribution is ready to be routed to verified global causes. Select your preferences to qualify for active draws.
                               </p>
                             </div>
-                            
+
                             <div className="flex justify-center">
                               <Button asChild variant="accent" size="sm" className="h-9 px-8 text-xs font-extrabold uppercase tracking-wider shadow-lg hover:shadow-accent/5">
                                 <Link href="/dashboard/charity">Select Causes & Set Allocations</Link>
                               </Button>
                             </div>
-                            
+
                             {/* 3 Featured Causes preview cards */}
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-4 text-left">
                               {[
@@ -1081,7 +1079,7 @@ export default function DashboardOverview() {
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                               <div className="p-3 bg-secondary/5 border border-border/10 rounded-xl hover:border-accent/20 transition-all flex flex-col justify-between">
                                 <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground block">Allocated This Month</span>
-                                <span className="text-sm font-black text-white mt-1.5 block">${(monthlyContribution || 100).toFixed(2)}</span>
+                                <span className="text-sm font-black text-white mt-1.5 block">₹{(monthlyContribution || 499).toLocaleString("en-IN")}</span>
                               </div>
                               <div className="p-3 bg-secondary/5 border border-border/10 rounded-xl hover:border-accent/20 transition-all flex flex-col justify-between">
                                 <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground block">Active Causes</span>
@@ -1152,15 +1150,15 @@ export default function DashboardOverview() {
                                   "border-purple-500/20 hover:border-purple-500/40"
                                 ];
                                 return (
-                                  <div 
-                                    key={item.id} 
+                                  <div
+                                    key={item.id}
                                     className={`group/alloc rounded-xl border bg-[#060C0A]/40 overflow-hidden flex flex-col justify-between transition-all duration-300 hover:scale-[1.02] hover:-translate-y-0.5 ${colors[idx % colors.length]}`}
                                   >
                                     <div className="h-20 w-full relative overflow-hidden bg-secondary/25">
-                                      <img 
-                                        src={item.charity_image} 
-                                        alt={item.charity_name} 
-                                        className="w-full h-full object-cover opacity-70 group-hover/alloc:opacity-85 transition-opacity" 
+                                      <img
+                                        src={item.charity_image}
+                                        alt={item.charity_name}
+                                        className="w-full h-full object-cover opacity-70 group-hover/alloc:opacity-85 transition-opacity"
                                       />
                                       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
                                       <div className="absolute top-2 right-2">
@@ -1179,7 +1177,7 @@ export default function DashboardOverview() {
                                           {item.charity_description || "Verified global cause support routing."}
                                         </p>
                                       </div>
-                                      
+
                                       {item.charity_impact && (
                                         <div className="mt-2.5 pt-2.5 border-t border-white/[0.04] text-[8.5px] text-emerald-400 font-bold flex items-center gap-1.5">
                                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -1215,8 +1213,8 @@ export default function DashboardOverview() {
                           {impactMetrics.map((metric, idx) => {
                             const MetricIcon = metric.icon;
                             return (
-                              <div 
-                                key={idx} 
+                              <div
+                                key={idx}
                                 className="p-4 bg-secondary/5 border border-border/10 rounded-2xl flex flex-col justify-between hover:border-accent/30 hover:bg-[#071611]/50 transition-all duration-300 group"
                               >
                                 <div className="flex justify-between items-start mb-3">
@@ -1274,7 +1272,7 @@ export default function DashboardOverview() {
                     {/* Glowing background highlights */}
                     <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-accent/5 blur-[80px] rounded-full pointer-events-none -z-10" />
                     <div className="absolute bottom-0 left-0 w-[200px] h-[200px] bg-emerald-800/5 blur-[60px] rounded-full pointer-events-none -z-10" />
-                    
+
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-white/[0.06] pb-6 mb-6">
                       <div className="space-y-2">
                         <div className="flex items-center gap-2">
@@ -1286,7 +1284,7 @@ export default function DashboardOverview() {
                           Verified Giving & Audited Transparency Hub
                         </h3>
                         <p className="text-xs text-muted-foreground max-w-3xl leading-relaxed">
-                          Fundora operates with absolute financial accountability. Every giving transaction is signed, recorded, and audited to guarantee your donations directly reach vetted local charities.
+                          Sahayata operates with absolute financial accountability. Every giving transaction is signed, recorded, and audited to guarantee your donations directly reach vetted local charities.
                         </p>
                       </div>
 
@@ -1414,7 +1412,7 @@ export default function DashboardOverview() {
             </motion.div>
 
             {/* Section 3: Rewards */}
-            <motion.div 
+            <motion.div
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 14 } }
@@ -1487,11 +1485,10 @@ export default function DashboardOverview() {
                         ].map((act, idx) => (
                           <div key={idx} className="flex items-start justify-between text-xs border-b border-border/20 pb-3 last:border-0 last:pb-0">
                             <div className="flex items-start gap-2.5">
-                              <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
-                                act.type === 'winner' ? 'bg-accent animate-ping' :
-                                act.type === 'draw' ? 'bg-emerald-500' :
-                                act.type === 'charity' ? 'bg-blue-500' : 'bg-[#C4A054]/40'
-                              }`} />
+                              <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${act.type === 'winner' ? 'bg-accent animate-ping' :
+                                  act.type === 'draw' ? 'bg-emerald-500' :
+                                    act.type === 'charity' ? 'bg-blue-500' : 'bg-[#C4A054]/40'
+                                }`} />
                               <span className="text-muted-foreground leading-relaxed">
                                 {act.text}
                               </span>
@@ -1509,13 +1506,13 @@ export default function DashboardOverview() {
                   <Card className="p-6 flex flex-col justify-between border-border bg-card h-full">
                     <div>
                       <div className="flex gap-4 border-b border-border/30 pb-2 mb-4 text-xs font-bold uppercase tracking-wider">
-                        <button 
+                        <button
                           onClick={() => setRewardTab("tickets")}
                           className={`pb-1.5 border-b-2 transition-all ${rewardTab === "tickets" ? "border-accent text-accent" : "border-transparent text-muted-foreground hover:text-foreground"}`}
                         >
                           Tickets ({currentDrawEntries.length})
                         </button>
-                        <button 
+                        <button
                           onClick={() => setRewardTab("claims")}
                           className={`pb-1.5 border-b-2 transition-all ${rewardTab === "claims" ? "border-accent text-accent" : "border-transparent text-muted-foreground hover:text-foreground"}`}
                         >
@@ -1558,9 +1555,9 @@ export default function DashboardOverview() {
                                   <div className="flex justify-between items-start">
                                     <span className="text-xs font-bold text-foreground truncate max-w-[110px]">{claim.draw_title || "Prize Claim"}</span>
                                     <Badge variant={
-                                      claim.status === "paid" ? "success" : 
-                                      claim.status === "approved" ? "success" : 
-                                      claim.status === "rejected" ? "destructive" : "warning"
+                                      claim.status === "paid" ? "success" :
+                                        claim.status === "approved" ? "success" :
+                                          claim.status === "rejected" ? "destructive" : "warning"
                                     } className="text-[8px] py-0 px-1">
                                       {claim.status}
                                     </Badge>
@@ -1593,7 +1590,7 @@ export default function DashboardOverview() {
             </motion.div>
 
             {/* Recent Winners Showcase */}
-            <motion.div 
+            <motion.div
               variants={{
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 14 } }
@@ -1642,7 +1639,7 @@ export default function DashboardOverview() {
                     category: "4 Match Winner",
                     status: "Verified Payout",
                     draw: "Community Impact Grants",
-                    prize: "$1,500 Cash Grant Reward",
+                    prize: "₹1,25,000 Cash Grant Reward",
                     ticket: "FND-041-K89",
                     proofUrl: "#",
                     date: "May 12, 2026",

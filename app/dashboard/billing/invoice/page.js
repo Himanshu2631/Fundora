@@ -5,10 +5,10 @@ import { useEffect, useState, Suspense } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { getUserPayments } from "@/services/subscriptionService";
 import { Button } from "@/components/ui/button";
-import { 
-  Printer, 
-  ArrowLeft, 
-  ShieldCheck, 
+import {
+  Printer,
+  ArrowLeft,
+  ShieldCheck,
   Heart,
   FileText
 } from "lucide-react";
@@ -46,14 +46,14 @@ function InvoiceContent() {
   };
 
   const getPlanName = (p) => {
-    if (!p) return "Fundora Subscription";
+    if (!p) return "Sahayata Subscription";
     const amt = parseFloat(p.amount);
     const priceId = p.stripe_price_id || "";
-    
-    if (priceId.includes("scout") || amt === 10 || amt === 96) return "Eco Scout Plan";
-    if (priceId.includes("advocate") || amt === 25 || amt === 240) return "Global Advocate Plan";
-    if (priceId.includes("builder") || amt === 100 || amt === 960) return "Legacy Builder Plan";
-    return "Fundora Support Plan";
+
+    if (priceId.includes("scout") || amt === 499 || amt === 4788) return "Eco Scout Plan";
+    if (priceId.includes("advocate") || amt === 1299 || amt === 11988) return "Global Advocate Plan";
+    if (priceId.includes("builder") || amt === 4999 || amt === 47988) return "Legacy Builder Plan";
+    return "Sahayata Support Plan";
   };
 
   const getBillingCycle = (p) => {
@@ -91,19 +91,19 @@ function InvoiceContent() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans py-8 px-4 flex flex-col items-center">
-      
+
       {/* Printable Control Box (Hidden during print) */}
       <div className="w-full max-w-2xl flex items-center justify-between mb-6 print:hidden">
-        <button 
-          onClick={() => router.back()} 
+        <button
+          onClick={() => router.back()}
           className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" /> Return
         </button>
-        <Button 
+        <Button
           onClick={handlePrint}
-          variant="outline" 
-          size="sm" 
+          variant="outline"
+          size="sm"
           className="text-xs gap-1.5 font-semibold text-slate-700 hover:text-slate-900"
         >
           <Printer className="w-3.5 h-3.5" /> Print Receipt
@@ -112,25 +112,25 @@ function InvoiceContent() {
 
       {/* Main Invoice Card */}
       <div className="w-full max-w-2xl bg-white border border-slate-200 rounded-2xl p-8 md:p-12 shadow-sm print:border-none print:shadow-none print:p-0 print:bg-transparent">
-        
+
         {/* Header Block */}
         <div className="flex flex-col sm:flex-row justify-between items-start gap-6 border-b border-slate-100 pb-8 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
               <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center font-bold text-white text-xs">
-                F
+                S
               </div>
               <span className="font-bold tracking-wider text-slate-900 text-sm">
-                FUNDORA
+                SAHAYATA
               </span>
             </div>
             <p className="text-[11px] text-slate-400 leading-relaxed font-medium">
-              Fundora Global Giving Foundation<br />
+              Sahayata Global Giving Foundation<br />
               100 audited pathways, Inc.<br />
               San Francisco, CA 94103
             </p>
           </div>
-          
+
           <div className="sm:text-right">
             <span className="text-[10px] bg-emerald-50 text-emerald-700 font-bold uppercase tracking-wider px-2.5 py-1 rounded-full inline-block mb-3">
               Payment Completed
@@ -151,13 +151,13 @@ function InvoiceContent() {
               Billed To
             </h4>
             <p className="font-bold text-slate-900">
-              {user.user_metadata?.full_name || "Fundora Member"}
+              {user.user_metadata?.full_name || "Sahayata Member"}
             </p>
             <p className="text-slate-500 mt-1 font-medium">
               {user.email}
             </p>
           </div>
-          
+
           <div className="sm:text-right">
             <h4 className="font-bold text-slate-950 uppercase tracking-wider text-[9px] text-slate-400 mb-2">
               Payment Details
@@ -178,7 +178,7 @@ function InvoiceContent() {
             <div className="col-span-2 text-right">Cycle</div>
             <div className="col-span-2 text-right">Amount</div>
           </div>
-          
+
           <div className="grid grid-cols-12 py-4 px-4 text-slate-900 border-b border-slate-100">
             <div className="col-span-8">
               <span className="font-bold text-slate-950 block">{getPlanName(payment)}</span>
@@ -195,15 +195,15 @@ function InvoiceContent() {
           <div className="bg-slate-50/50 py-3 px-4 space-y-1.5 text-right font-medium">
             <div className="flex justify-end gap-12 text-slate-400">
               <span>Subtotal:</span>
-              <span className="text-slate-700 font-mono">${parseFloat(payment.amount).toFixed(2)}</span>
+              <span className="text-slate-700 font-mono">₹{parseFloat(payment.amount).toLocaleString("en-IN")}</span>
             </div>
             <div className="flex justify-end gap-12 text-slate-400">
               <span>Sales Tax (0.0%):</span>
-              <span className="text-slate-700 font-mono">$0.00</span>
+              <span className="text-slate-700 font-mono">₹0.00</span>
             </div>
             <div className="flex justify-end gap-12 text-sm font-bold text-slate-950 border-t border-slate-100 pt-2.5 mt-1.5">
               <span>Total Paid:</span>
-              <span className="text-emerald-700 font-mono">${parseFloat(payment.amount).toFixed(2)}</span>
+              <span className="text-emerald-700 font-mono">₹{parseFloat(payment.amount).toLocaleString("en-IN")}</span>
             </div>
           </div>
         </div>
@@ -221,7 +221,7 @@ function InvoiceContent() {
 
         {/* Footer */}
         <div className="text-center text-[10px] text-slate-400 leading-relaxed border-t border-slate-100 pt-6">
-          Thank you for choosing Fundora. Your contributions directly fund forests, clean water reservoirs, and girl's STEM programs. For duplicate receipt inquiries, contact us at billing@fundora.org.
+          Thank you for choosing Sahayata. Your contributions directly fund forests, clean water reservoirs, and girl's STEM programs. For duplicate receipt inquiries, contact us at billing@sahayata.org.
         </div>
       </div>
     </div>

@@ -19,7 +19,7 @@ const ROLES = [
     icon: Globe,
     accentColor: "emerald",
     badge: "No Account Needed",
-    headline: "Explore Fundora",
+    headline: "Explore Sahayata",
     description: "Discover the platform concept, support charities, and learn draw mechanics.",
     features: [
       "Explore platform concept",
@@ -138,10 +138,10 @@ export default function Login() {
       <header className="flex items-center justify-between px-6 py-3 border-b border-white/[0.04] shrink-0 z-10 max-w-7xl w-full mx-auto">
         <Link href="/" className="flex items-center gap-2 group">
           <div className="w-7 h-7 rounded-xl bg-[#C4A054] flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-sm select-none">
-            F
+            S
           </div>
           <span className="font-heading font-extrabold tracking-wider text-base text-white group-hover:text-[#C4A054] transition-colors duration-300">
-            FUNDORA
+            SAHAYATA
           </span>
         </Link>
 
@@ -168,7 +168,7 @@ export default function Login() {
             <div className="inline-flex items-center gap-2 bg-[#C4A054]/10 border border-[#C4A054]/20 rounded-full px-3 py-1 sm:px-4 sm:py-1.5">
               <Sparkles className="w-3.5 h-3.5 text-[#C4A054] animate-pulse" />
               <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-[#C4A054]">
-                Introducing Fundora
+                Introducing Sahayata
               </span>
             </div>
 
@@ -181,7 +181,7 @@ export default function Login() {
 
             {/* Subtitle */}
             <p className="text-xs lg:text-sm text-[#8A9690] max-w-2xl mx-auto leading-relaxed font-medium">
-              Fundora combines community impact tracking, verified charity contributions, and monthly reward draws into a single membership platform.
+              Sahayata combines community impact tracking, verified charity contributions, and monthly reward draws into a single membership platform.
             </p>
           </motion.div>
 
@@ -253,7 +253,7 @@ export default function Login() {
             variants={itemVariants}
             className="text-center text-[10px] text-[#8A9690]/50 mt-0"
           >
-            © 2026 Fundora Technologies Inc. · v1.0.0 Stable ·{" "}
+            © 2026 Sahayata Technologies Inc. · v1.0.0 Stable ·{" "}
             <Link href="/" className="hover:text-[#8A9690] transition-colors">
               Privacy Policy
             </Link>

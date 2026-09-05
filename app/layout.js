@@ -16,7 +16,7 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Fundora — Gamified Philanthropy & Exclusive Draws",
+  title: "Sahayata — Gamified Philanthropy & Exclusive Draws",
   description: "Subscribe to support verified global causes, build your philanthropy score, and enter exclusive reward draws. Handcrafted for modern giving.",
 };
 

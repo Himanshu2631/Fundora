@@ -110,6 +110,15 @@ export async function calculateTotalImpactScore(userId, supabaseClient) {
 export async function recordImpactEvent(userId, eventData = {}, supabaseClient) {
   const supabase = supabaseClient || createClient();
 
+  let targetUserId = userId;
+  if (!targetUserId) {
+    const { data: authData } = await supabase.auth.getUser();
+    targetUserId = authData?.user?.id;
+  }
+  if (!targetUserId) {
+    throw new Error("User ID is required to record an impact event.");
+  }
+
   const actionCode = eventData.action || "custom_action";
   const matchedAction = Object.values(IMPACT_ACTIONS).find(a => a.code === actionCode);
 
@@ -117,7 +126,7 @@ export async function recordImpactEvent(userId, eventData = {}, supabaseClient) 
   const isOneTime = eventData.isOneTime || (matchedAction ? matchedAction.isOneTime : false);
 
   if (isOneTime) {
-    const existingEvents = await getUserImpactEvents(userId, supabase);
+    const existingEvents = await getUserImpactEvents(targetUserId, supabase);
     const alreadyCompleted = existingEvents.some(e => e.action === actionCode);
     if (alreadyCompleted) {
       return {
@@ -137,7 +146,7 @@ export async function recordImpactEvent(userId, eventData = {}, supabaseClient) 
   const scoreDate = eventData.scoreDate || new Date().toISOString().split("T")[0];
 
   const payload = {
-    user_id: userId,
+    user_id: targetUserId,
     score: pointsAwarded,
     action: actionCode,
     description: description,

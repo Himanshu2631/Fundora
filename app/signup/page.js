@@ -69,21 +69,21 @@ export default function Signup() {
       id: "scout",
       name: "Eco Scout",
       price: "₹499/mo",
-      score: "+10 Giving Score",
+      score: "+10 Impact Score",
       description: "Focuses on climate stabilization and local reforestation initiatives.",
     },
     {
       id: "advocate",
       name: "Global Advocate",
       price: "₹1,299/mo",
-      score: "+30 Giving Score",
+      score: "+30 Impact Score",
       description: "Focuses on clean water filtration and primary children healthcare.",
     },
     {
       id: "builder",
       name: "Legacy Builder",
       price: "₹4,999/mo",
-      score: "+150 Giving Score",
+      score: "+150 Impact Score",
       description: "Direct allocation to emergency responses and STEM fellowships.",
     },
   ];
@@ -128,7 +128,7 @@ export default function Signup() {
 
   return (
     <div className="min-h-screen bg-[#060C0A] grid grid-cols-1 lg:grid-cols-12 relative overflow-hidden font-sans">
-      
+
       {/* Background glow effects */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-[#C4A054]/[0.02] blur-[150px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-emerald-500/[0.02] blur-[150px] pointer-events-none" />
@@ -142,10 +142,10 @@ export default function Signup() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group w-fit">
             <div className="w-8 h-8 rounded-xl bg-[#C4A054] flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-sm select-none shadow-[0_0_20px_rgba(196,160,84,0.3)]">
-              F
+              S
             </div>
             <span className="font-heading font-black tracking-widest text-lg text-white group-hover:text-[#C4A054] transition-colors duration-300">
-              FUNDORA
+              SAHAYATA
             </span>
           </Link>
 
@@ -159,14 +159,14 @@ export default function Signup() {
               <span className="text-[#C4A054]">Unlock Monthly Rewards.</span>
             </h2>
             <p className="text-xs sm:text-sm text-[#8A9690] leading-relaxed max-w-sm">
-              Fundora combines community impact tracking, verified charity contributions, and monthly reward draws into a single membership platform.
+              Sahayata combines community impact tracking, verified charity contributions, and monthly reward draws into a single membership platform.
             </p>
           </div>
 
-          {/* How Fundora Works (Stepper) */}
+          {/* How Sahayata Works (Stepper) */}
           <div className="space-y-6">
             <h3 className="text-xs font-bold uppercase tracking-widest text-white/50 mb-2">
-              How Fundora Works
+              How Sahayata Works
             </h3>
             <motion.div
               variants={containerVariants}
@@ -200,7 +200,7 @@ export default function Signup() {
 
         {/* Footer info */}
         <div className="relative z-10 text-[9px] text-[#8A9690]/40 mt-12 border-t border-white/[0.04] pt-4">
-          © 2026 Fundora Technologies Inc. · Secured Platform.
+          © 2026 Sahayata Technologies Inc. · Secured Platform.
         </div>
       </section>
 
@@ -219,7 +219,7 @@ export default function Signup() {
 
         {/* Vertical centered form container */}
         <div className="max-w-xl w-full mx-auto my-auto relative z-10 space-y-8 py-8">
-          
+
           {/* Header Title */}
           <div className="space-y-3">
             {/* Badge */}
@@ -233,7 +233,7 @@ export default function Signup() {
               Create Account
             </h1>
             <p className="text-xs text-[#8A9690] leading-relaxed">
-              Join Fundora to initiate impact subscriptions, accumulate points, and qualify for reward draws.
+              Join Sahayata to initiate impact subscriptions, accumulate points, and qualify for reward draws.
             </p>
           </div>
 
@@ -321,11 +321,10 @@ export default function Signup() {
                     <div
                       key={tier.id}
                       onClick={() => setSelectedTier(tier.id)}
-                      className={`border p-4 rounded-xl cursor-pointer select-none transition-all duration-300 ${
-                        selectedTier === tier.id
+                      className={`border p-4 rounded-xl cursor-pointer select-none transition-all duration-300 ${selectedTier === tier.id
                           ? "bg-[#C4A054]/5 border-[#C4A054] shadow-sm"
                           : "bg-white/[0.01] border-white/10 hover:border-white/30"
-                      }`}
+                        }`}
                     >
                       <div className="flex justify-between items-center mb-2">
                         <span className="font-heading font-bold text-sm text-white">{tier.name}</span>

@@ -4,9 +4,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  XCircle, 
-  ArrowRight, 
+import {
+  XCircle,
+  ArrowRight,
   HelpCircle,
   CreditCard,
   ChevronLeft
@@ -52,7 +52,7 @@ export default function CheckoutCancelPage() {
               <HelpCircle className="w-3.5 h-3.5 text-accent" /> Need assistance?
             </h4>
             <p className="text-muted-foreground/90 leading-relaxed text-[11px]">
-              If you experienced a decline or credit card validation error, please ensure your card information is correct, or contact support at <span className="text-accent hover:underline cursor-pointer">billing@fundora.org</span>.
+              If you experienced a decline or credit card validation error, please ensure your card information is correct, or contact support at <span className="text-accent hover:underline cursor-pointer">billing@sahayata.org</span>.
             </p>
           </div>
 

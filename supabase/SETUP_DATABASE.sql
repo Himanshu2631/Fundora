@@ -223,6 +223,8 @@ ALTER TABLE public.email_preferences ENABLE ROW LEVEL SECURITY;
 -- profiles
 CREATE POLICY "Profiles are viewable by authenticated users"
   ON public.profiles FOR SELECT USING (auth.role() = 'authenticated');
+CREATE POLICY "Users can insert their own profile"
+  ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
 CREATE POLICY "Users can update their own profile"
   ON public.profiles FOR UPDATE USING (auth.uid() = id);
 CREATE POLICY "Admins have full access on profiles"
@@ -241,8 +243,12 @@ CREATE POLICY "Admins have full access on subscriptions"
 -- scores
 CREATE POLICY "Scores are viewable by authenticated users"
   ON public.scores FOR SELECT USING (auth.role() = 'authenticated');
-CREATE POLICY "Users can manage their own scores"
-  ON public.scores FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can insert their own scores"
+  ON public.scores FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can update their own scores"
+  ON public.scores FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can delete their own scores"
+  ON public.scores FOR DELETE USING (auth.uid() = user_id);
 CREATE POLICY "Admins have full access on scores"
   ON public.scores FOR ALL USING (public.is_admin(auth.uid()));
 

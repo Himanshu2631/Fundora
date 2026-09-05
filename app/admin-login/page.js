@@ -91,7 +91,7 @@ export default function AdminLogin() {
   const [copiedPassword, setCopiedPassword] = useState(false);
 
   const handleCopyEmail = () => {
-    navigator.clipboard.writeText("admin@fundora.demo");
+    navigator.clipboard.writeText("admin@sahayata.demo");
     setCopiedEmail(true);
     setTimeout(() => setCopiedEmail(false), 2000);
   };
@@ -106,7 +106,7 @@ export default function AdminLogin() {
     e?.preventDefault();
     setIsLoading(true);
     setErrorMsg("");
-    
+
     const result = await signIn(email, password);
     if (!result.success) {
       setErrorMsg(result.message || "Incorrect email or password.");
@@ -139,7 +139,7 @@ export default function AdminLogin() {
 
   return (
     <div className="min-h-screen bg-[#060C0A] grid grid-cols-1 lg:grid-cols-12 relative overflow-hidden font-sans">
-      
+
       {/* Background glow effects */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-[#C4A054]/[0.02] blur-[150px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-emerald-500/[0.02] blur-[150px] pointer-events-none" />
@@ -153,17 +153,17 @@ export default function AdminLogin() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group w-fit">
             <div className="w-8 h-8 rounded-xl bg-[#C4A054] flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-sm select-none shadow-[0_0_20px_rgba(196,160,84,0.3)]">
-              F
+              S
             </div>
             <span className="font-heading font-black tracking-widest text-lg text-white group-hover:text-[#C4A054] transition-colors duration-300">
-              FUNDORA
+              SAHAYATA
             </span>
           </Link>
 
           {/* Heading Info */}
           <div className="space-y-4">
             <h2 className="text-3xl sm:text-4xl font-heading font-black text-white leading-tight">
-              Fundora
+              Sahayata
               <br />
               <span className="text-[#C4A054]">Administration Center</span>
             </h2>
@@ -207,7 +207,7 @@ export default function AdminLogin() {
 
         {/* Footer info */}
         <div className="relative z-10 text-[9px] text-[#8A9690]/40 mt-12 border-t border-white/[0.04] pt-4">
-          © 2026 Fundora Technologies Inc. · Secured Platform.
+          © 2026 Sahayata Technologies Inc. · Secured Platform.
         </div>
       </section>
 
@@ -226,7 +226,7 @@ export default function AdminLogin() {
 
         {/* Vertical centered form container */}
         <div className="max-w-md w-full mx-auto my-auto relative z-10 space-y-8">
-          
+
           {/* Header Title */}
           <div className="space-y-3">
             {/* Badge */}
@@ -360,7 +360,7 @@ export default function AdminLogin() {
                         <div className="flex items-center justify-between bg-black/40 border border-white/[0.03] rounded-lg px-3 py-2">
                           <div className="min-w-0 flex-1">
                             <span className="text-[9px] uppercase tracking-wider text-[#8A9690] block mb-0.5">Email</span>
-                            <code className="text-white font-mono text-[11px] select-all block truncate">admin@fundora.demo</code>
+                            <code className="text-white font-mono text-[11px] select-all block truncate">admin@sahayata.demo</code>
                           </div>
                           <button
                             type="button"

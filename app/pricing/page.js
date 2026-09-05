@@ -43,7 +43,7 @@ const PLANS = [
     features: [
       "100% audited charity routing",
       "Monthly digital receipt archive",
-      "Giving Score calculation",
+      "Impact Score calculation",
       "Base draw entry (1× ticket)",
       "Community leaderboard access",
       "Email impact digest",
@@ -103,7 +103,7 @@ const COMPARISON = [
   {
     category: "Rewards & Score",
     rows: [
-      { label: "Monthly giving score", scout: "+10 pts", advocate: "+30 pts", builder: "+150 pts" },
+      { label: "Monthly impact score", scout: "+10 pts", advocate: "+30 pts", builder: "+150 pts" },
       { label: "Draw ticket entries", scout: "1×", advocate: "3×", builder: "10×" },
       { label: "Leaderboard ranking", scout: true, advocate: true, builder: true },
       { label: "Priority draw access", scout: false, advocate: true, builder: true },
@@ -138,12 +138,12 @@ const FAQS = [
     a: "Yes — annual plans are billed in a single upfront payment at the discounted rate. This gives you 2 months free compared to paying monthly. You can cancel at any time, though refunds are prorated based on unused months.",
   },
   {
-    q: "How is my Giving Score calculated?",
-    a: "Your Giving Score is a composite of: subscription tier base points, weekly streak multipliers (consecutive active months), and bonus points from score submissions and special charity campaigns. Scores reset monthly but a lifetime score tracks your cumulative impact.",
+    q: "How is my Impact Score calculated?",
+    a: "Your Impact Score is a composite of: subscription tier base points, weekly streak multipliers (consecutive active months), and bonus points from score submissions and special charity campaigns. Scores reset monthly but a lifetime score tracks your cumulative impact.",
   },
   {
     q: "What is the 'on-chain receipt proof' on Legacy Builder?",
-    a: "Legacy Builder subscribers get access to a cryptographic receipt dashboard where each verified transaction is paired with an immutable hash stored on a public ledger. This makes your charitable impact permanently verifiable, independent of Fundora's own records.",
+    a: "Legacy Builder subscribers get access to a cryptographic receipt dashboard where each verified transaction is paired with an immutable hash stored on a public ledger. This makes your charitable impact permanently verifiable, independent of Sahayata's own records.",
   },
 ];
 
@@ -156,7 +156,7 @@ const BENEFITS = [
   {
     icon: Zap,
     title: "Instant Score Updates",
-    desc: "Your Giving Score and rank update in real time. No lag, no batching — every contribution is reflected immediately.",
+    desc: "Your Impact Score and rank update in real time. No lag, no batching — every contribution is reflected immediately.",
   },
   {
     icon: Trophy,
@@ -331,11 +331,10 @@ function PlanCard({ plan, isYearly, onSubscribe, activeStatus, currentPlanKey, i
       className="h-full"
     >
       <Card
-        className={`relative flex flex-col h-full transition-all duration-300 overflow-hidden ${
-          plan.recommended
+        className={`relative flex flex-col h-full transition-all duration-300 overflow-hidden ${plan.recommended
             ? "border-accent shadow-[0_0_0_1px_hsl(var(--accent)/0.4),0_8px_32px_hsl(var(--accent)/0.12)]"
             : "hover:border-accent/30 hover:shadow-md"
-        } ${isCurrentPlan ? "ring-2 ring-accent/40" : ""}`}
+          } ${isCurrentPlan ? "ring-2 ring-accent/40" : ""}`}
       >
         {/* Gold top bar for recommended */}
         {plan.recommended && (
@@ -420,7 +419,7 @@ function PlanCard({ plan, isYearly, onSubscribe, activeStatus, currentPlanKey, i
             ))}
           </ul>
 
-          {/* Giving Score pill */}
+          {/* Impact Score pill */}
           <div className="mb-4 flex items-center gap-1.5 text-[10px] font-bold text-accent uppercase tracking-wider">
             <Trophy className="w-3 h-3" />
             {plan.score}
@@ -545,7 +544,7 @@ export default function PricingPage() {
                 variants={itemVariants}
                 className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto mb-10"
               >
-                Every plan routes 100% of your contribution to vetted global causes. Unlock higher giving scores and exclusive reward draws as you grow.
+                Every plan routes 100% of your contribution to vetted global causes. Unlock higher impact scores and exclusive reward draws as you grow.
               </motion.p>
 
               {/* Billing toggle */}
@@ -554,30 +553,27 @@ export default function PricingPage() {
                   <button
                     id="billing-toggle-monthly"
                     onClick={() => setIsYearly(false)}
-                    className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-250 ${
-                      !isYearly
+                    className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-250 ${!isYearly
                         ? "bg-foreground text-background shadow-sm"
                         : "text-muted-foreground hover:text-foreground"
-                    }`}
+                      }`}
                   >
                     Monthly
                   </button>
                   <button
                     id="billing-toggle-yearly"
                     onClick={() => setIsYearly(true)}
-                    className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-250 flex items-center gap-2 ${
-                      isYearly
+                    className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-250 flex items-center gap-2 ${isYearly
                         ? "bg-accent text-[#060C0A] shadow-sm"
                         : "text-muted-foreground hover:text-foreground"
-                    }`}
+                      }`}
                   >
                     Yearly
                     <span
-                      className={`text-[9px] px-1.5 py-0.5 rounded-xl font-extrabold leading-none ${
-                        isYearly
+                      className={`text-[9px] px-1.5 py-0.5 rounded-xl font-extrabold leading-none ${isYearly
                           ? "bg-[#060C0A]/20 text-[#060C0A]"
                           : "bg-accent/20 text-accent"
-                      }`}
+                        }`}
                     >
                       −20%
                     </span>
@@ -658,7 +654,7 @@ export default function PricingPage() {
               className="max-w-2xl mb-16"
             >
               <span className="text-xs uppercase tracking-widest text-accent font-bold block mb-3">
-                Why Fundora
+                Why Sahayata
               </span>
               <h2 className="font-heading text-3xl sm:text-4xl font-extrabold text-foreground">
                 Built for transparency. Designed for growth.
@@ -724,16 +720,15 @@ export default function PricingPage() {
                   const bestUse = p.key === "scout"
                     ? "Best for beginners"
                     : p.key === "advocate"
-                    ? "Most Popular"
-                    : "For high impact";
+                      ? "Most Popular"
+                      : "For high impact";
                   return (
                     <div
                       key={p.key}
-                      className={`flex flex-col p-4 rounded-xl relative transition-all duration-300 ${
-                        isFeatured
+                      className={`flex flex-col p-4 rounded-xl relative transition-all duration-300 ${isFeatured
                           ? "border border-accent bg-accent/[0.04] shadow-[0_0_20px_rgba(212,163,89,0.12)] z-10"
                           : "border border-border/40 bg-card/40 hover:border-border/80"
-                      }`}
+                        }`}
                     >
                       {isFeatured && (
                         <div className="absolute -top-2.5 right-4 z-20">
@@ -847,19 +842,17 @@ export default function PricingPage() {
                     <button
                       key={p.key}
                       onClick={() => setActiveCompareTab(p.key)}
-                      className={`py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 flex flex-col items-center justify-center relative ${
-                        isActive
+                      className={`py-3 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 flex flex-col items-center justify-center relative ${isActive
                           ? isFeatured
                             ? "bg-accent text-[#060C0A] shadow-sm"
                             : "bg-foreground text-background shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
-                      }`}
+                        }`}
                     >
                       <span>{p.name}</span>
                       {isFeatured && (
-                        <span className={`text-[7px] font-extrabold uppercase px-1.5 py-0.2 rounded-full absolute -top-1.5 ${
-                          isActive ? "bg-[#060C0A]/25 text-[#060C0A]" : "bg-accent text-[#060C0A]"
-                        }`}>
+                        <span className={`text-[7px] font-extrabold uppercase px-1.5 py-0.2 rounded-full absolute -top-1.5 ${isActive ? "bg-[#060C0A]/25 text-[#060C0A]" : "bg-accent text-[#060C0A]"
+                          }`}>
                           Popular
                         </span>
                       )}
@@ -977,10 +970,10 @@ export default function PricingPage() {
                 </h2>
                 <p className="text-xs text-muted-foreground leading-relaxed mb-6">
                   If you have a question not answered here, reach us directly at{" "}
-                  <span className="text-accent font-semibold">support@fundora.org</span>
+                  <span className="text-accent font-semibold">support@sahayata.org</span>
                 </p>
                 <Button asChild variant="goldOutline" size="sm">
-                  <Link href="mailto:support@fundora.org">Contact Support</Link>
+                  <Link href="mailto:support@sahayata.org">Contact Support</Link>
                 </Button>
               </motion.div>
 

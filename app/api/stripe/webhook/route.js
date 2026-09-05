@@ -42,7 +42,7 @@ export async function POST(req) {
         const session = event.data.object;
         const stripeCustomerId = session.customer;
         const stripeSubscriptionId = session.subscription;
-        
+
         let userId = session.metadata?.supabase_user_id;
 
         // If metadata doesn't have it, lookup by customer ID
@@ -110,14 +110,14 @@ export async function POST(req) {
 
         // 2. Sync subscription details to database
         await syncStripeSubscriptionToDatabase(userId, stripeSubscriptionId, priceId, status, renewalDate, supabase, cardBrand, cardLast4, stripeCustomerId);
-        
+
         // Trigger subscription purchase email
         const planNameStr = priceId.includes("scout") ? "Eco Scout" : priceId.includes("advocate") ? "Global Advocate" : priceId.includes("builder") ? "Legacy Builder" : "Giving Plan";
         const timestampStr = new Date().toLocaleString("en-US", { timeZone: "UTC" }) + " UTC";
         sendSystemUpdateEmail(userEmail, {
           userName: profile?.full_name || userEmail.split("@")[0],
           updateTitle: "Subscription Activated",
-          updateDetails: `Thank you for starting your active giving journey on Fundora!<br/><br/>Your membership plan <strong>${planNameStr}</strong> has been activated at ${timestampStr}.<br/><br/>Your monthly contributions are now active. Head over to your dashboard to configure which vetted local charities receive your allocations.`,
+          updateDetails: `Thank you for starting your active giving journey on Sahayata!<br/><br/>Your membership plan <strong>${planNameStr}</strong> has been activated at ${timestampStr}.<br/><br/>Your monthly contributions are now active. Head over to your dashboard to configure which vetted local charities receive your allocations.`,
         }).catch(err => console.error("Error sending purchase email:", err));
 
         console.log(`[Stripe Webhook] Handled checkout.session.completed successfully for user ${userId}`);
@@ -199,7 +199,7 @@ export async function POST(req) {
           .maybeSingle();
 
         await syncStripeSubscriptionToDatabase(userId, stripeSubscriptionId, priceId, status, renewalDate, supabase, cardBrand, cardLast4, stripeCustomerId);
-        
+
         // If they had an active subscription, and the price plan changed, send upgrade/downgrade email
         if (oldSub && (oldSub.status === "active" || oldSub.status === "trialing") && oldSub.stripe_price_id && oldSub.stripe_price_id !== priceId) {
           const planLevels = { scout: 1, advocate: 2, builder: 3 };
@@ -211,7 +211,7 @@ export async function POST(req) {
           };
           const oldType = getPlanType(oldSub.stripe_price_id);
           const newType = getPlanType(priceId);
-          
+
           const isUpgrade = planLevels[newType] > planLevels[oldType];
           const newPlanName = priceId.includes("scout") ? "Eco Scout" : priceId.includes("advocate") ? "Global Advocate" : priceId.includes("builder") ? "Legacy Builder" : "Giving Plan";
           const timestampStr = new Date().toLocaleString("en-US", { timeZone: "UTC" }) + " UTC";
@@ -252,7 +252,7 @@ export async function POST(req) {
           const endedAt = sub.ended_at ? new Date(sub.ended_at * 1000).toISOString() : new Date().toISOString();
           await supabase
             .from("subscriptions")
-            .update({ 
+            .update({
               status: "canceled",
               renewal_date: endedAt
             })
@@ -286,7 +286,7 @@ export async function POST(req) {
         const stripeCustomerId = invoice.customer;
         const stripeSubscriptionId = invoice.subscription;
         const stripeInvoiceId = invoice.id;
-        
+
         let userId = invoice.subscription_details?.metadata?.supabase_user_id;
 
         if (!userId) {
@@ -314,7 +314,7 @@ export async function POST(req) {
           }
 
           const amount = invoice.amount_paid / 100;
-          
+
           await supabase.from("payments").insert({
             user_id: userId,
             amount: amount,
@@ -333,7 +333,7 @@ export async function POST(req) {
             .maybeSingle();
           const userEmail = profile?.email || invoice.customer_email || "Unknown Email";
           const priceId = invoice.lines?.data?.[0]?.price?.id || "Unknown Price";
-          
+
           let subStatus = "active";
           let renewalDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
           let cardBrand = null;
@@ -396,7 +396,7 @@ export async function POST(req) {
             sendSystemUpdateEmail(userEmail, {
               userName: profile?.full_name || userEmail.split("@")[0],
               updateTitle: "Subscription Renewed",
-              updateDetails: `Your Fundora subscription was successfully renewed at ${timestampStr}.<br/><br/>Amount charged: <strong>$${amount.toFixed(2)}</strong>.<br/>Thank you for your continued support in backing verified environmental and education initiatives.`,
+              updateDetails: `Your Sahayata subscription was successfully renewed at ${timestampStr}.<br/><br/>Amount charged: <strong>₹${amount.toLocaleString("en-IN")}</strong>.<br/>Thank you for your continued support in backing verified environmental and education initiatives.`,
             }).catch(err => console.error("Error sending renewal email:", err));
           }
         }
@@ -407,7 +407,7 @@ export async function POST(req) {
         const invoice = event.data.object;
         const stripeCustomerId = invoice.customer;
         const stripeInvoiceId = invoice.id;
-        
+
         let userId = invoice.subscription_details?.metadata?.supabase_user_id;
 
         if (!userId) {
@@ -444,7 +444,7 @@ export async function POST(req) {
             hosted_invoice_url: invoice.hosted_invoice_url || null,
             created_at: new Date().toISOString()
           });
-          
+
           // Set subscription to past_due in database
           await supabase
             .from("subscriptions")

@@ -39,12 +39,12 @@ export default function Home() {
           profilesRes,
           scoresRes
         ] = await Promise.all([
-          supabase.from("charities").select("id, name, raised").catch(() => ({ data: null })),
-          supabase.from("draws").select("id, title, status").catch(() => ({ data: null })),
-          supabase.from("profiles").select("id, full_name, created_at").catch(() => ({ data: null })),
-          supabase.from("scores").select("id, score, score_date, user_id, created_at").catch(() => ({ data: null })),
+          Promise.resolve(supabase.from("charities").select("id, name, raised")).catch(() => ({ data: null })),
+          Promise.resolve(supabase.from("draws").select("id, title, status")).catch(() => ({ data: null })),
+          Promise.resolve(supabase.from("profiles").select("id, full_name, created_at")).catch(() => ({ data: null })),
+          Promise.resolve(supabase.from("scores").select("id, score, score_date, user_id, created_at")).catch(() => ({ data: null })),
         ]);
-        
+
         const charities = charitiesRes?.data;
         let charitiesCount = 4;
         let contributionsSum = 422900;
@@ -69,7 +69,7 @@ export default function Home() {
         const profiles = profilesRes?.data;
         if (profiles && profiles.length > 0) {
           membersCount = profiles.filter(p => p.role !== "admin").length;
-          
+
           profiles.forEach(p => {
             if (p.created_at) {
               activities.push({
@@ -85,7 +85,7 @@ export default function Home() {
         const scores = scoresRes?.data;
         if (scores && scores.length > 0) {
           scoresCount = scores.length;
-          
+
           scores.forEach(s => {
             const userObj = profiles?.find(p => p.id === s.user_id);
             activities.push({
@@ -113,17 +113,17 @@ export default function Home() {
             } else {
               maskedName = rawName;
             }
-            
+
             const diffMs = new Date() - new Date(act.time);
             const diffMin = Math.floor(diffMs / 60000);
             const diffHrs = Math.floor(diffMin / 60);
             const diffDays = Math.floor(diffHrs / 24);
-            
+
             let relativeTime = "Just now";
             if (diffMin > 0) relativeTime = `${diffMin}m ago`;
             if (diffHrs > 0) relativeTime = `${diffHrs}h ago`;
             if (diffDays > 0) relativeTime = `${diffDays}d ago`;
-            
+
             return {
               title: maskedName,
               detail: act.detail,
@@ -205,12 +205,12 @@ export default function Home() {
       name: "Eco Scout",
       monthlyPrice: 499,
       yearlyPrice: 399,
-      score: "+10 Giving Score",
+      score: "+10 Impact Score",
       description: "Automate core contributions targeting forest preservation.",
       features: [
         "100% audited charity routing",
         "Digital receipt tracking",
-        "Monthly Giving Score calculations",
+        "Monthly Impact Score calculations",
         "Base entry into standard draws"
       ]
     },
@@ -218,7 +218,7 @@ export default function Home() {
       name: "Global Advocate",
       monthlyPrice: 1299,
       yearlyPrice: 999,
-      score: "+30 Giving Score",
+      score: "+30 Impact Score",
       description: "Direct allocation to verified clean water & basic healthcare.",
       features: [
         "All Eco Scout benefits included",
@@ -232,7 +232,7 @@ export default function Home() {
       name: "Legacy Builder",
       monthlyPrice: 4999,
       yearlyPrice: 3999,
-      score: "+150 Giving Score",
+      score: "+150 Impact Score",
       description: "Sponsor advanced STEM fellowships and emergency humanitarian grids.",
       features: [
         "All Global Advocate benefits",
@@ -265,19 +265,19 @@ export default function Home() {
                     <Sparkles className="w-3.5 h-3.5" /> Reimagining Global Giving
                   </Badge>
                 </motion.div>
-                
+
                 <motion.h1
                   variants={itemVariants}
                   className="font-heading text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.05] mb-6"
                 >
                   Impact Standings. Vetted Giving. <span className="text-accent">Monthly Rewards.</span>
                 </motion.h1>
- 
+
                 <motion.p
                   variants={itemVariants}
                   className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl mb-8"
                 >
-                  Fundora is a member-driven platform where your passion for giving fuels global change. Subscribe to a tax-deductible giving plan, log your impact scores to earn entry tickets, and win premium monthly rewards—while 100% of your subscription flows directly to audited, vetted charities.
+                  Sahayata is a member-driven platform where your passion for giving fuels global change. Subscribe to a tax-deductible giving plan, log your impact scores to earn entry tickets, and win premium monthly rewards—while 100% of your subscription flows directly to audited, vetted charities.
                 </motion.p>
 
                 <motion.div
@@ -407,13 +407,13 @@ export default function Home() {
             <div className="max-w-2xl mb-20">
               <span className="text-xs uppercase tracking-widest text-accent font-bold block mb-3">Process Flow</span>
               <h2 className="font-heading text-3xl sm:text-4xl font-extrabold text-foreground">
-                How Fundora Works
+                How Sahayata Works
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground mt-4 leading-relaxed">
                 We bridge your passion for giving with verified global impact. Follow this simple 5-step progression to start giving and winning.
               </p>
             </div>
- 
+
             {/* Horizontal flow sequence */}
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 relative">
               {[
@@ -430,7 +430,7 @@ export default function Home() {
                   title: "2. Submit Impact Score",
                   icon: Trophy,
                   category: "Log impact",
-                  desc: "Log your weekly impact scores directly in the portal. Your logged scores determine your giving score multiplier.",
+                  desc: "Log your weekly impact scores directly in the portal. Your logged scores determine your impact score multiplier.",
                   tag: "Impact Points"
                 },
                 {
@@ -463,7 +463,7 @@ export default function Home() {
                   <div key={idx} className="relative flex flex-col justify-between p-6 bg-card/40 border border-border/80 hover:border-accent/40 rounded-2xl shadow-sm hover:-translate-y-1 transition-all duration-300 group">
                     {/* Glowing top line */}
                     <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    
+
                     <div>
                       {/* Step Header */}
                       <div className="flex justify-between items-center mb-6">
@@ -474,7 +474,7 @@ export default function Home() {
                           {stepObj.category}
                         </span>
                       </div>
-                      
+
                       <h3 className="font-heading text-base font-bold text-foreground mb-3 group-hover:text-accent transition-colors">
                         {stepObj.title}
                       </h3>
@@ -482,11 +482,11 @@ export default function Home() {
                         {stepObj.desc}
                       </p>
                     </div>
- 
+
                     <div className="mt-6 flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-accent">
                       <Check className="w-3.5 h-3.5 shrink-0" /> {stepObj.tag}
                     </div>
- 
+
                     {/* Progress indicators / arrows */}
                     {idx < 4 && (
                       <>
@@ -527,7 +527,7 @@ export default function Home() {
                   title: "Subscription Activates",
                   subtitle: "Instant Baseline Activation",
                   icon: Zap,
-                  desc: "Your membership becomes active instantly, establishing your baseline giving score and initializing your monthly draw status."
+                  desc: "Your membership becomes active instantly, establishing your baseline impact score and initializing your monthly draw status."
                 },
                 {
                   step: "02",
@@ -556,7 +556,7 @@ export default function Home() {
                   <div key={idx} className="relative flex flex-col justify-between p-6 bg-card/30 border border-border/50 hover:border-accent/30 rounded-2xl transition-all duration-300 group">
                     {/* Top Accent Gradient Line */}
                     <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent/35 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                    
+
                     <div>
                       <div className="flex justify-between items-center mb-6">
                         <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent group-hover:bg-accent/20 transition-all duration-300">
@@ -566,7 +566,7 @@ export default function Home() {
                           Step {step.step}
                         </span>
                       </div>
-                      
+
                       <span className="text-[9px] font-extrabold uppercase tracking-widest text-accent/80 block mb-1">
                         {step.subtitle}
                       </span>
@@ -590,7 +590,7 @@ export default function Home() {
             <div className="max-w-3xl mb-16">
               <span className="text-xs uppercase tracking-widest text-accent font-bold block mb-3">Benefits</span>
               <h2 className="font-heading text-3xl sm:text-4xl font-extrabold text-foreground">
-                Why Members Join Fundora
+                Why Members Join Sahayata
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground mt-4 leading-relaxed">
                 We bridge the gap between premium rewards and global impact, powered by your passion for giving.
@@ -710,22 +710,20 @@ export default function Home() {
               <h2 className="font-heading text-3xl sm:text-4xl font-extrabold text-foreground mb-6">
                 Select your contribution bracket.
               </h2>
-              
+
               {/* Interactive Switcher */}
               <div className="inline-flex items-center gap-4 bg-card border border-border p-1.5 rounded-full mt-4">
                 <button
                   onClick={() => setIsYearly(false)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
-                    !isYearly ? "bg-accent text-[#060C0A]" : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${!isYearly ? "bg-accent text-[#060C0A]" : "text-muted-foreground hover:text-foreground"
+                    }`}
                 >
                   Monthly
                 </button>
                 <button
                   onClick={() => setIsYearly(true)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 ${
-                    isYearly ? "bg-accent text-[#060C0A]" : "text-muted-foreground hover:text-foreground"
-                  }`}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1.5 ${isYearly ? "bg-accent text-[#060C0A]" : "text-muted-foreground hover:text-foreground"
+                    }`}
                 >
                   Yearly <span className="text-[9px] px-1.5 py-0.5 bg-accent/25 rounded-full font-extrabold text-white">Save 20%</span>
                 </button>
@@ -737,9 +735,8 @@ export default function Home() {
               {pricingTiers.map((tier, i) => (
                 <Card
                   key={i}
-                  className={`flex flex-col justify-between p-8 relative overflow-hidden transition-all duration-300 ${
-                    tier.recommended ? "border-accent shadow-forest bg-card" : "bg-card/40 border-border"
-                  }`}
+                  className={`flex flex-col justify-between p-8 relative overflow-hidden transition-all duration-300 ${tier.recommended ? "border-accent shadow-forest bg-card" : "bg-card/40 border-border"
+                    }`}
                 >
                   {tier.recommended && (
                     <div className="absolute top-0 left-0 w-full h-[3px] bg-accent" />
@@ -752,7 +749,7 @@ export default function Home() {
                         <Badge variant="accent">Recommended</Badge>
                       )}
                     </div>
-                    
+
                     <div className="mb-6 flex items-baseline gap-1.5">
                       <span className="font-heading text-3xl sm:text-4xl font-extrabold text-foreground">
                         ₹{(isYearly ? tier.yearlyPrice : tier.monthlyPrice).toLocaleString("en-IN")}

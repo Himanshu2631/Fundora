@@ -79,7 +79,7 @@ function normaliseDraw(draw) {
     prize: draw.prize || "Exclusive Prize",
     prize_value: draw.prize_value || null,
     min_score: draw.min_score || 0,
-    sponsor: draw.sponsor || "Fundora Foundation",
+    sponsor: draw.sponsor || "Sahayata Foundation",
     draw_date: draw.draw_date || null,
     generated_numbers: draw.generated_numbers || [],
     winning_numbers: draw.winning_numbers || [],
@@ -105,7 +105,7 @@ export async function createDraw(drawData, supabaseClient) {
     prize: drawData.prize || null,
     prize_value: drawData.prize_value ? parseFloat(drawData.prize_value) : null,
     min_score: drawData.min_score ? parseInt(drawData.min_score, 10) : 0,
-    sponsor: drawData.sponsor || "Fundora Foundation",
+    sponsor: drawData.sponsor || "Sahayata Foundation",
     draw_date: drawData.draw_date || null,
     status: normaliseStatus(drawData.status) || "upcoming",
     winning_numbers: drawData.winning_numbers || [],
@@ -244,7 +244,7 @@ export async function generateEntriesForUser(
       numsSet.add(Math.floor(Math.random() * 99) + 1);
     }
     const numbers = Array.from(numsSet).sort((a, b) => a - b);
-    
+
     // Generate a unique ticket number
     // Format: FND-XXX-XXX
     const randomCode = Math.random().toString(36).substring(2, 8).toUpperCase();

@@ -59,7 +59,7 @@ const generateUsers = () => [
   { id: "USR-001", name: "Marcus Klein", email: "marcus.k@email.com", role: "user", plan: "advocate", score: 490, joinedAt: "2025-11-18", status: "active", scores: 5, charities: 2, tickets: 3 },
   { id: "USR-002", name: "Elena Rodriguez", email: "elena.r@email.com", role: "user", plan: "builder", score: 420, joinedAt: "2025-12-05", status: "active", scores: 4, charities: 3, tickets: 5 },
   { id: "USR-003", name: "Yuki Shimizu", email: "yuki.s@email.com", role: "user", plan: "scout", score: 380, joinedAt: "2026-01-14", status: "active", scores: 5, charities: 1, tickets: 1 },
-  { id: "USR-004", name: "Admin Fundora", email: "admin@fundora.io", role: "admin", plan: "builder", score: 1200, joinedAt: "2025-10-01", status: "active", scores: 5, charities: 4, tickets: 8 },
+  { id: "USR-004", name: "Admin Sahayata", email: "admin@fundora.io", role: "admin", plan: "builder", score: 1200, joinedAt: "2025-10-01", status: "active", scores: 5, charities: 4, tickets: 8 },
   { id: "USR-005", name: "Hiroshi Tanaka", email: "hiroshi.t@email.com", role: "user", plan: "advocate", score: 310, joinedAt: "2026-02-20", status: "active", scores: 3, charities: 2, tickets: 2 },
   { id: "USR-006", name: "Sarah Chen", email: "sarah.c@email.com", role: "user", plan: "scout", score: 180, joinedAt: "2026-03-10", status: "active", scores: 2, charities: 1, tickets: 1 },
   { id: "USR-007", name: "David Okafor", email: "david.o@email.com", role: "user", plan: null, score: 0, joinedAt: "2026-04-22", status: "inactive", scores: 0, charities: 0, tickets: 0 },
@@ -99,7 +99,7 @@ export default function AdminUsersPage() {
 
   const renderSortIcon = (field) => {
     if (sortBy !== field) return <ArrowUpDown className="w-2.5 h-2.5 text-[#8A9690]/30" />;
-    return sortOrder === "asc" 
+    return sortOrder === "asc"
       ? <ChevronUp className="w-2.5 h-2.5 text-red-400" />
       : <ChevronDown className="w-2.5 h-2.5 text-red-400" />;
   };
@@ -124,8 +124,8 @@ export default function AdminUsersPage() {
       if (valB === undefined || valB === null) valB = "";
 
       if (typeof valA === "string" && typeof valB === "string") {
-        return sortOrder === "asc" 
-          ? valA.localeCompare(valB) 
+        return sortOrder === "asc"
+          ? valA.localeCompare(valB)
           : valB.localeCompare(valA);
       }
 
@@ -241,11 +241,10 @@ export default function AdminUsersPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => handleFilterChange(setStatusFilter)(status)}
-                className={`text-[10px] h-10 capitalize ${
-                  statusFilter === status
+                className={`text-[10px] h-10 capitalize ${statusFilter === status
                     ? "bg-red-600 hover:bg-red-500 text-white border-red-600"
                     : "bg-transparent border-[#162520] text-[#8A9690] hover:text-white hover:border-[#1E3A2E]"
-                }`}
+                  }`}
               >
                 {status === "all" ? "All Status" : status}
               </Button>
@@ -258,11 +257,10 @@ export default function AdminUsersPage() {
                 variant="outline"
                 size="sm"
                 onClick={() => handleFilterChange(setRoleFilter)(role)}
-                className={`text-[10px] h-10 capitalize ${
-                  roleFilter === role
+                className={`text-[10px] h-10 capitalize ${roleFilter === role
                     ? "bg-red-600 hover:bg-red-500 text-white border-red-600"
                     : "bg-transparent border-[#162520] text-[#8A9690] hover:text-white hover:border-[#1E3A2E]"
-                }`}
+                  }`}
               >
                 {role === "all" ? "All Roles" : role}
               </Button>
@@ -311,22 +309,20 @@ export default function AdminUsersPage() {
                   {paginated.map((user) => (
                     <TableRow
                       key={user.id}
-                      className={`border-[#162520] transition-colors cursor-pointer ${
-                        selectedUser?.id === user.id
+                      className={`border-[#162520] transition-colors cursor-pointer ${selectedUser?.id === user.id
                           ? "bg-red-600/8 hover:bg-red-600/12"
                           : "hover:bg-[#0D2B20]/30"
-                      }`}
+                        }`}
                       onClick={() => setSelectedUser(user)}
                     >
                       <TableCell className="pl-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-full border flex items-center justify-center text-[10px] font-bold uppercase shrink-0 ${
-                            user.status === "suspended"
+                          <div className={`w-8 h-8 rounded-full border flex items-center justify-center text-[10px] font-bold uppercase shrink-0 ${user.status === "suspended"
                               ? "bg-red-600/10 border-red-600/20 text-red-400"
                               : user.status === "inactive"
                                 ? "bg-[#0D2B20] border-[#162520] text-[#8A9690]"
                                 : "bg-[#0D2B20] border-[#162520] text-white"
-                          }`}>
+                            }`}>
                             {user.name.charAt(0)}
                           </div>
                           <div className="min-w-0">
@@ -354,13 +350,12 @@ export default function AdminUsersPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge className={`text-[9px] ${
-                          user.status === "active"
+                        <Badge className={`text-[9px] ${user.status === "active"
                             ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/25 hover:bg-emerald-500/20"
                             : user.status === "suspended"
                               ? "bg-red-500/15 text-red-400 border-red-500/25 hover:bg-red-500/20"
                               : "bg-[#0D2B20] text-[#8A9690] border-[#162520] hover:bg-[#0D2B20]"
-                        }`}>
+                          }`}>
                           {user.status === "active" && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1" />}
                           {user.status === "suspended" && <Ban className="w-2.5 h-2.5 mr-0.5" />}
                           {user.status}
@@ -444,11 +439,10 @@ export default function AdminUsersPage() {
                       variant="outline"
                       size="sm"
                       onClick={() => setCurrentPage(page)}
-                      className={`w-8 h-8 p-0 text-[10px] font-bold ${
-                        page === safePage
+                      className={`w-8 h-8 p-0 text-[10px] font-bold ${page === safePage
                           ? "bg-red-600 hover:bg-red-500 text-white border-red-600"
                           : "bg-transparent border-[#162520] text-[#8A9690] hover:text-white hover:border-[#1E3A2E]"
-                      }`}
+                        }`}
                     >
                       {page}
                     </Button>
@@ -481,13 +475,12 @@ export default function AdminUsersPage() {
                   {/* Detail Header */}
                   <div className="p-5 border-b border-[#162520] flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center text-base font-bold uppercase ${
-                        selectedUser.status === "suspended"
+                      <div className={`w-12 h-12 rounded-full border-2 flex items-center justify-center text-base font-bold uppercase ${selectedUser.status === "suspended"
                           ? "bg-red-600/10 border-red-600/30 text-red-400"
                           : selectedUser.status === "inactive"
                             ? "bg-[#0D2B20] border-[#162520] text-[#8A9690]"
                             : "bg-[#0D2B20] border-emerald-500/30 text-white"
-                      }`}>
+                        }`}>
                         {selectedUser.name.charAt(0)}
                       </div>
                       <div>
@@ -496,13 +489,12 @@ export default function AdminUsersPage() {
                           <Mail className="w-2.5 h-2.5" /> {selectedUser.email}
                         </p>
                         <div className="flex items-center gap-1.5 mt-1.5">
-                          <Badge className={`text-[8px] py-0 px-1.5 ${
-                            selectedUser.status === "active"
+                          <Badge className={`text-[8px] py-0 px-1.5 ${selectedUser.status === "active"
                               ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/25 hover:bg-emerald-500/20"
                               : selectedUser.status === "suspended"
                                 ? "bg-red-500/15 text-red-400 border-red-500/25 hover:bg-red-500/20"
                                 : "bg-[#0D2B20] text-[#8A9690] border-[#162520] hover:bg-[#0D2B20]"
-                          }`}>
+                            }`}>
                             {selectedUser.status}
                           </Badge>
                           {selectedUser.role === "admin" && (
@@ -525,7 +517,7 @@ export default function AdminUsersPage() {
                     {/* User Metrics Grid */}
                     <div className="grid grid-cols-2 gap-3">
                       {[
-                        { label: "Giving Score", value: `${selectedUser.score} pts`, icon: Trophy, color: "text-amber-400" },
+                        { label: "Impact Score", value: `${selectedUser.score} pts`, icon: Trophy, color: "text-amber-400" },
                         { label: "Impact Scores", value: `${selectedUser.scores} / 5`, icon: Trophy, color: "text-blue-400" },
                         { label: "Charities", value: String(selectedUser.charities), icon: Heart, color: "text-rose-400" },
                         { label: "Draw Tickets", value: String(selectedUser.tickets), icon: Ticket, color: "text-emerald-400" },

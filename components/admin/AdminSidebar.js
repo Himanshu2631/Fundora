@@ -29,10 +29,10 @@ const NAV_SECTIONS = [
   {
     label: "Management",
     items: [
-      { name: "User Management",    href: "/admin/users",      icon: Users   },
-      { name: "Draw Management",    href: "/admin/draws",      icon: Ticket  },
-      { name: "Charity Management", href: "/admin/charities",  icon: Heart   },
-      { name: "Winners Management", href: "/admin/winners",    icon: Trophy  },
+      { name: "User Management", href: "/admin/users", icon: Users },
+      { name: "Draw Management", href: "/admin/draws", icon: Ticket },
+      { name: "Charity Management", href: "/admin/charities", icon: Heart },
+      { name: "Winners Management", href: "/admin/winners", icon: Trophy },
     ],
   },
   {
@@ -93,7 +93,7 @@ export default function AdminSidebar({ collapsed, onToggle }) {
                 className="min-w-0"
               >
                 <span className="font-heading font-extrabold tracking-widest text-[13px] text-white group-hover:text-[#C4A054] transition-colors duration-300 whitespace-nowrap block">
-                  FUNDORA
+                  SAHAYATA
                 </span>
                 <span className="text-[8px] font-bold uppercase tracking-widest text-red-500/80 block -mt-0.5 whitespace-nowrap">
                   Admin Console

@@ -310,7 +310,7 @@ export default function DrawsPage() {
             <div className="border-t border-border/40 pt-4 mt-4 flex justify-between items-center text-xs">
               <span className="text-muted-foreground font-semibold flex items-center gap-1">
                 <Award className="w-3.5 h-3.5 text-accent" />
-                Current Giving Score:
+                Current Impact Score:
               </span>
               <strong className="text-foreground">{dynamicGivingScore} pts</strong>
             </div>
@@ -475,7 +475,7 @@ export default function DrawsPage() {
                         <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10 flex gap-2 text-[11px] text-muted-foreground leading-relaxed">
                           <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
                           <div>
-                            <strong>Threshold Pending:</strong> This draw requires a Giving Score of {activeDraw.min_score} pts. Increase your score to unlock.
+                            <strong>Threshold Pending:</strong> This draw requires an Impact Score of {activeDraw.min_score} pts. Increase your score to unlock.
                           </div>
                         </div>
                       ) : (
@@ -750,7 +750,7 @@ export default function DrawsPage() {
               <CardHeader className="pb-4 border-b border-border/30">
                 <CardTitle className="text-sm font-bold text-foreground flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-accent" />
-                  Upcoming Prize Brackets
+                  Upcoming Prize Draws
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4 space-y-4">

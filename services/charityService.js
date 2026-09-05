@@ -23,7 +23,7 @@ export async function getCharities(supabaseClient) {
     why_matters: c.why_matters || "",
     auditor_score: c.auditor_score || "",
     spending_ratio: c.spending_ratio || "",
-    raised: c.raised || "$0",
+    raised: c.raised || "₹0",
   }));
 }
 

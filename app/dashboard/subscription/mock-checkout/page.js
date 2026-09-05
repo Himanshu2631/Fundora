@@ -5,12 +5,12 @@ import { useState, useEffect, Suspense } from "react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { 
-  Lock, 
-  CreditCard, 
-  ShieldCheck, 
-  CheckCircle2, 
-  ArrowRight, 
+import {
+  Lock,
+  CreditCard,
+  ShieldCheck,
+  CheckCircle2,
+  ArrowRight,
   ArrowLeft,
   Sparkles,
   AlertTriangle
@@ -82,8 +82,8 @@ function MockCheckoutForm() {
       {/* Top Header Bar */}
       <header className="border-b border-border/40 bg-card/25 backdrop-blur-md px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <button 
-            onClick={() => router.push("/dashboard/subscription/cancel")} 
+          <button
+            onClick={() => router.push("/dashboard/subscription/cancel")}
             className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Back
@@ -101,7 +101,7 @@ function MockCheckoutForm() {
         {/* Left Side: Summary */}
         <section className="md:col-span-5 space-y-6">
           <div>
-            <span className="text-[10px] text-accent uppercase font-bold tracking-wider block mb-1">Fundora Subscription</span>
+            <span className="text-[10px] text-accent uppercase font-bold tracking-wider block mb-1">Sahayata Subscription</span>
             <h1 className="font-heading text-2xl font-extrabold tracking-tight text-foreground">
               Review your checkout details
             </h1>
@@ -121,7 +121,7 @@ function MockCheckoutForm() {
                 {plan.cycle}
               </Badge>
             </div>
-            
+
             <div className="space-y-2 text-xs border-t border-border/40 pt-4">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Subtotal</span>
@@ -129,7 +129,7 @@ function MockCheckoutForm() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Taxes</span>
-                <span className="font-bold">$0.00</span>
+                <span className="font-bold">₹0.00</span>
               </div>
               <div className="flex justify-between text-sm font-bold border-t border-border/20 pt-2 mt-2">
                 <span className="text-foreground">Total Due Today</span>
@@ -150,7 +150,7 @@ function MockCheckoutForm() {
         <section className="md:col-span-7">
           <Card className="p-6 md:p-8 border border-border/70 bg-card shadow-lg relative">
             {success ? (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="flex flex-col items-center justify-center py-16 text-center gap-4"
@@ -182,8 +182,8 @@ function MockCheckoutForm() {
                     <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
                       Name on Card
                     </label>
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       required
                       value={cardName}
                       onChange={(e) => setCardName(e.target.value)}
@@ -198,8 +198,8 @@ function MockCheckoutForm() {
                       Card Number
                     </label>
                     <div className="relative">
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         required
                         value={cardNumber}
                         onChange={(e) => setCardNumber(e.target.value)}
@@ -216,8 +216,8 @@ function MockCheckoutForm() {
                       <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
                         Expiration
                       </label>
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         required
                         value={expiry}
                         onChange={(e) => setExpiry(e.target.value)}
@@ -229,8 +229,8 @@ function MockCheckoutForm() {
                       <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
                         CVC
                       </label>
-                      <input 
-                        type="password" 
+                      <input
+                        type="password"
                         required
                         maxLength={4}
                         value={cvc}
@@ -242,10 +242,10 @@ function MockCheckoutForm() {
                   </div>
                 </div>
 
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={loading}
-                  variant="accent" 
+                  variant="accent"
                   className="w-full relative py-5 text-xs font-bold uppercase tracking-wider shadow-sm"
                 >
                   {loading ? "Approving Transaction..." : `Authorize Payment of ${plan.price}`}
@@ -264,7 +264,7 @@ function MockCheckoutForm() {
       {/* Footer */}
       <footer className="border-t border-border/40 py-6 bg-card/10 text-center text-[10px] text-muted-foreground">
         <div className="max-w-6xl mx-auto px-6">
-          Fundora Mock Billing Systems. Stripe and the Stripe Logo are trademarks of Stripe, Inc.
+          Sahayata Mock Billing Systems. Stripe and the Stripe Logo are trademarks of Stripe, Inc.
         </div>
       </footer>
     </div>
@@ -273,8 +273,8 @@ function MockCheckoutForm() {
 
 // Simple Badge component defined locally to guarantee dependency safety
 function Badge({ children, variant }) {
-  const styles = variant === "accent" 
-    ? "bg-accent/15 border border-accent/25 text-accent" 
+  const styles = variant === "accent"
+    ? "bg-accent/15 border border-accent/25 text-accent"
     : "bg-secondary text-secondary-foreground";
   return (
     <span className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${styles}`}>

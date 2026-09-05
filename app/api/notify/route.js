@@ -19,10 +19,10 @@ export async function POST(req) {
 
     switch (eventType) {
       case "registration":
-        subject = "Welcome to Fundora!";
+        subject = "Welcome to Sahayata!";
         bodyHtml = `
           <p>Hello ${userName || "Member"},</p>
-          <p>We are thrilled to welcome you to <strong>Fundora</strong> — the provably fair giving & charity reward platform!</p>
+          <p>We are thrilled to welcome you to <strong>Sahayata</strong> — the provably fair giving & charity reward platform!</p>
           <div style="background-color: rgba(255,255,255,0.03); border: 1px solid rgba(212,185,147,0.15); border-radius: 8px; padding: 16px; margin: 16px 0;">
             <p style="margin: 0 0 8px 0; color: #FFFFFF;"><strong>Account Status:</strong> Registered Successfully</p>
             <p style="margin: 0 0 8px 0; color: #B2C0B9;"><strong>Registered At:</strong> ${timestamp}</p>
@@ -37,7 +37,7 @@ export async function POST(req) {
         subject = "Subscription Activated";
         bodyHtml = `
           <p>Hello ${userName || "Member"},</p>
-          <p>Thank you for starting your active giving journey on Fundora!</p>
+          <p>Thank you for starting your active giving journey on Sahayata!</p>
           <div style="background-color: rgba(255,255,255,0.03); border: 1px solid rgba(212,185,147,0.15); border-radius: 8px; padding: 16px; margin: 16px 0;">
             <p style="margin: 0 0 8px 0; color: #FFFFFF;"><strong>Membership Plan:</strong> ${planName}</p>
             <p style="margin: 0 0 8px 0; color: #B2C0B9;"><strong>Status:</strong> Active</p>
@@ -51,7 +51,7 @@ export async function POST(req) {
         subject = "Subscription Cancelled";
         bodyHtml = `
           <p>Hello ${userName || "Member"},</p>
-          <p>We are writing to confirm that your Fundora subscription has been cancelled.</p>
+          <p>We are writing to confirm that your Sahayata subscription has been cancelled.</p>
           <div style="background-color: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 16px; margin: 16px 0;">
             <p style="margin: 0 0 8px 0; color: #FFFFFF;"><strong>Status:</strong> Cancelled (Cessation Pending)</p>
             <p style="margin: 0; color: #B2C0B9;"><strong>Requested At:</strong> ${timestamp}</p>

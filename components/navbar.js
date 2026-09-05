@@ -69,10 +69,10 @@ export default function Navbar() {
         <div className="flex-1 flex justify-start">
           <Link href="/" className="flex items-center gap-2 group">
             <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-lg select-none">
-              F
+              S
             </div>
             <span className="font-heading font-extrabold tracking-wider text-xl text-foreground group-hover:text-accent transition-colors duration-300">
-              FUNDORA
+              SAHAYATA
             </span>
           </Link>
         </div>
@@ -220,7 +220,7 @@ export default function Navbar() {
                     size="sm"
                   >
                     <Link href="/signup">
-                      Join Fundora <ArrowUpRight className="w-3.5 h-3.5" />
+                      Join Sahayata <ArrowUpRight className="w-3.5 h-3.5" />
                     </Link>
                   </Button>
                 </>
@@ -322,7 +322,7 @@ export default function Navbar() {
                     onClick={() => setIsOpen(false)}
                   >
                     <Link href="/signup">
-                      Join Fundora <ArrowUpRight className="w-3.5 h-3.5" />
+                      Join Sahayata <ArrowUpRight className="w-3.5 h-3.5" />
                     </Link>
                   </Button>
                 </>

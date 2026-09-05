@@ -10,10 +10,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LoadingState } from "@/components/ui/loading-state";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { 
-  Receipt, 
-  Calendar, 
-  DollarSign, 
+import {
+  Receipt,
+  Calendar,
+  DollarSign,
   CreditCard,
   ExternalLink,
   Download,
@@ -77,11 +77,11 @@ export default function BillingPage() {
   const getPlanLabel = (payment) => {
     const amt = parseFloat(payment.amount);
     const priceId = payment.stripe_price_id || "";
-    
+
     if (priceId.includes("scout") || amt === 499 || amt === 4788 || amt === 10 || amt === 96) return "Eco Scout";
     if (priceId.includes("advocate") || amt === 1299 || amt === 11988 || amt === 25 || amt === 240) return "Global Advocate";
     if (priceId.includes("builder") || amt === 4999 || amt === 47988 || amt === 100 || amt === 960) return "Legacy Builder";
-    return "Fundora Support";
+    return "Sahayata Support";
   };
 
   // Render status badges dynamically
@@ -169,10 +169,10 @@ export default function BillingPage() {
                   <Calendar className="w-4.5 h-4.5 text-accent" />
                   {subscription?.renewal_date && subStatus !== "expired"
                     ? new Date(subscription.renewal_date).toLocaleDateString(undefined, {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })
                     : "—"}
                 </h3>
               </div>
@@ -266,29 +266,29 @@ export default function BillingPage() {
                         </td>
                         {/* Actions */}
                         <td className="py-4.5 px-6 text-right space-x-2.5">
-                          <Button 
-                            asChild 
-                            variant="outline" 
-                            size="xs" 
+                          <Button
+                            asChild
+                            variant="outline"
+                            size="xs"
                             className="h-7 text-[10px] font-bold uppercase tracking-wider gap-1 border-border/65 hover:border-accent/40"
                           >
-                            <a 
-                              href={payment.invoice_pdf_url || `/dashboard/billing/invoice?payment_id=${payment.stripe_invoice_id}`} 
-                              target="_blank" 
+                            <a
+                              href={payment.invoice_pdf_url || `/dashboard/billing/invoice?payment_id=${payment.stripe_invoice_id}`}
+                              target="_blank"
                               rel="noopener noreferrer"
                             >
                               <Download className="w-3 h-3" /> Receipt
                             </a>
                           </Button>
-                          <Button 
-                            asChild 
-                            variant="accent" 
-                            size="xs" 
+                          <Button
+                            asChild
+                            variant="accent"
+                            size="xs"
                             className="h-7 text-[10px] font-bold uppercase tracking-wider gap-1"
                           >
-                            <a 
-                              href={payment.hosted_invoice_url || `/dashboard/billing/invoice?payment_id=${payment.stripe_invoice_id}`} 
-                              target="_blank" 
+                            <a
+                              href={payment.hosted_invoice_url || `/dashboard/billing/invoice?payment_id=${payment.stripe_invoice_id}`}
+                              target="_blank"
                               rel="noopener noreferrer"
                             >
                               <ExternalLink className="w-3 h-3" /> Invoice

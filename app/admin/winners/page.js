@@ -55,7 +55,7 @@ const STATUS_STYLES = {
 
 export default function AdminWinnersPage() {
   const { claims, loading: claimsLoading, error: claimsError, fetchAllClaims, reviewClaim } = useDraws();
-  
+
   // Extra data hooks mapping
   const [draws, setDraws] = useState([]);
   const [entries, setEntries] = useState([]);
@@ -113,10 +113,10 @@ export default function AdminWinnersPage() {
     try {
       const notes = adminNotes.trim() || `Verified and set to ${status} by Admin.`;
       await reviewClaim(claimId, status, notes);
-      
+
       // Update local claims cache
       await fetchAllClaims();
-      
+
       // Close modal
       setIsReviewOpen(false);
     } catch (err) {
@@ -136,7 +136,7 @@ export default function AdminWinnersPage() {
       userName: profile ? (profile.full_name || profile.email) : `User (${claim.user_id.substring(0, 8)})`,
       userEmail: profile?.email || "Unknown Email",
       drawTitle: draw ? draw.title : "Unknown Draw",
-      drawSponsor: draw ? draw.sponsor : "Fundora Platform",
+      drawSponsor: draw ? draw.sponsor : "Sahayata Platform",
       drawWinningNumbers: draw ? (draw.generated_numbers || []) : [],
       ticketNumbers: entry ? (entry.numbers || []) : [],
       ticketCode: claim.ticket_number || entry?.ticket_number || "FND-TICKET",
@@ -207,11 +207,10 @@ export default function AdminWinnersPage() {
               variant="outline"
               size="sm"
               onClick={() => setStatusFilter(status)}
-              className={`text-[10px] h-8 capitalize ${
-                statusFilter === status
+              className={`text-[10px] h-8 capitalize ${statusFilter === status
                   ? "bg-red-600 hover:bg-red-500 text-white border-red-600"
                   : "bg-transparent border-[#162520] text-[#8A9690] hover:text-white hover:border-[#1E3A2E]"
-              }`}
+                }`}
             >
               {status === "all" ? "All Claims" : status}
               {status === "pending" && pendingCount > 0 && (
@@ -257,11 +256,10 @@ export default function AdminWinnersPage() {
                       </TableCell>
                       <TableCell className="text-xs text-[#8A9690]">{claim.drawTitle}</TableCell>
                       <TableCell>
-                        <Badge className={`text-[9px] ${
-                          claim.match_count === 5 ? "bg-amber-500/15 text-amber-400 border-amber-500/25 hover:bg-amber-500/20" :
-                          claim.match_count === 4 ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/25 hover:bg-emerald-500/20" :
-                          "bg-blue-500/15 text-blue-400 border-blue-500/25 hover:bg-blue-500/20"
-                        }`}>
+                        <Badge className={`text-[9px] ${claim.match_count === 5 ? "bg-amber-500/15 text-amber-400 border-amber-500/25 hover:bg-amber-500/20" :
+                            claim.match_count === 4 ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/25 hover:bg-emerald-500/20" :
+                              "bg-blue-500/15 text-blue-400 border-blue-500/25 hover:bg-blue-500/20"
+                          }`}>
                           <Award className="w-2.5 h-2.5 mr-0.5" /> {claim.prize_category || `${claim.match_count} Match`}
                         </Badge>
                       </TableCell>
@@ -318,7 +316,7 @@ export default function AdminWinnersPage() {
       >
         {selectedClaim && (
           <div className="space-y-6 text-sm">
-            
+
             {/* Split Information Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-4 border-b border-[#162520]">
               {/* Participant & Draw info */}
@@ -357,11 +355,10 @@ export default function AdminWinnersPage() {
                       return (
                         <span
                           key={i}
-                        className={`w-7 h-7 rounded-xl font-mono font-bold text-xs flex items-center justify-center border ${
-                            isMatch
+                          className={`w-7 h-7 rounded-xl font-mono font-bold text-xs flex items-center justify-center border ${isMatch
                               ? "bg-red-600/10 border-red-500/30 text-red-400"
                               : "bg-[#070D0B] border-[#162520] text-[#8A9690]"
-                          }`}
+                            }`}
                         >
                           {num}
                         </span>
@@ -395,7 +392,7 @@ export default function AdminWinnersPage() {
 
             {/* Evidence screenshot preview */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-              
+
               {/* Evidence Screenshot */}
               <div className="space-y-2">
                 <span className="text-[10px] text-[#8A9690] uppercase font-bold tracking-wider block">Uploaded Proof</span>

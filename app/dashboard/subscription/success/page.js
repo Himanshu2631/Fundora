@@ -176,7 +176,7 @@ function SuccessContent() {
                   </h1>
 
                   <p className="text-xs text-muted-foreground leading-relaxed max-w-sm mx-auto mb-6">
-                    Your subscription is fully active. 100% of your tier contribution is now routed to audited causes. Your Giving Score and entry tickets are initialized.
+                    Your subscription is fully active. 100% of your tier contribution is now routed to audited causes. Your Impact Score and entry tickets are initialized.
                   </p>
                 </div>
 

@@ -114,7 +114,7 @@ export default function AdminDrawsPage() {
   const fetchExtraData = async () => {
     try {
       const supabase = createClient();
-      
+
       // Fetch all entries for stats
       const { data: entries } = await supabase.from("draw_entries").select("*");
       setAllEntries(entries || []);
@@ -233,7 +233,7 @@ export default function AdminDrawsPage() {
         year: parseInt(formData.year, 10),
         draw_date: formData.draw_date,
         min_score: parseInt(formData.min_score, 10),
-        sponsor: formData.sponsor || "Fundora Platform",
+        sponsor: formData.sponsor || "Sahayata Platform",
         status: "upcoming"
       };
 
@@ -274,7 +274,7 @@ export default function AdminDrawsPage() {
       setSuccessMsg(`Draw "${title}" completed successfully. Winning numbers generated!`);
       const list = await getWinners(drawId);
       setWinnersByDraw(prev => ({ ...prev, [drawId]: list }));
-      
+
       // Notify eligible users about the draw results
       try {
         const response = await fetch("/api/admin/draws/publish-results", {
@@ -343,7 +343,7 @@ export default function AdminDrawsPage() {
         userName: profile ? (profile.full_name || profile.email) : `User (${claim.user_id.substring(0, 8)})`,
         userEmail: profile?.email || "Unknown Email",
         drawTitle: draw ? draw.title : "Unknown Draw",
-        drawSponsor: draw ? draw.sponsor : "Fundora Platform",
+        drawSponsor: draw ? draw.sponsor : "Sahayata Platform",
         drawWinningNumbers: draw ? (draw.generated_numbers || []) : [],
         ticketNumbers: entry ? (entry.numbers || []) : [],
         ticketCode: claim.ticket_number || entry?.ticket_number || "FND-TICKET",
@@ -424,15 +424,15 @@ export default function AdminDrawsPage() {
 
         {/* Control Room Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          
+
           {/* Main Area: Current Console, Draw History, Winner Queue */}
           <div className="lg:col-span-8 space-y-6">
-            
+
             {/* 1. CURRENT ACTIVE DRAW CONSOLE */}
             <motion.div variants={itemVariants}>
               <Card className="bg-[#0A1C16] border-[#162520] overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-red-600/10 to-transparent pointer-events-none" />
-                
+
                 <CardHeader className="pb-4 border-b border-[#162520]">
                   <div className="flex justify-between items-start">
                     <div>
@@ -443,11 +443,10 @@ export default function AdminDrawsPage() {
                       </CardTitle>
                     </div>
                     {currentDraw ? (
-                      <Badge className={`text-[9px] uppercase font-bold ${
-                        currentDraw.status === "active" 
-                          ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/25 animate-pulse" 
+                      <Badge className={`text-[9px] uppercase font-bold ${currentDraw.status === "active"
+                          ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/25 animate-pulse"
                           : "bg-amber-500/15 text-amber-400 border-amber-500/25"
-                      }`}>
+                        }`}>
                         {currentDraw.status}
                       </Badge>
                     ) : (
@@ -455,7 +454,7 @@ export default function AdminDrawsPage() {
                     )}
                   </div>
                 </CardHeader>
-                
+
                 <CardContent className="pt-5">
                   {currentDraw ? (
                     <div className="space-y-6">
@@ -548,7 +547,7 @@ export default function AdminDrawsPage() {
                     <Plus className="w-3 h-3" /> Create Draw
                   </Button>
                 </CardHeader>
-                
+
                 <CardContent className="p-0 overflow-x-auto">
                   <Table>
                     <TableHeader>
@@ -588,11 +587,10 @@ export default function AdminDrawsPage() {
                               <span className="text-[9px] text-[#8A9690]">{ticketCount} tickets</span>
                             </TableCell>
                             <TableCell>
-                              <Badge className={`text-[8px] ${
-                                isActive ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/25 hover:bg-emerald-500/20" :
-                                isUpcoming ? "bg-amber-500/15 text-amber-400 border-amber-500/25 hover:bg-amber-500/20" :
-                                "bg-blue-500/15 text-blue-400 border-blue-500/25 hover:bg-blue-500/20"
-                              }`}>
+                              <Badge className={`text-[8px] ${isActive ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/25 hover:bg-emerald-500/20" :
+                                  isUpcoming ? "bg-amber-500/15 text-amber-400 border-amber-500/25 hover:bg-amber-500/20" :
+                                    "bg-blue-500/15 text-blue-400 border-blue-500/25 hover:bg-blue-500/20"
+                                }`}>
                                 {draw.status}
                               </Badge>
                             </TableCell>
@@ -647,7 +645,7 @@ export default function AdminDrawsPage() {
                       {pendingClaimsCount} pending
                     </Badge>
                   </div>
-                  
+
                   {/* Status Filters */}
                   <div className="flex gap-1.5 flex-wrap">
                     {["all", "pending", "approved", "paid", "rejected"].map((status) => (
@@ -656,18 +654,17 @@ export default function AdminDrawsPage() {
                         variant="outline"
                         size="xs"
                         onClick={() => setStatusFilter(status)}
-                        className={`text-[9px] h-7 px-2.5 capitalize ${
-                          statusFilter === status
+                        className={`text-[9px] h-7 px-2.5 capitalize ${statusFilter === status
                             ? "bg-red-600 hover:bg-red-500 text-white border-red-600"
                             : "bg-transparent border-[#162520] text-[#8A9690] hover:text-white hover:border-[#1E3A2E]"
-                        }`}
+                          }`}
                       >
                         {status}
                       </Button>
                     ))}
                   </div>
                 </CardHeader>
-                
+
                 <CardContent className="p-0 overflow-x-auto">
                   <Table>
                     <TableHeader>
@@ -747,7 +744,7 @@ export default function AdminDrawsPage() {
 
           {/* Side Area: Control Room Statistics, Vetting Checklist */}
           <div className="lg:col-span-4 space-y-6">
-            
+
             {/* Command Center Match statistics */}
             <motion.div variants={itemVariants}>
               <Card className="bg-[#0A1C16] border-[#162520]">
@@ -898,7 +895,7 @@ export default function AdminDrawsPage() {
             />
             <Input
               name="min_score"
-              label="Min Giving Score"
+              label="Min Impact Score"
               type="number"
               value={formData.min_score}
               onChange={handleInputChange}
@@ -1068,9 +1065,8 @@ export default function AdminDrawsPage() {
                       return (
                         <span
                           key={i}
-                          className={`w-7 h-7 rounded-lg font-mono font-bold text-xs flex items-center justify-center border ${
-                            isMatch ? "bg-red-600/10 border-red-500/30 text-red-400" : "bg-[#070D0B] border-[#162520] text-[#8A9690]"
-                          }`}
+                          className={`w-7 h-7 rounded-lg font-mono font-bold text-xs flex items-center justify-center border ${isMatch ? "bg-red-600/10 border-red-500/30 text-red-400" : "bg-[#070D0B] border-[#162520] text-[#8A9690]"
+                            }`}
                         >
                           {num}
                         </span>

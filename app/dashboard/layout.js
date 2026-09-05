@@ -24,7 +24,7 @@ const ROUTE_META = {
   },
   "/dashboard/scores": {
     title: "My Scores",
-    sub: "Track your Giving Score and leaderboard rank.",
+    sub: "Track your Impact Score and leaderboard rank.",
   },
   "/dashboard/charity": {
     title: "Charities",

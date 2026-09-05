@@ -290,7 +290,7 @@ export default function SubscriptionWidget() {
                 { label: "Total Contributions", value: `₹${totalContributions.toLocaleString("en-IN")}`, desc: `${totalMonths} billing cycles` },
                 { label: "Reward Multiplier", value: multiplier, desc: "On reward draws" },
                 { label: "Active Draw Entries", value: activeEntries, desc: "In upcoming pools" },
-                { label: "Giving Score Increment", value: impactScoreRate, desc: "Points added monthly" },
+                { label: "Impact Score Increment", value: impactScoreRate, desc: "Points added monthly" },
                 { label: "Membership Since", value: new Date(subscription.created_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }), desc: "Date activated" },
                 { label: "Audited Routing", value: "100.0% Verified", desc: "Cryptographically signed" },
               ].map((metric, i) => (
@@ -386,10 +386,10 @@ export default function SubscriptionWidget() {
             {/* Grid of Metric Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
               {[
-                { label: "Total Contributions", value: `$${totalContributions.toFixed(2)}`, desc: `${totalMonths} billing cycles` },
+                { label: "Total Contributions", value: `₹${totalContributions.toLocaleString("en-IN")}`, desc: `${totalMonths} billing cycles` },
                 { label: "Reward Multiplier", value: multiplier, desc: "Active until termination" },
                 { label: "Active Draw Entries", value: activeEntries, desc: "Active until termination" },
-                { label: "Giving Score Increment", value: impactScoreRate, desc: "Active until termination" },
+                { label: "Impact Score Increment", value: impactScoreRate, desc: "Active until termination" },
                 { label: "Membership Since", value: new Date(subscription.created_at).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }), desc: "Date activated" },
                 { label: "Audited Routing", value: "100.0% Verified", desc: "Cryptographically signed" },
               ].map((metric, i) => (

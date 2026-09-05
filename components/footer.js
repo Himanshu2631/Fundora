@@ -11,10 +11,10 @@ export default function Footer() {
         <div className="flex flex-col gap-4">
           <Link href="/" className="flex items-center gap-2 group">
             <div className="w-8 h-8 rounded-xl bg-accent flex items-center justify-center font-heading font-extrabold text-[#060C0A] text-lg select-none">
-              F
+              S
             </div>
             <span className="font-heading font-extrabold tracking-wider text-xl text-foreground group-hover:text-accent transition-colors duration-300">
-              FUNDORA
+              SAHAYATA
             </span>
           </Link>
           <p className="text-xs leading-relaxed max-w-xs text-muted-foreground/80">
@@ -74,7 +74,7 @@ export default function Footer() {
             </li>
             <li>
               <span className="text-muted-foreground/60 select-all">
-                transparency@fundora.org
+                transparency@sahayata.org
               </span>
             </li>
           </ul>
@@ -102,7 +102,7 @@ export default function Footer() {
       </div>
 
       <div className="mx-auto max-w-7xl px-6 mt-16 pt-8 border-t border-border/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-muted-foreground/60">
-        <p>© {currentYear} Fundora Technologies Inc. All rights reserved.</p>
+        <p>© {currentYear} Sahayata Technologies Inc. All rights reserved.</p>
         <p>Built with Next.js, Framer Motion, and Tailwind CSS.</p>
       </div>
     </footer>
