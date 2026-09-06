@@ -1,0 +1,14 @@
+{
+  "group_absolute_importance": {
+    "Metadata": 0.144677,
+    "Text": 0.053333,
+    "Early Behaviour": 0.173206,
+    "Image Metadata": 0.001263
+  },
+  "group_importance_percentages": {
+    "Metadata": 38.84,
+    "Text": 14.32,
+    "Early Behaviour": 46.5,
+    "Image Metadata": 0.34
+  }
+}

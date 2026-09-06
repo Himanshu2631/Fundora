@@ -1,0 +1,43 @@
+{
+  "feature_groups": {
+    "Metadata": [
+      "goal", "log_goal", "launch_day", "launch_hour", "is_weekend",
+      "cat_memorial", "cat_medical", "cat_animals", "cat_emergency",
+      "cat_financial_emergency", "cat_other", "country_us", "country_ca",
+      "country_gb", "country_au", "country_other"
+    ],
+    "Text": [
+      "description_length", "description_word_count", "sentence_count",
+      "avg_word_length", "readability_score", "sentiment_pos_ratio",
+      "sentiment_neg_ratio", "sentiment_polarity_net",
+      "tfidf_help", "tfidf_support", "tfidf_family", "tfidf_medical",
+      "tfidf_fund", "tfidf_life", "tfidf_love", "tfidf_time",
+      "tfidf_home", "tfidf_care", "tfidf_community", "tfidf_funds",
+      "tfidf_expenses", "tfidf_treatment", "tfidf_hospital", "tfidf_surgery",
+      "tfidf_cancer", "tfidf_passed", "tfidf_memorial", "tfidf_emergency"
+    ],
+    "Early Behaviour": [
+      "donations_first_24h_count", "donations_first_24h_amount",
+      "donations_first_48h_count", "donations_first_48h_amount",
+      "early_donation_velocity", "early_comment_count",
+      "early_comment_density", "early_update_count",
+      "early_update_frequency"
+    ],
+    "Image Metadata": [
+      "has_cover_photo", "num_body_photos", "total_photo_count"
+    ]
+  },
+  "feature_aliases": {
+    "d48Count": "donations_first_48h_count",
+    "d48Amt": "donations_first_48h_amount",
+    "d24Count": "donations_first_24h_count",
+    "d24Amt": "donations_first_24h_amount",
+    "earlyVel": "early_donation_velocity",
+    "u48Count": "early_update_count",
+    "u48Freq": "early_update_frequency",
+    "c48Count": "early_comment_count",
+    "cDensity": "early_comment_density",
+    "goal": "goal",
+    "log_goal": "log_goal"
+  }
+}

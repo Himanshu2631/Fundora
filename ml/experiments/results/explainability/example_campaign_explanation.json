@@ -1,0 +1,446 @@
+[
+  {
+    "archetype": "LOW RISK / HIGH VIABILITY (Score 70-100)",
+    "sample_index": 5,
+    "actual_outcome": 1,
+    "explanation": {
+      "campaign_id": "TEST_SAMPLE_0005",
+      "risk_probability": 0.2834,
+      "viability_score": 72,
+      "viability_score_exact": 71.7,
+      "risk_level": "LOW RISK",
+      "base_rate_risk": 0.499567,
+      "top_risk_factors": [
+        "Contextual usage or absence of keyword 'this' relative to campaign needs. (Keyword: this: 0.0104, +0.9% risk)",
+        "Modest Day-1 capital inflow suggests low early network engagement. (24h Raised Amount: $2,430.00, +0.9% risk)",
+        "Story is either too brief to establish credibility or excessively dense. (Story Length: 2,599, +0.8% risk)",
+        "Few supporter comments indicates low conversational engagement. (48h Comments: 1, +0.7% risk)",
+        "Memorial campaigns require concentrated immediate local network outreach. (Memorial Category: No, +0.4% risk)"
+      ],
+      "top_supporting_factors": [
+        "Realistic, well-sized funding goal facilitates goal achievement. (Funding Goal: $5,000.00, -5.5% risk)",
+        "Moderate target scale keeps required donor backing manageable. (Log Goal: $8.52, -4.5% risk)",
+        "High 48h donor mobilization provides critical early traction and social proof. (48h Donation Count: 63, -3.9% risk)",
+        "Rapid Day-1 donor turnout demonstrates high immediate urgency and backing. (24h Donation Count: 49, -3.8% risk)",
+        "Substantial 48h funding jumpstarts progress toward the goal. (48h Raised Amount: $3,315.00, -2.1% risk)"
+      ],
+      "detailed_risk_factors": [
+        {
+          "feature_name": "tfidf_this",
+          "title": "Narrative keyword relevance: 'this'",
+          "short_title": "Keyword: this",
+          "group": "Text",
+          "feature_value": 0.010436290375548938,
+          "formatted_value": "0.0104",
+          "shap_value": 0.009528,
+          "impact_percentage": 0.95,
+          "explanation": "Contextual usage or absence of keyword 'this' relative to campaign needs. (Keyword: this: 0.0104, +0.9% risk)"
+        },
+        {
+          "feature_name": "donations_first_24h_amount",
+          "title": "Total donation amount received during the first 24 hours",
+          "short_title": "24h Raised Amount",
+          "group": "Early Behaviour",
+          "feature_value": 2430.0,
+          "formatted_value": "$2,430.00",
+          "shap_value": 0.008952,
+          "impact_percentage": 0.9,
+          "explanation": "Modest Day-1 capital inflow suggests low early network engagement. (24h Raised Amount: $2,430.00, +0.9% risk)"
+        },
+        {
+          "feature_name": "description_length",
+          "title": "Campaign story character length",
+          "short_title": "Story Length",
+          "group": "Text",
+          "feature_value": 2599.0,
+          "formatted_value": "2,599",
+          "shap_value": 0.008455,
+          "impact_percentage": 0.85,
+          "explanation": "Story is either too brief to establish credibility or excessively dense. (Story Length: 2,599, +0.8% risk)"
+        },
+        {
+          "feature_name": "early_comment_count",
+          "title": "Supporter comments received in first 48 hours",
+          "short_title": "48h Comments",
+          "group": "Early Behaviour",
+          "feature_value": 1.0,
+          "formatted_value": "1",
+          "shap_value": 0.006859,
+          "impact_percentage": 0.69,
+          "explanation": "Few supporter comments indicates low conversational engagement. (48h Comments: 1, +0.7% risk)"
+        },
+        {
+          "feature_name": "cat_memorial",
+          "title": "Category: Memorial & Funeral",
+          "short_title": "Memorial Category",
+          "group": "Metadata",
+          "feature_value": 0.0,
+          "formatted_value": "No",
+          "shap_value": 0.004418,
+          "impact_percentage": 0.44,
+          "explanation": "Memorial campaigns require concentrated immediate local network outreach. (Memorial Category: No, +0.4% risk)"
+        }
+      ],
+      "detailed_supporting_factors": [
+        {
+          "feature_name": "goal",
+          "title": "Campaign funding goal",
+          "short_title": "Funding Goal",
+          "group": "Metadata",
+          "feature_value": 5000.0,
+          "formatted_value": "$5,000.00",
+          "shap_value": -0.054831,
+          "impact_percentage": -5.48,
+          "explanation": "Realistic, well-sized funding goal facilitates goal achievement. (Funding Goal: $5,000.00, -5.5% risk)"
+        },
+        {
+          "feature_name": "log_goal",
+          "title": "Log-transformed funding goal",
+          "short_title": "Log Goal",
+          "group": "Metadata",
+          "feature_value": 8.517393171418904,
+          "formatted_value": "$8.52",
+          "shap_value": -0.045114,
+          "impact_percentage": -4.51,
+          "explanation": "Moderate target scale keeps required donor backing manageable. (Log Goal: $8.52, -4.5% risk)"
+        },
+        {
+          "feature_name": "donations_first_48h_count",
+          "title": "Number of donations received during the first 48 hours",
+          "short_title": "48h Donation Count",
+          "group": "Early Behaviour",
+          "feature_value": 63.0,
+          "formatted_value": "63",
+          "shap_value": -0.039147,
+          "impact_percentage": -3.91,
+          "explanation": "High 48h donor mobilization provides critical early traction and social proof. (48h Donation Count: 63, -3.9% risk)"
+        },
+        {
+          "feature_name": "donations_first_24h_count",
+          "title": "Donations received during the first 24 hours",
+          "short_title": "24h Donation Count",
+          "group": "Early Behaviour",
+          "feature_value": 49.0,
+          "formatted_value": "49",
+          "shap_value": -0.037966,
+          "impact_percentage": -3.8,
+          "explanation": "Rapid Day-1 donor turnout demonstrates high immediate urgency and backing. (24h Donation Count: 49, -3.8% risk)"
+        },
+        {
+          "feature_name": "donations_first_48h_amount",
+          "title": "Total donation amount received during the first 48 hours",
+          "short_title": "48h Raised Amount",
+          "group": "Early Behaviour",
+          "feature_value": 3315.0,
+          "formatted_value": "$3,315.00",
+          "shap_value": -0.021295,
+          "impact_percentage": -2.13,
+          "explanation": "Substantial 48h funding jumpstarts progress toward the goal. (48h Raised Amount: $3,315.00, -2.1% risk)"
+        }
+      ],
+      "feature_group_attributions": {
+        "Metadata": -0.1047,
+        "Text": -0.0017,
+        "Early Behaviour": -0.1094,
+        "Image Metadata": -0.0004
+      },
+      "research_disclaimer": "Research Notice: This model estimates campaign funding viability risk and early momentum. The model provides decision support for campaign funding viability and does not determine whether a campaign is fraudulent or legitimate. A high-risk score indicates funding completion difficulty, NOT malicious intent."
+    }
+  },
+  {
+    "archetype": "MEDIUM RISK / MODERATE VIABILITY (Score 40-69)",
+    "sample_index": 1178,
+    "actual_outcome": 1,
+    "explanation": {
+      "campaign_id": "TEST_SAMPLE_1178",
+      "risk_probability": 0.4016,
+      "viability_score": 60,
+      "viability_score_exact": 59.8,
+      "risk_level": "MEDIUM RISK",
+      "base_rate_risk": 0.499567,
+      "top_risk_factors": [
+        "Higher target magnitude increases funding completion risk. (Log Goal: $11.51, +11.7% risk)",
+        "Large financial goal creates a higher threshold for full funding. (Funding Goal: $100,000.00, +9.7% risk)",
+        "Memorial campaigns require concentrated immediate local network outreach. (Memorial Category: No, +0.8% risk)",
+        "Medical campaigns often carry large ongoing funding targets. (Medical Category: Yes, +0.5% risk)",
+        "Under-communicating urgency fails to convey critical necessity. (Urgency Tone: 0.4%, +0.4% risk)"
+      ],
+      "top_supporting_factors": [
+        "Rapid hourly donation inflow rate indicates strong fundraising momentum. (Donation Velocity: $995.71, -8.3% risk)",
+        "Substantial 48h funding jumpstarts progress toward the goal. (48h Raised Amount: $47,794.00, -8.0% risk)",
+        "High Day-1 funding accelerates viral sharing across donor networks. (24h Raised Amount: $37,240.00, -5.1% risk)",
+        "High 48h donor mobilization provides critical early traction and social proof. (48h Donation Count: 361, -4.8% risk)",
+        "Rapid Day-1 donor turnout demonstrates high immediate urgency and backing. (24h Donation Count: 242, -3.7% risk)"
+      ],
+      "detailed_risk_factors": [
+        {
+          "feature_name": "log_goal",
+          "title": "Log-transformed funding goal",
+          "short_title": "Log Goal",
+          "group": "Metadata",
+          "feature_value": 11.51293546492023,
+          "formatted_value": "$11.51",
+          "shap_value": 0.116865,
+          "impact_percentage": 11.69,
+          "explanation": "Higher target magnitude increases funding completion risk. (Log Goal: $11.51, +11.7% risk)"
+        },
+        {
+          "feature_name": "goal",
+          "title": "Campaign funding goal",
+          "short_title": "Funding Goal",
+          "group": "Metadata",
+          "feature_value": 100000.0,
+          "formatted_value": "$100,000.00",
+          "shap_value": 0.09648,
+          "impact_percentage": 9.65,
+          "explanation": "Large financial goal creates a higher threshold for full funding. (Funding Goal: $100,000.00, +9.7% risk)"
+        },
+        {
+          "feature_name": "cat_memorial",
+          "title": "Category: Memorial & Funeral",
+          "short_title": "Memorial Category",
+          "group": "Metadata",
+          "feature_value": 0.0,
+          "formatted_value": "No",
+          "shap_value": 0.007769,
+          "impact_percentage": 0.78,
+          "explanation": "Memorial campaigns require concentrated immediate local network outreach. (Memorial Category: No, +0.8% risk)"
+        },
+        {
+          "feature_name": "cat_medical",
+          "title": "Category: Medical & Health",
+          "short_title": "Medical Category",
+          "group": "Metadata",
+          "feature_value": 1.0,
+          "formatted_value": "Yes",
+          "shap_value": 0.004717,
+          "impact_percentage": 0.47,
+          "explanation": "Medical campaigns often carry large ongoing funding targets. (Medical Category: Yes, +0.5% risk)"
+        },
+        {
+          "feature_name": "sentiment_neg_ratio",
+          "title": "Urgency and crisis vocabulary proportion",
+          "short_title": "Urgency Tone",
+          "group": "Text",
+          "feature_value": 0.004,
+          "formatted_value": "0.4%",
+          "shap_value": 0.004365,
+          "impact_percentage": 0.44,
+          "explanation": "Under-communicating urgency fails to convey critical necessity. (Urgency Tone: 0.4%, +0.4% risk)"
+        }
+      ],
+      "detailed_supporting_factors": [
+        {
+          "feature_name": "early_donation_velocity",
+          "title": "Average donation amount per hour during the first 48 hours",
+          "short_title": "Donation Velocity",
+          "group": "Early Behaviour",
+          "feature_value": 995.7083333333334,
+          "formatted_value": "$995.71",
+          "shap_value": -0.082744,
+          "impact_percentage": -8.27,
+          "explanation": "Rapid hourly donation inflow rate indicates strong fundraising momentum. (Donation Velocity: $995.71, -8.3% risk)"
+        },
+        {
+          "feature_name": "donations_first_48h_amount",
+          "title": "Total donation amount received during the first 48 hours",
+          "short_title": "48h Raised Amount",
+          "group": "Early Behaviour",
+          "feature_value": 47794.0,
+          "formatted_value": "$47,794.00",
+          "shap_value": -0.079859,
+          "impact_percentage": -7.99,
+          "explanation": "Substantial 48h funding jumpstarts progress toward the goal. (48h Raised Amount: $47,794.00, -8.0% risk)"
+        },
+        {
+          "feature_name": "donations_first_24h_amount",
+          "title": "Total donation amount received during the first 24 hours",
+          "short_title": "24h Raised Amount",
+          "group": "Early Behaviour",
+          "feature_value": 37240.0,
+          "formatted_value": "$37,240.00",
+          "shap_value": -0.051434,
+          "impact_percentage": -5.14,
+          "explanation": "High Day-1 funding accelerates viral sharing across donor networks. (24h Raised Amount: $37,240.00, -5.1% risk)"
+        },
+        {
+          "feature_name": "donations_first_48h_count",
+          "title": "Number of donations received during the first 48 hours",
+          "short_title": "48h Donation Count",
+          "group": "Early Behaviour",
+          "feature_value": 361.0,
+          "formatted_value": "361",
+          "shap_value": -0.047575,
+          "impact_percentage": -4.76,
+          "explanation": "High 48h donor mobilization provides critical early traction and social proof. (48h Donation Count: 361, -4.8% risk)"
+        },
+        {
+          "feature_name": "donations_first_24h_count",
+          "title": "Donations received during the first 24 hours",
+          "short_title": "24h Donation Count",
+          "group": "Early Behaviour",
+          "feature_value": 242.0,
+          "formatted_value": "242",
+          "shap_value": -0.036698,
+          "impact_percentage": -3.67,
+          "explanation": "Rapid Day-1 donor turnout demonstrates high immediate urgency and backing. (24h Donation Count: 242, -3.7% risk)"
+        }
+      ],
+      "feature_group_attributions": {
+        "Metadata": 0.2232,
+        "Text": 0.0067,
+        "Early Behaviour": -0.3269,
+        "Image Metadata": -0.001
+      },
+      "research_disclaimer": "Research Notice: This model estimates campaign funding viability risk and early momentum. The model provides decision support for campaign funding viability and does not determine whether a campaign is fraudulent or legitimate. A high-risk score indicates funding completion difficulty, NOT malicious intent."
+    }
+  },
+  {
+    "archetype": "HIGH RISK / LOW VIABILITY (Score 0-39)",
+    "sample_index": 2,
+    "actual_outcome": 1,
+    "explanation": {
+      "campaign_id": "TEST_SAMPLE_0002",
+      "risk_probability": 0.6048,
+      "viability_score": 40,
+      "viability_score_exact": 39.5,
+      "risk_level": "MEDIUM RISK",
+      "base_rate_risk": 0.499567,
+      "top_risk_factors": [
+        "Large financial goal creates a higher threshold for full funding. (Funding Goal: $25,000.00, +10.0% risk)",
+        "Higher target magnitude increases funding completion risk. (Log Goal: $10.13, +9.3% risk)",
+        "Contextual usage or absence of keyword 'family' relative to campaign needs. (Keyword: family: 0, +0.5% risk)",
+        "Contextual usage or absence of keyword 'this' relative to campaign needs. (Keyword: this: 0.0087, +0.5% risk)",
+        "Contextual usage or absence of keyword 'for' relative to campaign needs. (Keyword: for: 0.0388, +0.4% risk)"
+      ],
+      "top_supporting_factors": [
+        "Substantial 48h funding jumpstarts progress toward the goal. (48h Raised Amount: $5,560.00, -3.5% risk)",
+        "High 48h donor mobilization provides critical early traction and social proof. (48h Donation Count: 101, -2.3% risk)",
+        "Rapid Day-1 donor turnout demonstrates high immediate urgency and backing. (24h Donation Count: 86, -2.2% risk)",
+        "Rapid hourly donation inflow rate indicates strong fundraising momentum. (Donation Velocity: $115.83, -1.9% risk)",
+        "Clear narrative usage of 'and' highlighting the specific project cause. (Keyword: and: 0.0851, -0.8% risk)"
+      ],
+      "detailed_risk_factors": [
+        {
+          "feature_name": "goal",
+          "title": "Campaign funding goal",
+          "short_title": "Funding Goal",
+          "group": "Metadata",
+          "feature_value": 25000.0,
+          "formatted_value": "$25,000.00",
+          "shap_value": 0.099891,
+          "impact_percentage": 9.99,
+          "explanation": "Large financial goal creates a higher threshold for full funding. (Funding Goal: $25,000.00, +10.0% risk)"
+        },
+        {
+          "feature_name": "log_goal",
+          "title": "Log-transformed funding goal",
+          "short_title": "Log Goal",
+          "group": "Metadata",
+          "feature_value": 10.12667110305036,
+          "formatted_value": "$10.13",
+          "shap_value": 0.092753,
+          "impact_percentage": 9.28,
+          "explanation": "Higher target magnitude increases funding completion risk. (Log Goal: $10.13, +9.3% risk)"
+        },
+        {
+          "feature_name": "tfidf_family",
+          "title": "Narrative keyword relevance: 'family'",
+          "short_title": "Keyword: family",
+          "group": "Text",
+          "feature_value": 0.0,
+          "formatted_value": "0",
+          "shap_value": 0.004748,
+          "impact_percentage": 0.47,
+          "explanation": "Contextual usage or absence of keyword 'family' relative to campaign needs. (Keyword: family: 0, +0.5% risk)"
+        },
+        {
+          "feature_name": "tfidf_this",
+          "title": "Narrative keyword relevance: 'this'",
+          "short_title": "Keyword: this",
+          "group": "Text",
+          "feature_value": 0.00868507611752032,
+          "formatted_value": "0.0087",
+          "shap_value": 0.004631,
+          "impact_percentage": 0.46,
+          "explanation": "Contextual usage or absence of keyword 'this' relative to campaign needs. (Keyword: this: 0.0087, +0.5% risk)"
+        },
+        {
+          "feature_name": "tfidf_for",
+          "title": "Narrative keyword relevance: 'for'",
+          "short_title": "Keyword: for",
+          "group": "Text",
+          "feature_value": 0.03880623263389668,
+          "formatted_value": "0.0388",
+          "shap_value": 0.004043,
+          "impact_percentage": 0.4,
+          "explanation": "Contextual usage or absence of keyword 'for' relative to campaign needs. (Keyword: for: 0.0388, +0.4% risk)"
+        }
+      ],
+      "detailed_supporting_factors": [
+        {
+          "feature_name": "donations_first_48h_amount",
+          "title": "Total donation amount received during the first 48 hours",
+          "short_title": "48h Raised Amount",
+          "group": "Early Behaviour",
+          "feature_value": 5560.0,
+          "formatted_value": "$5,560.00",
+          "shap_value": -0.034574,
+          "impact_percentage": -3.46,
+          "explanation": "Substantial 48h funding jumpstarts progress toward the goal. (48h Raised Amount: $5,560.00, -3.5% risk)"
+        },
+        {
+          "feature_name": "donations_first_48h_count",
+          "title": "Number of donations received during the first 48 hours",
+          "short_title": "48h Donation Count",
+          "group": "Early Behaviour",
+          "feature_value": 101.0,
+          "formatted_value": "101",
+          "shap_value": -0.023362,
+          "impact_percentage": -2.34,
+          "explanation": "High 48h donor mobilization provides critical early traction and social proof. (48h Donation Count: 101, -2.3% risk)"
+        },
+        {
+          "feature_name": "donations_first_24h_count",
+          "title": "Donations received during the first 24 hours",
+          "short_title": "24h Donation Count",
+          "group": "Early Behaviour",
+          "feature_value": 86.0,
+          "formatted_value": "86",
+          "shap_value": -0.022252,
+          "impact_percentage": -2.23,
+          "explanation": "Rapid Day-1 donor turnout demonstrates high immediate urgency and backing. (24h Donation Count: 86, -2.2% risk)"
+        },
+        {
+          "feature_name": "early_donation_velocity",
+          "title": "Average donation amount per hour during the first 48 hours",
+          "short_title": "Donation Velocity",
+          "group": "Early Behaviour",
+          "feature_value": 115.83333333333333,
+          "formatted_value": "$115.83",
+          "shap_value": -0.019069,
+          "impact_percentage": -1.91,
+          "explanation": "Rapid hourly donation inflow rate indicates strong fundraising momentum. (Donation Velocity: $115.83, -1.9% risk)"
+        },
+        {
+          "feature_name": "tfidf_and",
+          "title": "Narrative keyword relevance: 'and'",
+          "short_title": "Keyword: and",
+          "group": "Text",
+          "feature_value": 0.08508875705094546,
+          "formatted_value": "0.0851",
+          "shap_value": -0.00789,
+          "impact_percentage": -0.79,
+          "explanation": "Clear narrative usage of 'and' highlighting the specific project cause. (Keyword: and: 0.0851, -0.8% risk)"
+        }
+      ],
+      "feature_group_attributions": {
+        "Metadata": 0.1932,
+        "Text": 0.0247,
+        "Early Behaviour": -0.1119,
+        "Image Metadata": -0.0008
+      },
+      "research_disclaimer": "Research Notice: This model estimates campaign funding viability risk and early momentum. The model provides decision support for campaign funding viability and does not determine whether a campaign is fraudulent or legitimate. A high-risk score indicates funding completion difficulty, NOT malicious intent."
+    }
+  }
+]
