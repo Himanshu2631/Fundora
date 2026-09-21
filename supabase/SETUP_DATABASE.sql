@@ -215,6 +215,29 @@ CREATE TABLE IF NOT EXISTS public.email_preferences (
 );
 ALTER TABLE public.email_preferences ENABLE ROW LEVEL SECURITY;
 
+-- campaign_viability_assessments
+CREATE TABLE IF NOT EXISTS public.campaign_viability_assessments (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  campaign_id uuid REFERENCES public.charities(id) ON DELETE CASCADE NOT NULL,
+  risk_probability numeric(5, 4) NOT NULL CHECK (risk_probability >= 0.0 AND risk_probability <= 1.0),
+  viability_score integer NOT NULL CHECK (viability_score >= 0 AND viability_score <= 100),
+  risk_level text NOT NULL CHECK (risk_level IN ('LOW RISK', 'MEDIUM RISK', 'HIGH RISK')),
+  prediction_horizon_hours integer NOT NULL DEFAULT 48,
+  model_name text NOT NULL DEFAULT 'Random Forest Champion',
+  model_type text DEFAULT 'RandomForestClassifier',
+  n_features integer NOT NULL DEFAULT 56,
+  calibration text NOT NULL DEFAULT 'Platt Scaling (Sigmoid)',
+  base_rate_risk numeric(5, 4) NOT NULL DEFAULT 0.4996,
+  top_risk_factors jsonb NOT NULL DEFAULT '[]'::jsonb,
+  top_supporting_factors jsonb NOT NULL DEFAULT '[]'::jsonb,
+  detailed_risk_factors jsonb DEFAULT '[]'::jsonb,
+  detailed_supporting_factors jsonb DEFAULT '[]'::jsonb,
+  research_disclaimer text,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+ALTER TABLE public.campaign_viability_assessments ENABLE ROW LEVEL SECURITY;
+
 
 -- ==========================================
 -- STEP 3: RLS Policies
@@ -318,6 +341,14 @@ CREATE POLICY "Users can manage their own email preferences"
 CREATE POLICY "Admins have full access on email preferences"
   ON public.email_preferences FOR ALL USING (public.is_admin(auth.uid()));
 
+-- campaign_viability_assessments
+CREATE POLICY "Assessments are viewable by everyone"
+  ON public.campaign_viability_assessments FOR SELECT USING (true);
+CREATE POLICY "Admins have full access on assessments"
+  ON public.campaign_viability_assessments FOR ALL
+  USING (public.is_admin(auth.uid()))
+  WITH CHECK (public.is_admin(auth.uid()));
+
 
 -- ==========================================
 -- STEP 4: Indexes
@@ -340,6 +371,9 @@ CREATE INDEX IF NOT EXISTS idx_user_charity_selections_user_id ON public.user_ch
 CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON public.notifications(user_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_read ON public.notifications(read);
 CREATE INDEX IF NOT EXISTS idx_email_preferences_user_id ON public.email_preferences(user_id);
+CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_campaign_id ON public.campaign_viability_assessments(campaign_id);
+CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_created_at ON public.campaign_viability_assessments(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_risk_level ON public.campaign_viability_assessments(risk_level);
 
 
 -- ==========================================
@@ -359,6 +393,7 @@ CREATE TRIGGER update_payments_updated_at BEFORE UPDATE ON public.payments FOR E
 CREATE TRIGGER update_subscription_plans_updated_at BEFORE UPDATE ON public.subscription_plans FOR EACH ROW EXECUTE PROCEDURE public.update_updated_at_column();
 CREATE TRIGGER update_notifications_updated_at BEFORE UPDATE ON public.notifications FOR EACH ROW EXECUTE PROCEDURE public.update_updated_at_column();
 CREATE TRIGGER update_email_preferences_updated_at BEFORE UPDATE ON public.email_preferences FOR EACH ROW EXECUTE PROCEDURE public.update_updated_at_column();
+CREATE TRIGGER update_campaign_viability_assessments_updated_at BEFORE UPDATE ON public.campaign_viability_assessments FOR EACH ROW EXECUTE PROCEDURE public.update_updated_at_column();
 
 -- Profile and default settings Sync Trigger
 CREATE OR REPLACE FUNCTION public.handle_new_user()

@@ -2,12 +2,13 @@
 Feature Extraction Pipeline & Dataset Split Module
 Assembles feature groups into complete matrix X and target vector y.
 Enforces reproducible temporal splitting on real MDCC dataset (Train: 70%, Validation: 15%, Test: 15%).
+Provides transform methods for online API inference.
 """
 
 from datetime import datetime
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from .metadata_features import extract_metadata_features
-from .text_features import extract_text_features
+from .text_features import extract_text_features, DEFAULT_CHAMPION_VOCAB, DEFAULT_IDF_WEIGHTS
 from .early_behavior_features import extract_early_behavior_features
 from .image_features import extract_image_features
 
@@ -23,16 +24,27 @@ def parse_dt(ts_str: str) -> datetime:
 class FeatureExtractionPipeline:
     """
     Orchestrates extraction of all feature groups and performs chronological dataset splitting.
+    Reused across model training and real-time API inference.
     """
 
-    def __init__(self, window_hours: float = 48.0, top_n_tfidf: int = 20):
+    def __init__(
+        self,
+        window_hours: float = 48.0,
+        top_n_tfidf: int = 20,
+        vocabulary: Optional[List[str]] = None,
+        idf_dict: Optional[Dict[str, float]] = None
+    ):
         self.window_hours = window_hours
         self.top_n_tfidf = top_n_tfidf
+        self.vocabulary = vocabulary or DEFAULT_CHAMPION_VOCAB
+        self.idf_dict = idf_dict or DEFAULT_IDF_WEIGHTS
         self.feature_names = []
 
     def fit_transform(self, records: List[Dict[str, Any]]) -> Tuple[List[List[float]], List[int], List[str]]:
         meta_X, meta_names = extract_metadata_features(records)
-        text_X, text_names = extract_text_features(records, top_n_tfidf=self.top_n_tfidf)
+        text_X, text_names = extract_text_features(
+            records, top_n_tfidf=self.top_n_tfidf, vocabulary=self.vocabulary, idf_dict=self.idf_dict
+        )
         early_X, early_names = extract_early_behavior_features(records, window_hours=self.window_hours)
         img_X, img_names = extract_image_features(records)
 
@@ -48,6 +60,32 @@ class FeatureExtractionPipeline:
             y.append(target_val)
 
         return X, y, self.feature_names
+
+    def transform(self, records: List[Dict[str, Any]]) -> Tuple[List[List[float]], List[str]]:
+        """
+        Extracts 56 features for incoming records using pre-fitted vocabulary without target calculation.
+        """
+        meta_X, meta_names = extract_metadata_features(records)
+        text_X, text_names = extract_text_features(
+            records, top_n_tfidf=self.top_n_tfidf, vocabulary=self.vocabulary, idf_dict=self.idf_dict
+        )
+        early_X, early_names = extract_early_behavior_features(records, window_hours=self.window_hours)
+        img_X, img_names = extract_image_features(records)
+
+        feature_names = meta_names + text_names + early_names + img_names
+        X = []
+        for idx in range(len(records)):
+            combined_row = meta_X[idx] + text_X[idx] + early_X[idx] + img_X[idx]
+            X.append(combined_row)
+
+        return X, feature_names
+
+    def transform_single(self, record: Dict[str, Any]) -> List[float]:
+        """
+        Extracts the exact 56 features for a single campaign record.
+        """
+        X, _ = self.transform([record])
+        return X[0]
 
     def temporal_split(
         self, records: List[Dict[str, Any]], X: List[List[float]], y: List[int],
