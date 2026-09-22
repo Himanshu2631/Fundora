@@ -222,6 +222,7 @@ CREATE TABLE IF NOT EXISTS public.campaign_viability_assessments (
   risk_probability numeric(5, 4) NOT NULL CHECK (risk_probability >= 0.0 AND risk_probability <= 1.0),
   viability_score integer NOT NULL CHECK (viability_score >= 0 AND viability_score <= 100),
   risk_level text NOT NULL CHECK (risk_level IN ('LOW RISK', 'MEDIUM RISK', 'HIGH RISK')),
+  assessment_type text NOT NULL DEFAULT 'initial_48h' CHECK (assessment_type IN ('initial_48h', 'reassessment', 'manual')),
   prediction_horizon_hours integer NOT NULL DEFAULT 48,
   model_name text NOT NULL DEFAULT 'Random Forest Champion',
   model_type text DEFAULT 'RandomForestClassifier',
@@ -372,6 +373,8 @@ CREATE INDEX IF NOT EXISTS idx_notifications_user_id ON public.notifications(use
 CREATE INDEX IF NOT EXISTS idx_notifications_read ON public.notifications(read);
 CREATE INDEX IF NOT EXISTS idx_email_preferences_user_id ON public.email_preferences(user_id);
 CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_campaign_id ON public.campaign_viability_assessments(campaign_id);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_campaign_initial_48h_assessment ON public.campaign_viability_assessments(campaign_id) WHERE (assessment_type = 'initial_48h');
+CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_type ON public.campaign_viability_assessments(assessment_type);
 CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_created_at ON public.campaign_viability_assessments(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_risk_level ON public.campaign_viability_assessments(risk_level);
 

@@ -38,6 +38,7 @@ import {
   Loader2,
   Calendar,
   AlertTriangle,
+  AlertCircle,
   Sparkles,
   Droplet,
   Trees,

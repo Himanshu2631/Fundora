@@ -6,6 +6,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { LoadingState } from "@/components/ui/loading-state";
 import { createClient } from "@/lib/supabase";
+import ViabilitySummarySection from "@/components/admin/ViabilitySummarySection";
+import CampaignViabilityTable from "@/components/admin/CampaignViabilityTable";
 import Link from "next/link";
 import {
   Users,
@@ -268,6 +270,16 @@ export default function AdminDashboard() {
               <p className="text-[10px] text-[#8A9690]/70 mt-1">{stat.sub}</p>
             </Card>
           ))}
+        </motion.div>
+
+        {/* Machine Learning Campaign Viability Summary */}
+        <motion.div variants={itemVariants}>
+          <ViabilitySummarySection />
+        </motion.div>
+
+        {/* Machine Learning Campaign Viability Table */}
+        <motion.div variants={itemVariants}>
+          <CampaignViabilityTable />
         </motion.div>
 
         {/* Main Grid: Activity + Quick Access */}

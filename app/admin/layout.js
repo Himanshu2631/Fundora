@@ -60,7 +60,18 @@ export default function AdminLayout({ children }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const routeMeta = ROUTE_META[currentPath] || ROUTE_META["/admin/dashboard"];
+  const getRouteMeta = (path) => {
+    if (ROUTE_META[path]) return ROUTE_META[path];
+    if (path.startsWith("/admin/assessments/")) {
+      return {
+        title: "Viability Assessment Details",
+        sub: "Detailed 48-hour machine learning assessment and risk factor breakdown.",
+      };
+    }
+    return ROUTE_META["/admin/dashboard"];
+  };
+
+  const routeMeta = getRouteMeta(currentPath);
 
   // Auth loading state
   if (authLoading) {
