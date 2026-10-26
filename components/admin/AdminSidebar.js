@@ -7,8 +7,7 @@ import {
   LayoutDashboard,
   Users,
   Heart,
-  Ticket,
-  Trophy,
+  Sparkles,
   BarChart3,
   ChevronLeft,
   ChevronRight,
@@ -30,14 +29,13 @@ const NAV_SECTIONS = [
     label: "Management",
     items: [
       { name: "User Management", href: "/admin/users", icon: Users },
-      { name: "Draw Management", href: "/admin/draws", icon: Ticket },
       { name: "Charity Management", href: "/admin/charities", icon: Heart },
-      { name: "Winners Management", href: "/admin/winners", icon: Trophy },
     ],
   },
   {
-    label: "Analytics",
+    label: "Intelligence & Data",
     items: [
+      { name: "Viability Assessments", href: "/admin/assessments", icon: Sparkles },
       { name: "Reports & Analytics", href: "/admin/analytics", icon: BarChart3 },
     ],
   },

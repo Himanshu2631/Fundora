@@ -16,31 +16,27 @@ import { ShieldAlert } from "lucide-react";
 const ROUTE_META = {
   "/admin": {
     title: "Admin Dashboard",
-    sub: "Platform overview, KPIs, and operational summary.",
+    sub: "Platform overview, giving KPIs, and operational summary.",
   },
   "/admin/dashboard": {
     title: "Admin Dashboard",
-    sub: "Platform overview, KPIs, and operational summary.",
+    sub: "Platform overview, giving KPIs, and operational summary.",
   },
   "/admin/users": {
     title: "User Management",
-    sub: "View and manage all registered platform users and subscriptions.",
+    sub: "View and manage registered platform supporters and subscription tiers.",
   },
   "/admin/charities": {
     title: "Charity Management",
-    sub: "Add, edit, and manage partner charities and content.",
+    sub: "Add, edit, verify, and manage partner charities and campaigns.",
   },
-  "/admin/draws": {
-    title: "Draw Management",
-    sub: "Configure draw logic, run simulations, and publish results.",
-  },
-  "/admin/winners": {
-    title: "Winners Management",
-    sub: "View winners, verify submissions, and mark payouts as completed.",
+  "/admin/assessments": {
+    title: "Viability Intelligence",
+    sub: "Inspect ML predictions, Early Funding Viability scores, and SHAP calibration.",
   },
   "/admin/analytics": {
     title: "Reports & Analytics",
-    sub: "Total users, prize pool, charity contributions, and draw statistics.",
+    sub: "Supporter base, monthly recurring giving, charity impact, and community certificates.",
   },
 };
 

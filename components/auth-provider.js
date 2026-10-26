@@ -111,24 +111,25 @@ export function AuthProvider({ children }) {
 
   const signIn = async (email, password) => {
     setLoading(true);
-    console.log("🔑 [AuthProvider] signIn called for:", email);
+    const cleanEmail = typeof email === "string" ? email.trim() : email;
+    console.log("🔑 [AuthProvider] Attempting signIn for account");
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: cleanEmail,
         password,
       });
       if (error) {
-        console.error("❌ [AuthProvider] signIn failed:", error.message || error);
+        console.warn("⚠️ [AuthProvider] signIn rejection:", error.message || error);
         let msg = error.message;
         if (msg === "Invalid login credentials" || msg?.toLowerCase().includes("invalid login credentials")) {
           msg = "Incorrect email or password.";
         }
         return { success: false, message: msg };
       }
-      console.log("✅ [AuthProvider] signIn succeeded, user:", data.user?.email);
+      console.log("✅ [AuthProvider] signIn succeeded");
       return { success: true, data };
     } catch (err) {
-      console.error("❌ [AuthProvider] signIn catch block:", err);
+      console.warn("⚠️ [AuthProvider] signIn exception:", err?.message || err);
       let msg = err.message || "Failed to sign in.";
       if (msg === "Invalid login credentials" || msg?.toLowerCase().includes("invalid login credentials")) {
         msg = "Incorrect email or password.";

@@ -16,8 +16,8 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Sahayata — Gamified Philanthropy & Exclusive Draws",
-  description: "Subscribe to support verified global causes, build your philanthropy score, and enter exclusive reward draws. Handcrafted for modern giving.",
+  title: "Sahayata — Audited Philanthropy & Impact Recognition",
+  description: "Subscribe to support verified global causes, build your philanthropy Impact Score, and earn certified badges. Handcrafted for modern giving.",
 };
 
 export default function RootLayout({ children }) {

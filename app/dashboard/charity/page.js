@@ -30,6 +30,7 @@ import {
   TrendingUp,
   Scale
 } from "lucide-react";
+import EarlyViabilitySection from "@/components/charity/EarlyViabilitySection";
 
 // Page animations
 const containerVariants = {
@@ -433,6 +434,7 @@ export default function CharityDashboard() {
                 <Badge variant="outline" className="backdrop-blur-md bg-background/50 border-emerald-500/20 text-emerald-400">
                   {featuredCharity.category}
                 </Badge>
+                <EarlyViabilitySection charityId={featuredCharity.id} createdAt={featuredCharity.created_at} compact={true} />
               </div>
             </div>
 
@@ -611,6 +613,10 @@ export default function CharityDashboard() {
                           {charity.description}
                         </p>
 
+                        <div className="pt-0.5">
+                          <EarlyViabilitySection charityId={charity.id} createdAt={charity.created_at} compact={true} />
+                        </div>
+
                         {charity.why_matters && (
                           <div className="pt-1.5">
                             <button
@@ -771,6 +777,12 @@ export default function CharityDashboard() {
                   {selectedCharity.why_matters}
                 </div>
               )}
+
+              {/* Early Funding Viability Section */}
+              <EarlyViabilitySection
+                charityId={selectedCharity.id}
+                createdAt={selectedCharity.created_at}
+              />
 
               {/* Status Alert Context */}
               {modalError && (

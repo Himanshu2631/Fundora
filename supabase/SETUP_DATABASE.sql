@@ -233,6 +233,8 @@ CREATE TABLE IF NOT EXISTS public.campaign_viability_assessments (
   top_supporting_factors jsonb NOT NULL DEFAULT '[]'::jsonb,
   detailed_risk_factors jsonb DEFAULT '[]'::jsonb,
   detailed_supporting_factors jsonb DEFAULT '[]'::jsonb,
+  status text NOT NULL DEFAULT 'completed' CHECK (status IN ('completed', 'failed', 'pending')),
+  model_version text DEFAULT '1.0.0',
   research_disclaimer text,
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
@@ -377,6 +379,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_campaign_initial_48h_assessment ON 
 CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_type ON public.campaign_viability_assessments(assessment_type);
 CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_created_at ON public.campaign_viability_assessments(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_risk_level ON public.campaign_viability_assessments(risk_level);
+CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_campaign_history ON public.campaign_viability_assessments(campaign_id, created_at DESC);
 
 
 -- ==========================================
@@ -495,3 +498,90 @@ BEGIN
     CREATE VIEW public.winner_claims AS SELECT * FROM public.winner_submissions;
   END IF;
 END $$;
+
+
+-- ==========================================
+-- STEP 10: Campaign Viability Assessments (Phase 4 ML Pipeline)
+-- ==========================================
+CREATE TABLE IF NOT EXISTS public.campaign_viability_assessments (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  campaign_id uuid REFERENCES public.charities(id) ON DELETE CASCADE NOT NULL,
+  risk_probability numeric(5, 4) NOT NULL CHECK (risk_probability >= 0.0 AND risk_probability <= 1.0),
+  viability_score integer NOT NULL CHECK (viability_score >= 0 AND viability_score <= 100),
+  risk_level text NOT NULL CHECK (risk_level IN ('LOW RISK', 'MEDIUM RISK', 'HIGH RISK')),
+  assessment_type text NOT NULL DEFAULT 'initial_48h' CHECK (assessment_type IN ('initial_48h', 'reassessment', 'manual')),
+  status text NOT NULL DEFAULT 'completed' CHECK (status IN ('completed', 'failed', 'pending')),
+  model_version text DEFAULT '1.0.0',
+  prediction_horizon_hours integer NOT NULL DEFAULT 48,
+  model_name text NOT NULL DEFAULT 'Random Forest Champion',
+  model_type text DEFAULT 'RandomForestClassifier',
+  n_features integer NOT NULL DEFAULT 56,
+  calibration text NOT NULL DEFAULT 'Platt Scaling (Sigmoid)',
+  base_rate_risk numeric(5, 4) NOT NULL DEFAULT 0.4996,
+  top_risk_factors jsonb NOT NULL DEFAULT '[]'::jsonb,
+  top_supporting_factors jsonb NOT NULL DEFAULT '[]'::jsonb,
+  detailed_risk_factors jsonb DEFAULT '[]'::jsonb,
+  detailed_supporting_factors jsonb DEFAULT '[]'::jsonb,
+  research_disclaimer text,
+  created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+  updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.campaign_viability_assessments ENABLE ROW LEVEL SECURITY;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public' AND tablename = 'campaign_viability_assessments' AND policyname = 'Assessments are viewable by everyone'
+  ) THEN
+    CREATE POLICY "Assessments are viewable by everyone"
+      ON public.campaign_viability_assessments FOR SELECT USING (true);
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE schemaname = 'public' AND tablename = 'campaign_viability_assessments' AND policyname = 'Admins have full access on assessments'
+  ) THEN
+    CREATE POLICY "Admins have full access on assessments"
+      ON public.campaign_viability_assessments FOR ALL
+      USING (public.is_admin(auth.uid()))
+      WITH CHECK (public.is_admin(auth.uid()));
+  END IF;
+END $$;
+
+-- Indexes for campaign assessments
+CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_campaign_id
+  ON public.campaign_viability_assessments(campaign_id);
+
+CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_created_at
+  ON public.campaign_viability_assessments(created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_risk_level
+  ON public.campaign_viability_assessments(risk_level);
+
+CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_type
+  ON public.campaign_viability_assessments(assessment_type);
+
+-- Unique partial index protecting initial 48-hour assessment idempotency
+CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_campaign_initial_48h_assessment
+  ON public.campaign_viability_assessments(campaign_id)
+  WHERE (assessment_type = 'initial_48h');
+
+-- Composite history index for chronological assessment retrieval
+CREATE INDEX IF NOT EXISTS idx_campaign_viability_assessments_campaign_history
+  ON public.campaign_viability_assessments(campaign_id, created_at DESC);
+
+-- Trigger for auto-updating updated_at timestamp
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger
+    WHERE tgname = 'update_campaign_viability_assessments_updated_at'
+  ) THEN
+    CREATE TRIGGER update_campaign_viability_assessments_updated_at
+      BEFORE UPDATE ON public.campaign_viability_assessments
+      FOR EACH ROW EXECUTE PROCEDURE public.update_updated_at_column();
+  END IF;
+END $$;
+

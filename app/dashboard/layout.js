@@ -12,11 +12,11 @@ import { useAuth } from "@/hooks/useAuth";
 const ROUTE_META = {
   "/dashboard": {
     title: "Overview",
-    sub: "Your giving summary and activity at a glance.",
+    sub: "Your giving summary and impact recognition at a glance.",
   },
   "/dashboard/subscription": {
     title: "Subscription",
-    sub: "Manage your giving tier and billing.",
+    sub: "Manage your giving tier, impact multipliers, and billing.",
   },
   "/dashboard/billing": {
     title: "Billing & History",
@@ -24,15 +24,11 @@ const ROUTE_META = {
   },
   "/dashboard/scores": {
     title: "My Scores",
-    sub: "Track your Impact Score and leaderboard rank.",
+    sub: "Track your Impact Score, badges, and leaderboard rank.",
   },
   "/dashboard/charity": {
     title: "Charities",
     sub: "Browse and follow audited partner causes.",
-  },
-  "/dashboard/draws": {
-    title: "Draws",
-    sub: "Your active tickets and upcoming prize draws.",
   },
   "/dashboard/settings": {
     title: "Settings",

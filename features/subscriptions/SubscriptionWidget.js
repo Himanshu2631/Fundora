@@ -514,7 +514,7 @@ export default function SubscriptionWidget() {
           </div>
 
           <p className="text-xs text-muted-foreground leading-relaxed mb-6">
-            Select a giving tier to participate in secure, audited charity routing and unlock automatic draw entries.
+            Select a giving tier to participate in secure, audited charity routing and unlock monthly Impact Score multipliers.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-border/30">
@@ -576,7 +576,7 @@ export default function SubscriptionWidget() {
       >
         <div className="space-y-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Choose a giving tier to change your impact level, draw entry multipliers, and leaderboard score routing.
+            Choose a giving tier to change your impact level, Impact Score multipliers, and leaderboard score routing.
           </p>
 
           <div className="space-y-3">
@@ -671,7 +671,7 @@ export default function SubscriptionWidget() {
           </div>
           
           <p className="text-xs text-muted-foreground leading-relaxed">
-            Your membership benefits, score points, and eligibility for all active prize draws will remain fully active until the end of your billing cycle on:
+            Your membership benefits, score points, and verified donation certificates will remain fully active until the end of your billing cycle on:
             <strong className="block text-foreground font-bold mt-1">
               {subscription && new Date(subscription.renewal_date).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' })}
             </strong>

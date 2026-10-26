@@ -56,10 +56,17 @@ function createTestClient() {
       }
       if (table === "campaign_viability_assessments") {
         return {
-          insert: async (data) => {
+          insert: (data) => {
             insertCount++;
-            return { data, error: null };
-          }
+            return {
+              select: () => ({
+                single: async () => ({
+                  data: { id: "test-assess-1", created_at: new Date().toISOString(), ...data },
+                  error: null,
+                }),
+              }),
+            };
+          },
         };
       }
       return { select: () => ({ eq: () => ({ data: [], error: null }) }) };
@@ -76,14 +83,16 @@ async function runAssessmentTest() {
 
   const originalRecord = JSON.stringify(testClient.getCampaignRecord());
 
-  const prediction = await assessCampaignViability(campaignId, {
+  const result = await assessCampaignViability(campaignId, {
     supabaseClient: testClient,
     targetGoal: 10000.0,
     country: "US"
   });
 
+  const prediction = result.prediction;
+
   console.log("\n--- Received Prediction Object ---");
-  console.log(JSON.stringify(prediction, null, 2));
+  console.log(JSON.stringify(result, null, 2));
 
   console.log("\n--- Field Validations ---");
   const hasCampaignId = prediction.campaign_id === campaignId;
@@ -112,8 +121,7 @@ async function runAssessmentTest() {
   console.log("9. Campaign data modified in DB:", !campaignUnmodified ? "YES" : "NO");
   console.log("10. Assessment record inserted into DB:", !zeroInserts ? "YES" : "NO");
 
-  console.log("\n--- Overall Test Status ---");
-  const allValid = hasCampaignId && hasProbability && hasScore && hasRiskLevel && hasHorizon && hasModel && hasExplanation && campaignUnmodified && zeroInserts;
+  const allValid = hasCampaignId && hasProbability && hasScore && hasRiskLevel && hasHorizon && hasModel && hasExplanation && campaignUnmodified && !zeroInserts;
   console.log(`Prediction Returned: ${allValid ? "PASS" : "FAIL"}`);
 }
 

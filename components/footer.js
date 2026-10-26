@@ -18,7 +18,7 @@ export default function Footer() {
             </span>
           </Link>
           <p className="text-xs leading-relaxed max-w-xs text-muted-foreground/80">
-            A premium handcrafted gamified philanthropy platform. Build your score, support verified global causes, and unlock exclusive rewards.
+            A premium handcrafted gamified philanthropy platform. Build your score, support verified global causes, and earn audited impact certificates.
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export default function Footer() {
             Stay Updated
           </h3>
           <p className="text-xs max-w-xs leading-relaxed text-muted-foreground/80">
-            Subscribe to our weekly dispatch of impact updates and upcoming draws.
+            Subscribe to our weekly dispatch of impact updates and verified cause milestones.
           </p>
           <div className="flex gap-2 w-full max-w-sm">
             <input

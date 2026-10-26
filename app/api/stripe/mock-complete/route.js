@@ -130,13 +130,13 @@ export async function POST(req) {
           sendSystemUpdateEmail(user.email, {
             userName,
             updateTitle: "Membership Upgraded!",
-            updateDetails: `Congratulations! Your membership was upgraded to <strong>${newPlanName}</strong> at ${timestamp}.<br/><br/>Your new entries multiplier has been applied, and your future contributions will be scaled to create larger environmental and educational impacts.`,
+            updateDetails: `Congratulations! Your membership was upgraded to <strong>${newPlanName}</strong> at ${timestamp}.<br/><br/>Your new Impact Score multiplier has been applied, and your future contributions will be scaled to create larger environmental and educational impacts.`,
           }).catch(err => console.error("Error sending upgrade email:", err));
         } else {
           sendSystemUpdateEmail(user.email, {
             userName,
             updateTitle: "Membership Downgraded",
-            updateDetails: `Your membership tier was adjusted to <strong>${newPlanName}</strong> at ${timestamp}.<br/><br/>Your contribution amounts and draw entries multiplier have been scaled to match this new tier.`,
+            updateDetails: `Your membership tier was adjusted to <strong>${newPlanName}</strong> at ${timestamp}.<br/><br/>Your contribution amounts and Impact Score multiplier have been scaled to match this new tier.`,
           }).catch(err => console.error("Error sending downgrade email:", err));
         }
       } else {

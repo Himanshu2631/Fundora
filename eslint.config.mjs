@@ -10,6 +10,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    ".venv/**",
+    "ml/**",
+    "scratch/**",
   ]),
   // Disable React Compiler plugin rules that produce false positives for
   // valid, standard React patterns (async fetchers in useEffect, initialization

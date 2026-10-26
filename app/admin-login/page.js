@@ -10,6 +10,7 @@ import {
   Loader2,
   Users,
   Trophy,
+  Sparkles,
   CheckCircle2,
   Heart,
   BarChart3,
@@ -50,23 +51,23 @@ const CAPABILITIES = [
     iconBg: "bg-emerald-500/10",
   },
   {
-    icon: Trophy,
-    title: "Draw Management",
-    description: "Configure and run monthly draws and rewards.",
+    icon: Sparkles,
+    title: "Viability Intelligence",
+    description: "ML predictions, campaign viability scoring, and SHAP calibration.",
     iconColor: "text-[#C4A054]",
     iconBg: "bg-[#C4A054]/10",
   },
   {
     icon: CheckCircle2,
-    title: "Winner Verification",
-    description: "Audit claims and verify monthly draw winners.",
+    title: "Impact & Fund Auditing",
+    description: "Audit charity fund disbursements and donation receipts.",
     iconColor: "text-purple-400",
     iconBg: "bg-purple-500/10",
   },
   {
     icon: Heart,
     title: "Charity Operations",
-    description: "Manage vetted non-profit organizations and payouts.",
+    description: "Manage vetted non-profit organizations and campaigns.",
     iconColor: "text-red-400",
     iconBg: "bg-red-500/10",
   },
@@ -107,7 +108,8 @@ export default function AdminLogin() {
     setIsLoading(true);
     setErrorMsg("");
 
-    const result = await signIn(email, password);
+    const cleanEmail = email?.trim();
+    const result = await signIn(cleanEmail, password);
     if (!result.success) {
       setErrorMsg(result.message || "Incorrect email or password.");
       setIsLoading(false);
@@ -168,7 +170,7 @@ export default function AdminLogin() {
               <span className="text-[#C4A054]">Administration Center</span>
             </h2>
             <p className="text-xs sm:text-sm text-[#8A9690] leading-relaxed max-w-sm">
-              Manage subscriptions, users, reward draws, charities, winner verification, and analytics.
+              Manage subscriptions, users, partner charities, ML viability intelligence, and analytics.
             </p>
           </div>
 
@@ -275,7 +277,7 @@ export default function AdminLogin() {
                 label="Administrator Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@fundora.demo"
+                placeholder="admin@sahayata.demo"
                 id="admin-email"
                 className="focus:ring-1 focus:ring-[#C4A054]/20"
               />

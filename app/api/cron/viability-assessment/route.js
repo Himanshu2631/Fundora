@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server.js";
 import {
   verifyCronAuthorization,
   runScheduledViabilityAssessments,
-} from "@/lib/ml/assessmentScheduler";
+} from "../../../../lib/ml/assessmentScheduler.js";
 
 export const dynamic = "force-dynamic";
 

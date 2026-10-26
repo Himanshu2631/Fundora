@@ -56,7 +56,7 @@ export async function POST(req) {
             <p style="margin: 0 0 8px 0; color: #FFFFFF;"><strong>Status:</strong> Cancelled (Cessation Pending)</p>
             <p style="margin: 0; color: #B2C0B9;"><strong>Requested At:</strong> ${timestamp}</p>
           </div>
-          <p>You will retain access to active tickets, score logging multipliers, and charity configurations until the end of your current billing cycle. Thank you for the impact you have made so far!</p>
+          <p>You will retain access to score logging multipliers, verified certificates, and charity configurations until the end of your current billing cycle. Thank you for the impact you have made so far!</p>
         `;
         break;
 

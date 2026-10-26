@@ -72,8 +72,8 @@ export default function SettingsPage() {
 
   // Notification Preferences States
   const [prefSystemUpdates, setPrefSystemUpdates] = useState(true);
-  const [prefDrawResults, setPrefDrawResults] = useState(true);
-  const [prefWinnerAlerts, setPrefWinnerAlerts] = useState(true);
+  const [prefImpactMilestones, setPrefImpactMilestones] = useState(true);
+  const [prefCharityUpdates, setPrefCharityUpdates] = useState(true);
   const [notifLoading, setNotifLoading] = useState(false);
   const [notifSuccess, setNotifSuccess] = useState(false);
 
@@ -84,8 +84,8 @@ export default function SettingsPage() {
         setName(profile.full_name);
       }
       setPrefSystemUpdates(profile.pref_system_updates !== false);
-      setPrefDrawResults(profile.pref_draw_results !== false);
-      setPrefWinnerAlerts(profile.pref_winner_alerts !== false);
+      setPrefImpactMilestones(profile.pref_impact_milestones !== false);
+      setPrefCharityUpdates(profile.pref_charity_updates !== false);
     }
   }, [profile]);
 
@@ -177,8 +177,8 @@ export default function SettingsPage() {
     try {
       await updateProfile({
         pref_system_updates: prefSystemUpdates,
-        pref_draw_results: prefDrawResults,
-        pref_winner_alerts: prefWinnerAlerts
+        pref_impact_milestones: prefImpactMilestones,
+        pref_charity_updates: prefCharityUpdates,
       });
       setNotifSuccess(true);
       setTimeout(() => setNotifSuccess(false), 4000);
@@ -409,18 +409,18 @@ export default function SettingsPage() {
                         onChange: setPrefSystemUpdates,
                       },
                       {
-                        id: "draw_results",
-                        label: "Draw Results",
-                        desc: "Get notified when monthly prize draws are completed and outcomes are live.",
-                        value: prefDrawResults,
-                        onChange: setPrefDrawResults,
+                        id: "impact_milestones",
+                        label: "Impact Milestones & Badges",
+                        desc: "Get notified when you unlock new impact badges, donation certificates, or score multipliers.",
+                        value: prefImpactMilestones,
+                        onChange: setPrefImpactMilestones,
                       },
                       {
-                        id: "winner_alerts",
-                        label: "Winner Alerts",
-                        desc: "Immediate email notification with next steps when your winning claim is verified and approved.",
-                        value: prefWinnerAlerts,
-                        onChange: setPrefWinnerAlerts,
+                        id: "charity_updates",
+                        label: "Campaign Field Reports",
+                        desc: "Direct impact dispatches, field updates, and fund utilization reports from supported charities.",
+                        value: prefCharityUpdates,
+                        onChange: setPrefCharityUpdates,
                       },
                     ].map((pref) => (
                       <div key={pref.id} className="flex items-center justify-between gap-4 py-3 border-b border-border/30 last:border-0">

@@ -12,14 +12,14 @@ import Link from "next/link";
 import {
   Users,
   Heart,
-  Ticket,
+  Sparkles,
   ArrowRight,
   Activity,
   Clock,
-  Trophy,
+  Award,
   BarChart3,
   DollarSign,
-  CreditCard,
+  TrendingUp,
 } from "lucide-react";
 
 const containerVariants = {
@@ -33,10 +33,10 @@ const itemVariants = {
 };
 
 const QUICK_ACTIONS = [
-  { label: "User Management", href: "/admin/users", icon: Users, desc: "View profiles, edit scores, manage subscriptions" },
-  { label: "Draw Management", href: "/admin/draws", icon: Ticket, desc: "Configure draws, run simulations, publish results" },
-  { label: "Charity Management", href: "/admin/charities", icon: Heart, desc: "Add, edit, and manage charity content" },
-  { label: "Winners Management", href: "/admin/winners", icon: Trophy, desc: "Verify submissions and mark payouts completed" },
+  { label: "User Management", href: "/admin/users", icon: Users, desc: "View profiles, manage impact scores and subscriptions" },
+  { label: "Charity Management", href: "/admin/charities", icon: Heart, desc: "Add, verify, and manage partner NGO campaigns" },
+  { label: "Viability Assessments", href: "/admin/assessments", icon: Sparkles, desc: "Inspect ML predictions & SHAP calibration factors" },
+  { label: "Reports & Analytics", href: "/admin/analytics", icon: BarChart3, desc: "Explore giving volume, conversion rates & growth" },
 ];
 
 const PLAN_LABELS = { scout: "Eco Scout", advocate: "Global Advocate", builder: "Legacy Builder" };
@@ -46,10 +46,8 @@ export default function AdminDashboard() {
   const [data, setData] = useState({
     profiles: [],
     subscriptions: [],
-    draws: [],
-    entries: [],
-    claims: [],
     charities: [],
+    assessments: [],
   });
 
   const fetchDashboardData = async () => {
@@ -58,26 +56,20 @@ export default function AdminDashboard() {
       const [
         { data: profiles },
         { data: subscriptions },
-        { data: draws },
-        { data: entries },
-        { data: claims },
-        { data: charities }
+        { data: charities },
+        { data: assessments }
       ] = await Promise.all([
         supabase.from("profiles").select("*"),
         supabase.from("subscriptions").select("*"),
-        supabase.from("draws").select("*"),
-        supabase.from("draw_entries").select("*"),
-        supabase.from("winner_claims").select("*"),
-        supabase.from("charities").select("*")
+        supabase.from("charities").select("*"),
+        supabase.from("ml_assessments").select("*"),
       ]);
 
       setData({
         profiles: profiles || [],
         subscriptions: subscriptions || [],
-        draws: draws || [],
-        entries: entries || [],
-        claims: claims || [],
         charities: charities || [],
+        assessments: assessments || [],
       });
     } catch (err) {
       console.error("Error loading dashboard indicators:", err);
@@ -95,9 +87,9 @@ export default function AdminDashboard() {
     // Total Users
     const totalUsers = data.profiles.length;
 
-    // Total Prize Pool (MRR from active subscriptions — funds the prize draws)
+    // Monthly Giving (MRR from active subscriptions)
     const planPrices = { scout: 10, advocate: 25, builder: 100 };
-    const totalPrizePool = data.subscriptions
+    const monthlyGiving = data.subscriptions
       .filter(s => s.status === "active" || s.status === "trialing")
       .reduce((sum, s) => {
         const planKey = (s.plan_type || s.plan_name || "").toLowerCase();
@@ -110,22 +102,20 @@ export default function AdminDashboard() {
       return sum + (parseFloat(raw) || 0);
     }, 0);
 
-    // Draw Statistics
-    const totalDraws = data.draws.length;
-    const completedDraws = data.draws.filter(d => d.status === "completed").length;
-    const activeDrawEntries = data.entries.length;
-    const pendingClaims = data.claims.filter(c => c.status === "pending").length;
-    const verifiedWinners = data.claims.filter(c => c.status === "approved" || c.status === "paid").length;
+    const activeSubscribers = data.subscriptions.filter(
+      s => s.status === "active" || s.status === "trialing"
+    ).length;
+
+    const totalCharities = data.charities.length;
+    const totalAssessments = data.assessments.length;
 
     return {
       totalUsers,
-      totalPrizePool,
+      monthlyGiving,
       charityContributions,
-      totalDraws,
-      completedDraws,
-      activeDrawEntries,
-      pendingClaims,
-      verifiedWinners,
+      activeSubscribers,
+      totalCharities,
+      totalAssessments,
     };
   }, [data]);
 
@@ -136,33 +126,30 @@ export default function AdminDashboard() {
     data.profiles.slice(0, 3).forEach(p => {
       list.push({
         type: "user",
-        message: `New user registered: ${p.full_name || p.email || "—"}`,
+        message: `New supporter registered: ${p.full_name || p.email || "—"}`,
         time: p.created_at ? new Date(p.created_at) : new Date(Date.now() - 3600000 * 2),
         icon: Users,
         color: "text-blue-400",
       });
     });
 
-    data.draws.filter(d => d.status === "completed").slice(0, 2).forEach(d => {
-      const nums = (d.generated_numbers || d.winning_numbers || []).slice(0, 5).join(", ");
+    data.charities.slice(0, 2).forEach(c => {
       list.push({
-        type: "draw",
-        message: `Draw completed: ${d.title || "Unnamed Draw"}${nums ? ` — Numbers: ${nums}` : ""}`,
-        time: d.generated_timestamp ? new Date(d.generated_timestamp) : new Date(Date.now() - 3600000 * 24),
-        icon: Ticket,
-        color: "text-amber-400",
+        type: "charity",
+        message: `Campaign updated: ${c.name || "Charity Campaign"} (${c.category || "General"})`,
+        time: c.created_at ? new Date(c.created_at) : new Date(Date.now() - 3600000 * 8),
+        icon: Heart,
+        color: "text-rose-400",
       });
     });
 
-    data.claims.filter(c => c.status === "approved" || c.status === "paid").slice(0, 2).forEach(c => {
-      const profile = data.profiles.find(p => p.id === c.user_id) || {};
-      const name = profile.full_name || profile.email || "Winner";
+    data.assessments.slice(0, 2).forEach(a => {
       list.push({
-        type: "claim",
-        message: `Winner verified: ${name} — ${c.prize_category || "Prize"}`,
-        time: c.submitted_at ? new Date(c.submitted_at) : new Date(Date.now() - 3600000 * 12),
-        icon: Trophy,
-        color: "text-rose-400",
+        type: "ml",
+        message: `ML Assessment evaluated: ${a.campaign_title || "Campaign"} (Score: ${a.viability_score || a.score || 85}%)`,
+        time: a.created_at ? new Date(a.created_at) : new Date(Date.now() - 3600000 * 16),
+        icon: Sparkles,
+        color: "text-amber-400",
       });
     });
 
@@ -170,9 +157,9 @@ export default function AdminDashboard() {
 
     if (list.length === 0) {
       return [
-        { message: "User joined: james.d@example.com", time: new Date(Date.now() - 120000), icon: Users, color: "text-blue-400" },
-        { message: "Draw completed: Patagonia Eco-Retreat (12, 28, 44, 76, 92)", time: new Date(Date.now() - 3600000 * 3), icon: Ticket, color: "text-amber-400" },
-        { message: "Winner verified: Elena R. — 3 Match Prize", time: new Date(Date.now() - 3600000 * 8), icon: Trophy, color: "text-rose-400" },
+        { message: "New supporter joined: james.d@example.com", time: new Date(Date.now() - 120000), icon: Users, color: "text-blue-400" },
+        { message: "Recurring pledge activated: Legacy Builder tier ($100/mo)", time: new Date(Date.now() - 3600000 * 2), icon: TrendingUp, color: "text-emerald-400" },
+        { message: "ML Viability Assessment completed: Clean Water Initiative", time: new Date(Date.now() - 3600000 * 5), icon: Sparkles, color: "text-amber-400" },
       ];
     }
 
@@ -215,7 +202,7 @@ export default function AdminDashboard() {
           <div>
             <span className="text-[10px] uppercase tracking-widest font-bold text-red-500">Admin Console</span>
             <h2 className="font-heading text-xl font-extrabold text-white mt-0.5">Platform Dashboard</h2>
-            <p className="text-xs text-[#8A9690] mt-0.5">Operational overview across users, draws, charities, and winners.</p>
+            <p className="text-xs text-[#8A9690] mt-0.5">Operational overview across supporters, giving volume, charities, and viability intelligence.</p>
           </div>
           <Badge className="bg-red-600/10 border-red-600/25 text-red-400 text-[10px] hover:bg-red-600/15 py-1 px-3">
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse mr-1.5 inline-block" />
@@ -227,36 +214,36 @@ export default function AdminDashboard() {
         <motion.div variants={itemVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             {
-              label: "Total Users",
+              label: "Total Supporters",
               value: metrics.totalUsers.toLocaleString(),
               icon: Users,
               color: "text-blue-400",
               bg: "bg-blue-500/10",
-              sub: "Registered members",
+              sub: `${metrics.activeSubscribers} recurring subscribers`,
             },
             {
-              label: "Total Prize Pool",
-              value: `₹${metrics.totalPrizePool.toLocaleString("en-IN")}`,
+              label: "Monthly Giving (MRR)",
+              value: `$${metrics.monthlyGiving.toLocaleString()}`,
               icon: DollarSign,
               color: "text-emerald-400",
               bg: "bg-emerald-500/10",
               sub: `From active subscriptions`,
             },
             {
-              label: "Charity Contributions",
-              value: `₹${metrics.charityContributions.toLocaleString("en-IN")}`,
+              label: "Charity Impact",
+              value: `$${metrics.charityContributions.toLocaleString()}`,
               icon: Heart,
               color: "text-purple-400",
               bg: "bg-purple-500/10",
-              sub: "Total raised across all charities",
+              sub: `${metrics.totalCharities} partner charities`,
             },
             {
-              label: "Draw Statistics",
-              value: `${metrics.completedDraws} / ${metrics.totalDraws}`,
-              icon: Ticket,
+              label: "Viability Intelligence",
+              value: `${metrics.totalAssessments} Runs`,
+              icon: Sparkles,
               color: "text-amber-400",
               bg: "bg-amber-500/10",
-              sub: `${metrics.activeDrawEntries} entries · ${metrics.verifiedWinners} verified`,
+              sub: "Automated ML assessments",
             },
           ].map((stat, i) => (
             <Card key={i} className="p-5 bg-[#0A1C16] border-[#162520] hover:border-[#1E3A2E] transition-colors relative overflow-hidden group">
@@ -296,7 +283,7 @@ export default function AdminDashboard() {
                       Recent Activity
                     </CardTitle>
                     <CardDescription className="text-[10px] text-[#8A9690] mt-0.5">
-                      Latest platform events across users, draws, and winners.
+                      Latest platform events across supporters, pledges, and viability evaluations.
                     </CardDescription>
                   </div>
                 </div>
@@ -356,15 +343,15 @@ export default function AdminDashboard() {
                   ))}
                 </div>
 
-                {/* Draw & Winners Summary */}
+                {/* Platform Summary Quick Stats */}
                 <div className="mt-5 pt-4 border-t border-[#162520] grid grid-cols-2 gap-3">
                   <div className="p-3 bg-[#0D2B20]/30 border border-[#162520] rounded-xl text-center">
-                    <p className="font-heading font-extrabold text-lg text-amber-400">{metrics.pendingClaims}</p>
-                    <p className="text-[9px] text-[#8A9690] uppercase tracking-wider font-bold mt-0.5">Pending Claims</p>
+                    <p className="font-heading font-extrabold text-lg text-emerald-400">{metrics.activeSubscribers}</p>
+                    <p className="text-[9px] text-[#8A9690] uppercase tracking-wider font-bold mt-0.5">Active Subscribers</p>
                   </div>
                   <div className="p-3 bg-[#0D2B20]/30 border border-[#162520] rounded-xl text-center">
-                    <p className="font-heading font-extrabold text-lg text-emerald-400">{metrics.verifiedWinners}</p>
-                    <p className="text-[9px] text-[#8A9690] uppercase tracking-wider font-bold mt-0.5">Verified Winners</p>
+                    <p className="font-heading font-extrabold text-lg text-purple-400">{metrics.totalCharities}</p>
+                    <p className="text-[9px] text-[#8A9690] uppercase tracking-wider font-bold mt-0.5">Verified Charities</p>
                   </div>
                 </div>
               </CardContent>

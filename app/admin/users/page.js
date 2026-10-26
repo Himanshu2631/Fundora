@@ -33,7 +33,7 @@ import {
   Loader2,
   CheckCircle,
   Trophy,
-  Ticket,
+  Award,
   Heart,
   CreditCard,
   ArrowRight,
@@ -56,22 +56,22 @@ const itemVariants = {
 const PLAN_LABELS = { scout: "Eco Scout", advocate: "Global Advocate", builder: "Legacy Builder" };
 
 const generateUsers = () => [
-  { id: "USR-001", name: "Marcus Klein", email: "marcus.k@email.com", role: "user", plan: "advocate", score: 490, joinedAt: "2025-11-18", status: "active", scores: 5, charities: 2, tickets: 3 },
-  { id: "USR-002", name: "Elena Rodriguez", email: "elena.r@email.com", role: "user", plan: "builder", score: 420, joinedAt: "2025-12-05", status: "active", scores: 4, charities: 3, tickets: 5 },
-  { id: "USR-003", name: "Yuki Shimizu", email: "yuki.s@email.com", role: "user", plan: "scout", score: 380, joinedAt: "2026-01-14", status: "active", scores: 5, charities: 1, tickets: 1 },
-  { id: "USR-004", name: "Admin Sahayata", email: "admin@fundora.io", role: "admin", plan: "builder", score: 1200, joinedAt: "2025-10-01", status: "active", scores: 5, charities: 4, tickets: 8 },
-  { id: "USR-005", name: "Hiroshi Tanaka", email: "hiroshi.t@email.com", role: "user", plan: "advocate", score: 310, joinedAt: "2026-02-20", status: "active", scores: 3, charities: 2, tickets: 2 },
-  { id: "USR-006", name: "Sarah Chen", email: "sarah.c@email.com", role: "user", plan: "scout", score: 180, joinedAt: "2026-03-10", status: "active", scores: 2, charities: 1, tickets: 1 },
-  { id: "USR-007", name: "David Okafor", email: "david.o@email.com", role: "user", plan: null, score: 0, joinedAt: "2026-04-22", status: "inactive", scores: 0, charities: 0, tickets: 0 },
-  { id: "USR-008", name: "Maya Patel", email: "maya.p@email.com", role: "user", plan: "advocate", score: 275, joinedAt: "2026-03-28", status: "active", scores: 3, charities: 2, tickets: 2 },
-  { id: "USR-009", name: "Lucas Ferreira", email: "lucas.f@email.com", role: "user", plan: "scout", score: 140, joinedAt: "2026-04-05", status: "suspended", scores: 1, charities: 0, tickets: 0 },
-  { id: "USR-010", name: "Amara Diallo", email: "amara.d@email.com", role: "user", plan: "builder", score: 520, joinedAt: "2025-11-30", status: "active", scores: 5, charities: 3, tickets: 6 },
-  { id: "USR-011", name: "Liam O'Brien", email: "liam.o@email.com", role: "user", plan: "advocate", score: 340, joinedAt: "2026-01-22", status: "active", scores: 4, charities: 2, tickets: 3 },
-  { id: "USR-012", name: "Nina Petrov", email: "nina.p@email.com", role: "user", plan: "scout", score: 95, joinedAt: "2026-05-10", status: "active", scores: 1, charities: 1, tickets: 1 },
-  { id: "USR-013", name: "Carlos Mendez", email: "carlos.m@email.com", role: "user", plan: null, score: 0, joinedAt: "2026-05-28", status: "inactive", scores: 0, charities: 0, tickets: 0 },
-  { id: "USR-014", name: "Aiko Yamamoto", email: "aiko.y@email.com", role: "user", plan: "advocate", score: 260, joinedAt: "2026-02-14", status: "active", scores: 3, charities: 1, tickets: 2 },
-  { id: "USR-015", name: "James Whitfield", email: "james.w@email.com", role: "user", plan: "builder", score: 480, joinedAt: "2025-12-18", status: "suspended", scores: 5, charities: 2, tickets: 4 },
-  { id: "USR-016", name: "Fatima Al-Hassan", email: "fatima.a@email.com", role: "user", plan: "scout", score: 210, joinedAt: "2026-03-02", status: "active", scores: 2, charities: 1, tickets: 1 },
+  { id: "USR-001", name: "Marcus Klein", email: "marcus.k@email.com", role: "user", plan: "advocate", score: 490, joinedAt: "2025-11-18", status: "active", scores: 5, charities: 2, certificates: 3 },
+  { id: "USR-002", name: "Elena Rodriguez", email: "elena.r@email.com", role: "user", plan: "builder", score: 420, joinedAt: "2025-12-05", status: "active", scores: 4, charities: 3, certificates: 5 },
+  { id: "USR-003", name: "Yuki Shimizu", email: "yuki.s@email.com", role: "user", plan: "scout", score: 380, joinedAt: "2026-01-14", status: "active", scores: 5, charities: 1, certificates: 1 },
+  { id: "USR-004", name: "Admin Sahayata", email: "admin@fundora.io", role: "admin", plan: "builder", score: 1200, joinedAt: "2025-10-01", status: "active", scores: 5, charities: 4, certificates: 8 },
+  { id: "USR-005", name: "Hiroshi Tanaka", email: "hiroshi.t@email.com", role: "user", plan: "advocate", score: 310, joinedAt: "2026-02-20", status: "active", scores: 3, charities: 2, certificates: 2 },
+  { id: "USR-006", name: "Sarah Chen", email: "sarah.c@email.com", role: "user", plan: "scout", score: 180, joinedAt: "2026-03-10", status: "active", scores: 2, charities: 1, certificates: 1 },
+  { id: "USR-007", name: "David Okafor", email: "david.o@email.com", role: "user", plan: null, score: 0, joinedAt: "2026-04-22", status: "inactive", scores: 0, charities: 0, certificates: 0 },
+  { id: "USR-008", name: "Maya Patel", email: "maya.p@email.com", role: "user", plan: "advocate", score: 275, joinedAt: "2026-03-28", status: "active", scores: 3, charities: 2, certificates: 2 },
+  { id: "USR-009", name: "Lucas Ferreira", email: "lucas.f@email.com", role: "user", plan: "scout", score: 140, joinedAt: "2026-04-05", status: "suspended", scores: 1, charities: 0, certificates: 0 },
+  { id: "USR-010", name: "Amara Diallo", email: "amara.d@email.com", role: "user", plan: "builder", score: 520, joinedAt: "2025-11-30", status: "active", scores: 5, charities: 3, certificates: 6 },
+  { id: "USR-011", name: "Liam O'Brien", email: "liam.o@email.com", role: "user", plan: "advocate", score: 340, joinedAt: "2026-01-22", status: "active", scores: 4, charities: 2, certificates: 3 },
+  { id: "USR-012", name: "Nina Petrov", email: "nina.p@email.com", role: "user", plan: "scout", score: 95, joinedAt: "2026-05-10", status: "active", scores: 1, charities: 1, certificates: 1 },
+  { id: "USR-013", name: "Carlos Mendez", email: "carlos.m@email.com", role: "user", plan: null, score: 0, joinedAt: "2026-05-28", status: "inactive", scores: 0, charities: 0, certificates: 0 },
+  { id: "USR-014", name: "Aiko Yamamoto", email: "aiko.y@email.com", role: "user", plan: "advocate", score: 260, joinedAt: "2026-02-14", status: "active", scores: 3, charities: 1, certificates: 2 },
+  { id: "USR-015", name: "James Whitfield", email: "james.w@email.com", role: "user", plan: "builder", score: 480, joinedAt: "2025-12-18", status: "suspended", scores: 5, charities: 2, certificates: 4 },
+  { id: "USR-016", name: "Fatima Al-Hassan", email: "fatima.a@email.com", role: "user", plan: "scout", score: 210, joinedAt: "2026-03-02", status: "active", scores: 2, charities: 1, certificates: 1 },
 ];
 
 const ITEMS_PER_PAGE = 8;
@@ -520,7 +520,7 @@ export default function AdminUsersPage() {
                         { label: "Impact Score", value: `${selectedUser.score} pts`, icon: Trophy, color: "text-amber-400" },
                         { label: "Impact Scores", value: `${selectedUser.scores} / 5`, icon: Trophy, color: "text-blue-400" },
                         { label: "Charities", value: String(selectedUser.charities), icon: Heart, color: "text-rose-400" },
-                        { label: "Draw Tickets", value: String(selectedUser.tickets), icon: Ticket, color: "text-emerald-400" },
+                        { label: "Certificates", value: String(selectedUser.certificates || 0), icon: Award, color: "text-emerald-400" },
                       ].map((metric) => (
                         <div key={metric.label} className="p-3 bg-[#0D2B20]/30 border border-[#162520] rounded-xl text-center">
                           <metric.icon className={`w-3.5 h-3.5 ${metric.color} mx-auto mb-1`} />

@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server.js";
-import { getCampaignViabilityAssessments } from "../../../../lib/ml/adminAssessmentService.js";
+import {
+  getCampaignViabilityAssessments,
+  getAdminCampaignAssessmentHistory,
+} from "../../../../lib/ml/adminAssessmentService.js";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -92,7 +95,31 @@ export async function GET(request) {
     // 4. Extract cookie store from request if present
     const cookieStore = request?.cookies;
 
-    // 5. Query assessment data layer (handles server-side admin authentication)
+    // 5. Handle dedicated campaign assessment history queries
+    const isHistoryQuery = searchParams.get("history") === "true" || searchParams.get("mode") === "history";
+    if (campaignId && isHistoryQuery) {
+      const history = await getAdminCampaignAssessmentHistory(campaignId, {
+        sortOrder,
+        limit: pageSize,
+        cookieStore,
+        supabaseClient: request?.supabaseClient,
+      });
+
+      const response = NextResponse.json(
+        {
+          success: true,
+          data: history,
+          campaignId,
+          totalCount: history.length,
+        },
+        { status: 200 }
+      );
+
+      response.headers.set("Cache-Control", "no-store, max-age=0, must-revalidate");
+      return response;
+    }
+
+    // 6. Query assessment data layer (handles server-side admin authentication)
     const { assessments, pagination } = await getCampaignViabilityAssessments({
       page,
       pageSize,
@@ -101,6 +128,7 @@ export async function GET(request) {
       assessmentType,
       sortOrder,
       cookieStore,
+      supabaseClient: request?.supabaseClient,
     });
 
     const response = NextResponse.json(

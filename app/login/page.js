@@ -20,11 +20,11 @@ const ROLES = [
     accentColor: "emerald",
     badge: "No Account Needed",
     headline: "Explore Sahayata",
-    description: "Discover the platform concept, support charities, and learn draw mechanics.",
+    description: "Discover the platform mission, support verified causes, and track community impact.",
     features: [
       "Explore platform concept",
-      "Browse charities",
-      "Learn draw mechanics",
+      "Browse verified charities",
+      "Understand impact scoring",
     ],
     cta: "Explore Platform",
     ctaHref: "/",
@@ -45,12 +45,12 @@ const ROLES = [
     accentColor: "accent",
     badge: "Member Access",
     headline: "Member Sign In",
-    description: "Manage your membership, submit impact scores, and enter premium reward draws.",
+    description: "Manage your membership, submit impact scores, and earn verified certificates.",
     features: [
-      "Manage membership",
+      "Manage membership tier",
       "Submit impact scores",
-      "Participate in draws",
-      "Track rewards",
+      "Earn supporter badges",
+      "Track verified receipts",
     ],
     cta: "Sign In",
     ctaHref: "/register-subscriber/login",
@@ -71,11 +71,11 @@ const ROLES = [
     accentColor: "red",
     badge: "Restricted Access",
     headline: "Admin Console",
-    description: "Administrative dashboard for managing users, draws, payouts, and system analytics.",
+    description: "Administrative dashboard for managing users, charities, ML assessments, and analytics.",
     features: [
-      "Manage users",
-      "Configure draws",
-      "Verify winners",
+      "Manage users & tiers",
+      "Manage partner charities",
+      "Run ML assessments",
       "Access analytics",
     ],
     cta: "Admin Sign In",
@@ -176,12 +176,12 @@ export default function Login() {
             <h1 className="font-heading text-2xl sm:text-3xl lg:text-[32px] xl:text-[32px] 2xl:text-[40px] font-black text-white tracking-tight leading-[1.1] md:leading-[1.05]">
               <span className="block hover:text-[#C4A054] transition-colors duration-300">Fund Your Impact.</span>
               <span className="block hover:text-[#C4A054] transition-colors duration-300">Track Your Impact.</span>
-              <span className="block text-[#C4A054]">Unlock Monthly Rewards.</span>
+              <span className="block text-[#C4A054]">Earn Verified Recognition.</span>
             </h1>
 
             {/* Subtitle */}
             <p className="text-xs lg:text-sm text-[#8A9690] max-w-2xl mx-auto leading-relaxed font-medium">
-              Sahayata combines community impact tracking, verified charity contributions, and monthly reward draws into a single membership platform.
+              Sahayata combines community impact tracking, verified charity contributions, and audited recognition into a single membership platform.
             </p>
           </motion.div>
 

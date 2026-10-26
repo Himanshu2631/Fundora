@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   Zap,
   Trophy,
+  Award,
   Heart,
   Sparkles,
   Lock,
@@ -42,9 +43,9 @@ const PLANS = [
     recommended: false,
     features: [
       "100% audited charity routing",
-      "Monthly digital receipt archive",
+      "Digital receipt & certificate archive",
       "Impact Score calculation",
-      "Base draw entry (1× ticket)",
+      "Supporter community badge",
       "Community leaderboard access",
       "Email impact digest",
     ],
@@ -61,9 +62,9 @@ const PLANS = [
     recommended: true,
     features: [
       "Everything in Eco Scout",
-      "3× draw ticket multiplier",
+      "3× Impact Score multiplier",
       "Weighted weekly rank shifts",
-      "Priority corporate draw access",
+      "Verified Advocate badge",
       "Cause selection + rotation",
       "Monthly giving performance report",
     ],
@@ -71,7 +72,7 @@ const PLANS = [
   {
     key: "builder",
     name: "Legacy Builder",
-    tagline: "Maximum impact. Maximum rewards.",
+    tagline: "Maximum impact. Maximum recognition.",
     monthlyPrice: 4999,
     yearlyPrice: 3999,
     yearlyTotal: 47988,
@@ -80,11 +81,11 @@ const PLANS = [
     recommended: false,
     features: [
       "Everything in Global Advocate",
-      "10× draw ticket multiplier",
+      "10× Impact Score multiplier",
       "Direct impact coordinator access",
       "On-chain receipt dashboard",
       "Exclusive NGO partner briefings",
-      "Legacy builder profile badge",
+      "Legacy Builder profile badge",
     ],
   },
 ];
@@ -101,12 +102,12 @@ const COMPARISON = [
     ],
   },
   {
-    category: "Rewards & Score",
+    category: "Recognition & Score",
     rows: [
       { label: "Monthly impact score", scout: "+10 pts", advocate: "+30 pts", builder: "+150 pts" },
-      { label: "Draw ticket entries", scout: "1×", advocate: "3×", builder: "10×" },
+      { label: "Score multiplier", scout: "1×", advocate: "3×", builder: "10×" },
       { label: "Leaderboard ranking", scout: true, advocate: true, builder: true },
-      { label: "Priority draw access", scout: false, advocate: true, builder: true },
+      { label: "Donation certificates", scout: true, advocate: true, builder: true },
     ],
   },
   {
@@ -130,8 +131,8 @@ const FAQS = [
     a: "Yes. You can upgrade or downgrade your plan at any time from your dashboard. Upgrades take effect immediately. Downgrades are applied at the start of your next billing cycle, so you retain current tier benefits until then.",
   },
   {
-    q: "What happens to my draw tickets if I cancel?",
-    a: "If you cancel, all existing draw tickets remain valid through the end of your current billing period. Any draws scheduled within that window will still include your entries. After your period ends, future draws will no longer include you.",
+    q: "What happens to my badges and certificates if I cancel?",
+    a: "If you cancel, all earned badges, donation certificates, and historical giving receipts remain permanently stored in your account archive. Your streak and active monthly score multipliers freeze at the end of your billing cycle.",
   },
   {
     q: "Is yearly billing charged upfront?",
@@ -159,9 +160,9 @@ const BENEFITS = [
     desc: "Your Impact Score and rank update in real time. No lag, no batching — every contribution is reflected immediately.",
   },
   {
-    icon: Trophy,
-    title: "Exclusive Reward Draws",
-    desc: "Corporate-sponsored eco-retreats, tech gear, and travel packages. Higher tiers earn exponentially more draw entries.",
+    icon: Award,
+    title: "Verified Impact Recognition",
+    desc: "Audited donation certificates, supporter badges, and public leaderboard recognition. Higher tiers unlock higher score multipliers.",
   },
   {
     icon: Globe,
@@ -544,7 +545,7 @@ export default function PricingPage() {
                 variants={itemVariants}
                 className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl mx-auto mb-10"
               >
-                Every plan routes 100% of your contribution to vetted global causes. Unlock higher impact scores and exclusive reward draws as you grow.
+                Every plan routes 100% of your contribution to vetted global causes. Unlock higher impact score multipliers and verified certificates as you grow.
               </motion.p>
 
               {/* Billing toggle */}

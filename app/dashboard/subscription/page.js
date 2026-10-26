@@ -31,19 +31,19 @@ const PLAN_DETAILS = {
     name: "Eco Scout",
     price: 499,
     yearlyPrice: 399,
-    perks: ["1× draw entry", "+10 score/mo", "Audit receipts", "Community rank"],
+    perks: ["1× score multiplier", "+10 score/mo", "Audit receipts", "Community rank"],
   },
   advocate: {
     name: "Global Advocate",
     price: 1299,
     yearlyPrice: 999,
-    perks: ["3× draw multiplier", "+30 score/mo", "Priority draws", "Cause rotation"],
+    perks: ["3× score multiplier", "+30 score/mo", "Verified certificate", "Cause rotation"],
   },
   builder: {
     name: "Legacy Builder",
     price: 4999,
     yearlyPrice: 3999,
-    perks: ["10× draw multiplier", "+150 score/mo", "On-chain receipts", "NGO access"],
+    perks: ["10× score multiplier", "+150 score/mo", "On-chain receipts", "NGO access"],
   },
 };
 
@@ -301,7 +301,7 @@ export default function SubscriptionPage() {
                   No Active Giving Tier
                 </h4>
                 <p className="text-xs text-muted-foreground leading-relaxed max-w-xs mx-auto">
-                  Subscribe to a giving tier to participate in secure charity routing, gain Impact Score rankings, and enter eco-retreat prize draws.
+                  Subscribe to a giving tier to participate in secure charity routing, unlock Impact Score multipliers, and receive verified certificates.
                 </p>
               </div>
               <Button asChild variant="accent" size="sm" className="font-bold shadow-sm">
@@ -384,13 +384,13 @@ export default function SubscriptionPage() {
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <Badge variant="accent">Upgrade Available</Badge>
-                    <span className="text-[10px] text-accent font-bold uppercase tracking-wider">3× Draw Multiplier</span>
+                    <span className="text-[10px] text-accent font-bold uppercase tracking-wider">3× Score Multiplier</span>
                   </div>
                   <h3 className="font-heading font-bold text-base text-foreground">
                     Unlock more impact with Global Advocate
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1 max-w-md">
-                    Get 3× draw entries, priority corporate draw access, and rotating NGO allocation lists for just ₹1,299/mo.
+                    Get 3× Impact Score multipliers, verified certificates, and rotating NGO allocation lists for just ₹1,299/mo.
                   </p>
                 </div>
                 <Button asChild variant="accent" className="shrink-0 font-bold">

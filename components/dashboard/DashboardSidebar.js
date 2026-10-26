@@ -37,7 +37,6 @@ const BASE_NAV_SECTIONS = [
     label: "Impact",
     items: [
       { name: "Charities", href: "/dashboard/charity", icon: Heart },
-      { name: "Draws", href: "/dashboard/draws", icon: Ticket },
     ],
   },
   {

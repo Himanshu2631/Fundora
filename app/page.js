@@ -7,7 +7,7 @@ import Footer from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, ShieldCheck, Trophy, Sparkles, Heart, Check, HelpCircle, Gift, Users, CreditCard, Activity, Award, Ticket, Zap } from "lucide-react";
+import { ArrowRight, ShieldCheck, Trophy, Sparkles, Heart, Check, HelpCircle, Gift, Users, CreditCard, Activity, Award, Zap } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 
@@ -17,11 +17,8 @@ export default function Home() {
   const [stats, setStats] = useState({
     activeMembers: 148,
     totalScores: 412,
-    totalCharityContributions: 422900,
+    totalCharityContributions: 0,
     totalCharitiesSupported: 4,
-    activeDraws: 1,
-    contributionAchieved: 83,
-    rewardPool: 24950
   });
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,31 +32,31 @@ export default function Home() {
         // Batch all platform stats queries in parallel
         const [
           charitiesRes,
-          drawsRes,
           profilesRes,
-          scoresRes
+          scoresRes,
+          paymentsRes,
         ] = await Promise.all([
           Promise.resolve(supabase.from("charities").select("id, name, raised")).catch(() => ({ data: null })),
-          Promise.resolve(supabase.from("draws").select("id, title, status")).catch(() => ({ data: null })),
           Promise.resolve(supabase.from("profiles").select("id, full_name, created_at")).catch(() => ({ data: null })),
           Promise.resolve(supabase.from("scores").select("id, score, score_date, user_id, created_at")).catch(() => ({ data: null })),
+          Promise.resolve(supabase.from("payments").select("amount, status").eq("status", "succeeded")).catch(() => ({ data: null })),
         ]);
 
         const charities = charitiesRes?.data;
         let charitiesCount = 4;
-        let contributionsSum = 422900;
         if (charities && charities.length > 0) {
           charitiesCount = charities.length;
-          contributionsSum = charities.reduce((sum, c) => {
-            const val = parseFloat(String(c.raised || "").replace(/[^0-9.]/g, ""));
-            return sum + (isNaN(val) ? 0 : val);
-          }, 0);
         }
 
-        const draws = drawsRes?.data;
-        let drawsCount = 1;
-        if (draws && draws.length > 0) {
-          drawsCount = draws.filter(d => d.status === "active" || d.status === "upcoming").length;
+        const payments = paymentsRes?.data;
+        let contributionsSum = 0;
+        if (payments && payments.length > 0) {
+          contributionsSum = payments
+            .filter(p => p.status === "succeeded")
+            .reduce((sum, p) => {
+              const val = parseFloat(p.amount);
+              return sum + (isNaN(val) ? 0 : val);
+            }, 0);
         }
 
         let activities = [];
@@ -134,18 +131,11 @@ export default function Home() {
           setRecentActivity(slicedActivities);
         }
 
-        const targetGoal = 500000;
-        const pctAchieved = Math.min(Math.round((contributionsSum / targetGoal) * 100), 100) || 83;
-        const calculatedPool = Math.round(contributionsSum * 0.05) || 24950;
-
         setStats({
           activeMembers: membersCount,
           totalScores: scoresCount,
           totalCharityContributions: contributionsSum,
           totalCharitiesSupported: charitiesCount,
-          activeDraws: drawsCount,
-          contributionAchieved: pctAchieved,
-          rewardPool: calculatedPool
         });
       } catch (err) {
         console.error("Error loading stats for widget:", err);
@@ -209,9 +199,9 @@ export default function Home() {
       description: "Automate core contributions targeting forest preservation.",
       features: [
         "100% audited charity routing",
-        "Digital receipt tracking",
+        "Digital receipt & certificate archive",
         "Monthly Impact Score calculations",
-        "Base entry into standard draws"
+        "Community leaderboard access"
       ]
     },
     {
@@ -222,9 +212,9 @@ export default function Home() {
       description: "Direct allocation to verified clean water & basic healthcare.",
       features: [
         "All Eco Scout benefits included",
-        "3x entries ticket multiplier",
+        "3x Impact Score multiplier",
         "Weekly profile ranking shifts",
-        "Priority access to corporate draws"
+        "Cause selection & rotation"
       ],
       recommended: true
     },
@@ -236,7 +226,7 @@ export default function Home() {
       description: "Sponsor advanced STEM fellowships and emergency humanitarian grids.",
       features: [
         "All Global Advocate benefits",
-        "10x entries ticket multiplier",
+        "10x Impact Score multiplier",
         "Direct impact coordinator desk access",
         "Cryptographic auditor dashboard view"
       ]
@@ -270,14 +260,14 @@ export default function Home() {
                   variants={itemVariants}
                   className="font-heading text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.05] mb-6"
                 >
-                  Impact Standings. Vetted Giving. <span className="text-accent">Monthly Rewards.</span>
+                  Impact Standings. Vetted Giving. <span className="text-accent">Verified Recognition.</span>
                 </motion.h1>
 
                 <motion.p
                   variants={itemVariants}
                   className="text-base sm:text-lg text-muted-foreground leading-relaxed max-w-xl mb-8"
                 >
-                  Sahayata is a member-driven platform where your passion for giving fuels global change. Subscribe to a tax-deductible giving plan, log your impact scores to earn entry tickets, and win premium monthly rewards—while 100% of your subscription flows directly to audited, vetted charities.
+                  Sahayata is a member-driven platform where your passion for giving fuels global change. Subscribe to a tax-deductible giving plan, log your impact scores to build community standing, and earn verified donation certificates—while 100% of your subscription flows directly to audited, vetted charities.
                 </motion.p>
 
                 <motion.div
@@ -286,7 +276,7 @@ export default function Home() {
                 >
                   <Button asChild variant="accent" size="lg">
                     <Link href={user ? "/dashboard" : "/signup"}>
-                      Subscribe & Start Winning <ArrowRight className="w-5 h-5" />
+                      Subscribe & Start Giving <ArrowRight className="w-5 h-5" />
                     </Link>
                   </Button>
                   <Button asChild variant="outline" size="lg">
@@ -306,39 +296,16 @@ export default function Home() {
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1 flex items-center gap-1">
-                        <Gift className="w-3 h-3 text-accent" /> Monthly Reward Pool
+                        <Heart className="w-3 h-3 text-accent" /> Community Contributions
                       </p>
                       <h3 className="font-heading text-3xl font-extrabold text-foreground">
-                        ₹{stats.rewardPool.toLocaleString("en-IN")}
+                        ₹{stats.totalCharityContributions.toLocaleString("en-IN")}
                       </h3>
                     </div>
-                    <Badge variant="accent" className="font-semibold text-[10px]">
-                      Next Draw: 4d 11h
-                    </Badge>
                   </div>
 
-                  {/* Dynamic interactive contribution tracker */}
+                  {/* Dynamic interactive stats container */}
                   <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between text-xs mb-1 text-muted-foreground font-medium">
-                        <span className="flex items-center gap-1"><Heart className="w-3 h-3 text-accent" /> Contribution Goal</span>
-                        <span className="text-foreground font-bold">{stats.contributionAchieved}% achieved</span>
-                      </div>
-                      <div className="w-full h-1.5 bg-border/40 rounded-full overflow-hidden">
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${stats.contributionAchieved}%` }}
-                          transition={{ duration: 1.5, ease: "easeOut" }}
-                          className="h-full bg-accent"
-                        />
-                      </div>
-                      <p className="text-[9px] text-muted-foreground mt-0.5">
-                        Target: ₹{(5000000).toLocaleString("en-IN")} raised via member subscriptions.
-                      </p>
-                    </div>
-
-                    <div className="h-[1px] bg-border/40 my-3.5" />
-
                     {/* Platform Analytics Grid */}
                     <p className="text-[10px] font-bold uppercase tracking-widest text-foreground mb-2 flex items-center gap-1.5">
                       <Activity className="w-3.5 h-3.5 text-accent" /> Platform Analytics
@@ -410,7 +377,7 @@ export default function Home() {
                 How Sahayata Works
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground mt-4 leading-relaxed">
-                We bridge your passion for giving with verified global impact. Follow this simple 5-step progression to start giving and winning.
+                We bridge your passion for giving with verified global impact. Follow this simple 5-step progression to start contributing and creating audited change.
               </p>
             </div>
 
@@ -443,19 +410,19 @@ export default function Home() {
                 },
                 {
                   step: "04",
-                  title: "4. Receive Draw Tickets",
-                  icon: Ticket,
-                  category: "Get Entries",
-                  desc: "Your subscription tier and logged impact scores automatically calculate your active tickets for the monthly drawings.",
-                  tag: "Automated Multipliers"
+                  title: "4. Earn Impact Badges",
+                  icon: Award,
+                  category: "Milestones",
+                  desc: "Your subscription tier and logged impact scores automatically calculate your standing and unlock verified community badges.",
+                  tag: "Verified Milestones"
                 },
                 {
                   step: "05",
-                  title: "5. Win Rewards",
-                  icon: Gift,
-                  category: "Win Prizes",
-                  desc: "Stand a chance to win monthly luxury eco-retreat getaways, premium electric cruisers, and green technology rewards.",
-                  tag: "Monthly Eco Draws"
+                  title: "5. Certified Giving",
+                  icon: ShieldCheck,
+                  category: "Tax Exemption",
+                  desc: "Receive verifiable cryptographic donation certificates and detailed outcome impact reports for 100% of your contributions.",
+                  tag: "Audited Certificates"
                 }
               ].map((stepObj, idx) => {
                 const IconComponent = stepObj.icon;
@@ -516,7 +483,7 @@ export default function Home() {
                 What Happens After You Subscribe
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground mt-4 leading-relaxed">
-                As soon as your membership is activated, a sequence of automated events ensures your contribution is routed and your rewards are tracked.
+                As soon as your membership is activated, a sequence of automated events ensures your contribution is routed and your impact is certified.
               </p>
             </div>
 
@@ -527,7 +494,7 @@ export default function Home() {
                   title: "Subscription Activates",
                   subtitle: "Instant Baseline Activation",
                   icon: Zap,
-                  desc: "Your membership becomes active instantly, establishing your baseline impact score and initializing your monthly draw status."
+                  desc: "Your membership becomes active instantly, establishing your baseline impact score and initializing your monthly cause routing."
                 },
                 {
                   step: "02",
@@ -538,10 +505,10 @@ export default function Home() {
                 },
                 {
                   step: "03",
-                  title: "Draw Eligibility Begins",
-                  subtitle: "Reward Pool Integration",
+                  title: "Badges & Standings Active",
+                  subtitle: "Recognition & Impact",
                   icon: Award,
-                  desc: "Your subscription tier combined with your logged impact scores calculates and registers your entries into the upcoming premium reward pools."
+                  desc: "Your subscription tier combined with your logged impact scores unlocks verified supporter badges and ranks you on the global leaderboard."
                 },
                 {
                   step: "04",
@@ -593,23 +560,23 @@ export default function Home() {
                 Why Members Join Sahayata
               </h2>
               <p className="text-xs sm:text-sm text-muted-foreground mt-4 leading-relaxed">
-                We bridge the gap between premium rewards and global impact, powered by your passion for giving.
+                We bridge the gap between verified philanthropy and meaningful community recognition, powered by your passion for giving.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Pillar 1: Monthly Rewards */}
+              {/* Pillar 1: Verified Recognition */}
               <div className="flex flex-col p-8 bg-background border border-border/80 rounded-2xl shadow-sm hover:border-accent/40 hover:scale-[1.02] hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-accent/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="w-12 h-12 flex items-center justify-center bg-[#07130F] border border-accent/20 text-accent rounded-2xl mb-6 group-hover:bg-accent/10 transition-colors">
-                  <Gift className="w-6 h-6" />
+                  <Award className="w-6 h-6" />
                 </div>
-                <h3 className="font-heading text-xl font-bold text-foreground mb-4 group-hover:text-accent transition-colors">Monthly Rewards</h3>
+                <h3 className="font-heading text-xl font-bold text-foreground mb-4 group-hover:text-accent transition-colors">Verified Recognition</h3>
                 <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed flex-1 mb-6">
-                  Win premium incentives including luxury eco-retreats, electric cruiser bikes, and curated green tech getaways. Submissions and active subscription multipliers automatically boost your draw chances.
+                  Earn verified supporter badges, official donation certificates, and transparent impact scoring as you automate recurring donations to causes that matter most.
                 </p>
                 <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-wider text-accent">
-                  <span>Eco-Travel & Tech Draws</span>
+                  <span>Badges & Certified Impact</span>
                 </div>
               </div>
 
@@ -634,9 +601,9 @@ export default function Home() {
                 <div className="w-12 h-12 flex items-center justify-center bg-[#07130F] border border-accent/20 text-accent rounded-2xl mb-6 group-hover:bg-accent/10 transition-colors">
                   <Users className="w-6 h-6" />
                 </div>
-                <h3 className="font-heading text-xl font-bold text-foreground mb-4 group-hover:text-accent transition-colors">Community Competition</h3>
+                <h3 className="font-heading text-xl font-bold text-foreground mb-4 group-hover:text-accent transition-colors">Community Standing</h3>
                 <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed flex-1 mb-6">
-                  Compete on global community impact and giving leaderboards. Log impact scores, track detailed impact analytics, and connect with a dedicated community of members who care.
+                  Connect on global community impact and giving leaderboards. Log impact scores, track detailed impact analytics, and connect with a dedicated community of members who care.
                 </p>
                 <div className="flex items-center gap-2 text-[10px] font-extrabold uppercase tracking-wider text-accent">
                   <span>Leaderboards & Impact Tracking</span>
@@ -645,7 +612,6 @@ export default function Home() {
             </div>
           </div>
         </section>
-
 
         {/* IMPACT SECTION */}
         <section className="py-24 border-b border-border bg-card/40">

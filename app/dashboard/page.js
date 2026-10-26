@@ -21,7 +21,6 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSubscription, PLAN_LABELS } from "@/hooks/useSubscription";
 import { useImpactScores } from "@/hooks/useImpactScores";
 import { useCharities } from "@/hooks/useCharities";
-import { useDraws } from "@/hooks/useDraws";
 import { useLeaderboard } from "@/hooks/useLeaderboard";
 import SubscriptionWidget from "@/features/subscriptions/SubscriptionWidget";
 import {
@@ -33,7 +32,6 @@ import {
   ArrowRight,
   Inbox,
   TrendingUp,
-  Ticket,
   Heart,
   Loader2,
   Calendar,
@@ -43,6 +41,9 @@ import {
   Droplet,
   Trees,
   GraduationCap,
+  Award,
+  Activity,
+  Users,
 } from "lucide-react";
 
 const PLAN_PRICES = { scout: 499, advocate: 1299, builder: 4999 };
@@ -110,179 +111,19 @@ function AnimatedCounter({ value, duration = 800 }) {
   return <span>{count}</span>;
 }
 
-function RecentWinnerCard({ winner }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  return (
-    <Card className="p-6 flex flex-col justify-between border-border bg-gradient-to-b from-[#0A1C16] to-[#040D09] hover:border-accent/60 hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden group shadow-lg hover:shadow-accent/5">
-      {/* Premium accent border on hover */}
-      <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-accent via-accent-foreground to-accent opacity-20 group-hover:opacity-100 transition-opacity" />
-
-      {/* Glowing background bubble */}
-      <div className="absolute -top-10 -right-10 w-24 h-24 bg-accent/5 rounded-full blur-2xl group-hover:bg-accent/10 transition-colors pointer-events-none" />
-
-      <div className="space-y-4">
-        {/* Header: Verified Winner Label & Member Tier */}
-        <div className="flex items-start justify-between border-b border-white/[0.04] pb-3">
-          <div className="flex flex-col gap-0.5">
-            <span className="text-xs font-bold text-white flex items-center gap-1.5 font-heading">
-              Verified Winner
-            </span>
-            <span className="text-[9px] uppercase font-semibold tracking-wider text-muted-foreground/80">
-              {winner.tier}
-            </span>
-          </div>
-          <Badge variant="outline" className="text-[8px] uppercase tracking-wider font-extrabold text-emerald-400 border-emerald-500/20 bg-emerald-500/5 px-2 py-0.5 h-fit shrink-0">
-            ✓ Verified Payout
-          </Badge>
-        </div>
-
-        {/* Primary Showcase: Prize Won */}
-        <div className="space-y-1 pt-1">
-          <span className="text-[9px] font-extrabold uppercase tracking-widest text-accent block">
-            Prize Won
-          </span>
-          <h4 className="text-base font-extrabold text-white leading-snug font-heading tracking-wide group-hover:text-accent transition-colors">
-            🏆 {winner.prize}
-          </h4>
-        </div>
-
-        {/* Details Row: Winning Category */}
-        <div className="flex justify-between items-center text-xs py-2.5 border-t border-b border-white/[0.04] mt-3">
-          <span className="text-muted-foreground/80 font-semibold">Winning Category</span>
-          <span className="text-foreground font-bold">{winner.category}</span>
-        </div>
-
-        {/* Supporting Row: Approved Date */}
-        <div className="flex justify-between items-center text-[10px] text-muted-foreground pt-1">
-          <span>Approved Date</span>
-          <span className="font-bold text-foreground/90">{winner.date}</span>
-        </div>
-      </div>
-
-      {/* Footer action to view verification details */}
-      <div className="pt-4 mt-5 border-t border-white/[0.06] flex items-center justify-end">
-        <button
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-          className="text-accent hover:text-accent-foreground hover:scale-[1.03] active:scale-[0.97] font-black uppercase tracking-wider text-[10px] flex items-center gap-1 transition-all"
-        >
-          View Verification <ArrowRight className="w-3.5 h-3.5" />
-        </button>
-      </div>
-
-      {/* Payout Verification Audit Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Payout Verification Audit"
-        className="max-w-md bg-[#070D0B] border-[#162520] text-white"
-      >
-        <div className="space-y-6">
-          <div className="flex flex-col items-center text-center p-4 bg-emerald-950/20 border border-emerald-500/20 rounded-2xl">
-            <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-500 mb-3 animate-pulse">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
-            <h4 className="text-sm font-extrabold text-white uppercase tracking-wider font-heading">
-              Payout Verified & Audited
-            </h4>
-            <p className="text-[11px] text-muted-foreground/80 leading-relaxed mt-1.5">
-              This draw payout has been reviewed, approved, and released by the Compliance Board.
-            </p>
-          </div>
-
-          <div className="space-y-3 bg-[#0A1C16]/50 p-4 rounded-xl border border-white/[0.04] text-xs">
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground font-semibold">Verification Status:</span>
-              <Badge variant="outline" className="text-[9px] uppercase tracking-wider font-extrabold text-emerald-500 border-emerald-500/20 bg-emerald-500/5 px-2 py-0.5">
-                Submission Approved
-              </Badge>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground font-semibold">Approved By:</span>
-              <span className="font-bold text-foreground">Platform Admin (Vetted Account)</span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground font-semibold">Approval Date:</span>
-              <span className="font-bold text-foreground">{winner.date}</span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground font-semibold">Winner Status:</span>
-              <span className="text-emerald-500 font-bold flex items-center gap-1">
-                <Check className="w-3.5 h-3.5" /> Payout Disbursed
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground font-semibold">Draw Sweepstakes:</span>
-              <span className="font-bold text-foreground text-right truncate max-w-[150px]">
-                {winner.draw}
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground font-semibold">Prize Description:</span>
-              <span className="font-bold text-accent text-right truncate max-w-[150px]">
-                {winner.prize}
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground font-semibold">Winner Tier:</span>
-              <span className="font-bold text-foreground">{winner.tier}</span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground font-semibold">Verification Code:</span>
-              <span className="font-mono text-[10px] font-bold text-foreground">{winner.ticket}</span>
-            </div>
-
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground font-semibold">Escrow Audit Hash:</span>
-              <span className="font-mono text-[10px] font-bold text-accent">{winner.hash}</span>
-            </div>
-          </div>
-
-          <div className="text-[10px] text-muted-foreground/60 leading-relaxed text-center">
-            Platform receipts are stored in secure escrow. Audit ID: <span className="font-mono text-[#8a9690]">{winner.ticket}</span>
-          </div>
-
-          <div className="flex justify-end pt-2 border-t border-white/[0.04]">
-            <Button
-              onClick={() => setIsModalOpen(false)}
-              variant="outline"
-              size="sm"
-              className="text-[10px] font-bold uppercase tracking-wider rounded-xl h-9"
-            >
-              Close Verification
-            </Button>
-          </div>
-        </div>
-      </Modal>
-    </Card>
-  );
-}
-
 export default function DashboardOverview() {
   const [activeTab, setActiveTab] = useState("overview");
-  const [rewardTab, setRewardTab] = useState("tickets");
   const { user: authUser, profile } = useAuth();
   const { subscription, status } = useSubscription();
 
-  // Day 3 Real Data integration via custom hooks
+  // Data integration via custom hooks
   let { impactScores: scores, totalImpactScore, loading: scoresLoading, error: scoresError } = useImpactScores();
   let { allocations, loading: charitiesLoading, error: charitiesError } = useCharities();
-  let { userEntries, draws, claims: rawClaims, loading: drawsLoading } = useDraws();
   let { leaderboard, rank: leaderboardRank, loading: leaderboardLoading, error: leaderboardError } = useLeaderboard();
 
-  // Safeguard array references to prevent runtime crashes on undefined/null
+  // Safeguard array references
   scores = scores || [];
   allocations = allocations || [];
-  userEntries = userEntries || [];
-  draws = draws || [];
   leaderboard = leaderboard || [];
 
   const displayLeaderboard = useMemo(() => {
@@ -298,62 +139,6 @@ export default function DashboardOverview() {
     }
     return top3;
   }, [leaderboard]);
-
-  const claims = Array.isArray(rawClaims) ? rawClaims : [];
-
-  const sortedDraws = useMemo(() => {
-    if (!draws) return [];
-    return [...draws].sort((a, b) => {
-      if (a.status === "active" && b.status !== "active") return -1;
-      if (b.status === "active" && a.status !== "active") return 1;
-
-      const isACompleted = a.status === "completed" || a.status === "drawn";
-      const isBCompleted = b.status === "completed" || b.status === "drawn";
-      if (isACompleted && !isBCompleted) return -1;
-      if (isBCompleted && !isACompleted) return 1;
-      if (isACompleted && isBCompleted) {
-        return new Date(b.draw_date) - new Date(a.draw_date);
-      }
-
-      const isAUpcoming = a.status === "upcoming";
-      const isBUpcoming = b.status === "upcoming";
-      if (isAUpcoming && !isBUpcoming) return -1;
-      if (isBUpcoming && !isAUpcoming) return 1;
-      if (isAUpcoming && isBUpcoming) {
-        return new Date(b.draw_date) - new Date(a.draw_date);
-      }
-      return 0;
-    });
-  }, [draws]);
-
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const activeDraw = sortedDraws.length > 0 ? sortedDraws[0] : null;
-  const activePrize = activeDraw ? (typeof activeDraw.prize_value === 'number' && activeDraw.prize_value > 0 ? `₹${activeDraw.prize_value.toLocaleString("en-IN")}` : activeDraw.prize || "Exclusive Prize") : "No Active Draws";
-
-  useEffect(() => {
-    if (!activeDraw || activeDraw.status === "completed" || activeDraw.status === "drawn") {
-      setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      return;
-    }
-
-    const targetDate = new Date(activeDraw.draw_date);
-
-    const timer = setInterval(() => {
-      const now = new Date();
-      const difference = targetDate.getTime() - now.getTime();
-      if (difference <= 0) {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        clearInterval(timer);
-        return;
-      }
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((difference / 1000 / 60) % 60);
-      const seconds = Math.floor((difference / 1000) % 60);
-      setTimeLeft({ days, hours, minutes, seconds });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [activeDraw]);
 
   const monthlyContribution = PLAN_PRICES[subscription?.plan_type] ?? 0;
   const hasActivePlan = status === "active" || status === "cancelled";
@@ -378,7 +163,7 @@ export default function DashboardOverview() {
   // Active allocations summary
   const totalAllocatedVal = allocations ? allocations.reduce((sum, item) => sum + item.contribution_percentage, 0) : 0;
 
-  // Redesign dynamic outcome metrics
+  // Outcome metrics
   let waterLiters = 0;
   let treesPlanted = 0;
   let tutoringHours = 0;
@@ -400,13 +185,6 @@ export default function DashboardOverview() {
       }
     });
   }
-
-  // Filter active draw entries count
-  const activeTicketsCount = activeDraw
-    ? userEntries.filter(e => e.draw_id === activeDraw.id).length
-    : 0;
-
-  const activeDrawSub = activeDraw ? activeDraw.title : "No active draws";
 
   const displayUser = {
     name: profile?.full_name || authUser?.email?.split("@")[0] || "Member",
@@ -431,20 +209,6 @@ export default function DashboardOverview() {
     { id: "TXN-4019", date: "Feb 15, 2026", amount: "₹1,299.00", charity: "Empower Global Edu", status: "Audited", docUrl: "#" },
   ];
 
-  // Map user entries using real Supabase draw relations
-  const currentDrawEntries = userEntries.map(entry => {
-    const matchingDraw = draws.find(d => d.id === entry.draw_id);
-    const drawDateStr = matchingDraw
-      ? new Date(matchingDraw.draw_date).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
-      : "—";
-    return {
-      ticketNumber: entry.ticket_number,
-      drawName: matchingDraw ? matchingDraw.title : "Eco Prize Draw",
-      date: drawDateStr,
-      status: matchingDraw ? (matchingDraw.status === "active" ? "Active" : matchingDraw.status === "completed" ? "Completed" : "Upcoming") : "Active"
-    };
-  });
-
   const hasAllocations = allocations && allocations.length > 0;
 
   const impactMetrics = [
@@ -452,19 +216,10 @@ export default function DashboardOverview() {
       label: "Membership Tier",
       value: displayUser.tier,
       desc: hasActivePlan
-        ? `${subscription?.plan_type === "builder" ? "10x" : subscription?.plan_type === "advocate" ? "3x" : "Base"} multiplier active`
+        ? `${subscription?.plan_type === "builder" ? "10x" : subscription?.plan_type === "advocate" ? "3x" : "Base"} score multiplier active`
         : "No active giving plan",
       icon: ShieldCheck,
       color: "text-accent",
-    },
-    {
-      label: "Active Draw Entries",
-      value: hasAllocations
-        ? (activeTicketsCount > 0 ? `${activeTicketsCount} Entries` : "No active entries")
-        : (hasActivePlan ? "Awaiting charity selection" : "Awaiting subscription"),
-      desc: hasAllocations && activeTicketsCount > 0 ? "Registered in active pools" : "Select cause & subscribe to activate",
-      icon: Ticket,
-      color: "text-emerald-400",
     },
     {
       label: "Contribution Amount",
@@ -482,6 +237,22 @@ export default function DashboardOverview() {
       icon: Heart,
       color: "text-purple-400",
     },
+    {
+      label: "Current Impact Score",
+      value: hasAllocations
+        ? `${dynamicGivingScore} pts`
+        : "Awaiting charity selection",
+      desc: hasAllocations ? `Rank ${displayUser.rank} overall` : "Score generation pending",
+      icon: Trophy,
+      color: "text-accent",
+    },
+    {
+      label: "Giving Streak",
+      value: `${streakMultiplier} Weeks Active`,
+      desc: "+25 bonus impact points maintained",
+      icon: Flame,
+      color: "text-amber-400",
+    },
     ...(hasAllocations ? [] : [
       {
         label: "Impact Status",
@@ -491,15 +262,6 @@ export default function DashboardOverview() {
         color: "text-amber-400 animate-pulse",
       }
     ]),
-    {
-      label: "Current Impact Score",
-      value: hasAllocations
-        ? `${dynamicGivingScore} pts`
-        : "Awaiting charity selection",
-      desc: hasAllocations ? `Rank ${displayUser.rank} overall` : "Score generation pending",
-      icon: Trophy,
-      color: "text-accent",
-    }
   ];
 
   return (
@@ -522,12 +284,12 @@ export default function DashboardOverview() {
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#0c1d18_1px,transparent_1px),linear-gradient(to_bottom,#0c1d18_1px,transparent_1px)] bg-[size:4rem_4rem] opacity-30 -z-10 pointer-events-none" />
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-              {/* Left Column - Target Draw Sweepstakes details */}
+              {/* Left Column - Philanthropy Overview */}
               <div className="lg:col-span-7 flex flex-col justify-between h-full">
                 <div>
                   <div className="flex flex-wrap items-center gap-3 mb-4">
-                    <Badge variant="accent" className="gap-1.5 px-3 py-1 text-[10px] uppercase font-extrabold tracking-widest text-[#060C0A] bg-accent animate-pulse">
-                      <Flame className="w-3.5 h-3.5" /> Reward Command Center
+                    <Badge variant="accent" className="gap-1.5 px-3 py-1 text-[10px] uppercase font-extrabold tracking-widest text-[#060C0A] bg-accent">
+                      <Sparkles className="w-3.5 h-3.5" /> Philanthropy Command Center
                     </Badge>
                     <span className="text-xs text-muted-foreground/85 font-semibold">
                       Welcome back, <strong className="text-white">{displayUser.name.split(" ")[0]}</strong>
@@ -535,60 +297,37 @@ export default function DashboardOverview() {
                   </div>
 
                   <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight tracking-tight mb-8">
-                    What are you <span className="text-accent">working toward?</span>
+                    Your Verified <span className="text-accent">Giving Impact</span>
                   </h1>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-8">
-                  {/* Current Jackpot */}
-                  <div className="md:col-span-6 bg-[#05110D]/95 border border-border/20 p-6 rounded-2xl relative overflow-hidden shadow-inner group/jackpot hover:border-accent/40 transition-all duration-300">
+                  {/* Monthly Giving Allocation */}
+                  <div className="md:col-span-6 bg-[#05110D]/95 border border-border/20 p-6 rounded-2xl relative overflow-hidden shadow-inner group/giving hover:border-accent/40 transition-all duration-300">
                     <div className="absolute top-0 left-0 w-[3px] h-full bg-accent" />
                     <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground block mb-2">
-                      Current Estimated Jackpot Pool
+                      Monthly Contribution
                     </span>
                     <span className="text-4xl md:text-5xl font-black text-accent font-heading block tracking-tight drop-shadow-[0_0_15px_rgba(212,185,147,0.15)]">
-                      <AnimatedCounter value={activePrize} />
+                      <AnimatedCounter value={hasActivePlan ? `₹${monthlyContribution.toLocaleString("en-IN")}` : "₹0"} />
                     </span>
                     <span className="text-[10px] text-muted-foreground font-medium mt-3 block">
-                      Active Draw: <strong>{activeDrawSub}</strong>
+                      Tier: <strong>{displayUser.tier}</strong>
                     </span>
                   </div>
 
-                  {/* Countdown Timer */}
+                  {/* Impact Score Standing */}
                   <div className="md:col-span-6 bg-[#05110D]/95 border border-border/20 p-6 rounded-2xl relative overflow-hidden shadow-inner hover:border-emerald-500/30 transition-all duration-300">
                     <div className="absolute top-0 left-0 w-[3px] h-full bg-emerald-600" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground block mb-3.5">
-                      Countdown to Live Draw
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground block mb-2">
+                      Current Impact Score
                     </span>
-                    <div className="flex items-center gap-2 text-foreground font-heading">
-                      <div className="flex flex-col items-center">
-                        <span className="text-2xl md:text-3xl font-black bg-[#060C0A] px-2.5 py-1.5 rounded-xl border border-border/30 text-white w-[48px] text-center">
-                          {String(timeLeft.days).padStart(2, "0")}
-                        </span>
-                        <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground mt-1.5">Days</span>
-                      </div>
-                      <span className="text-xl font-black text-muted-foreground/60 -mt-4">:</span>
-                      <div className="flex flex-col items-center">
-                        <span className="text-2xl md:text-3xl font-black bg-[#060C0A] px-2.5 py-1.5 rounded-xl border border-border/30 text-white w-[48px] text-center">
-                          {String(timeLeft.hours).padStart(2, "0")}
-                        </span>
-                        <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground mt-1.5">Hours</span>
-                      </div>
-                      <span className="text-xl font-black text-muted-foreground/60 -mt-4">:</span>
-                      <div className="flex flex-col items-center">
-                        <span className="text-2xl md:text-3xl font-black bg-[#060C0A] px-2.5 py-1.5 rounded-xl border border-border/30 text-white w-[48px] text-center">
-                          {String(timeLeft.minutes).padStart(2, "0")}
-                        </span>
-                        <span className="text-[8px] uppercase font-bold tracking-wider text-muted-foreground mt-1.5">Mins</span>
-                      </div>
-                      <span className="text-xl font-black text-muted-foreground/60 -mt-4">:</span>
-                      <div className="flex flex-col items-center">
-                        <span className="text-2xl md:text-3xl font-black bg-[#060C0A] px-2.5 py-1.5 rounded-xl border border-accent/40 text-accent w-[48px] text-center animate-pulse">
-                          {String(timeLeft.seconds).padStart(2, "0")}
-                        </span>
-                        <span className="text-[8px] uppercase font-bold tracking-wider text-accent mt-1.5">Secs</span>
-                      </div>
-                    </div>
+                    <span className="text-4xl md:text-5xl font-black text-emerald-400 font-heading block tracking-tight">
+                      <AnimatedCounter value={`${dynamicGivingScore} pts`} />
+                    </span>
+                    <span className="text-[10px] text-muted-foreground font-medium mt-3 block">
+                      Leaderboard Rank: <strong>{displayUser.rank}</strong>
+                    </span>
                   </div>
                 </div>
 
@@ -608,8 +347,8 @@ export default function DashboardOverview() {
                   </div>
                   <p className="text-[10px] text-muted-foreground flex items-center gap-1.5 leading-none">
                     {scores?.length === 5
-                      ? "✓ All weekly scores logged! Max multipliers and bonus tickets are active."
-                      : `Log ${5 - (scores?.length || 0)} more impact score${5 - (scores?.length || 0) > 1 ? "s" : ""} to unlock maximum draw entry bonuses.`}
+                      ? "✓ All weekly scores logged! Maximum score multiplier active."
+                      : `Log ${5 - (scores?.length || 0)} more impact score${5 - (scores?.length || 0) > 1 ? "s" : ""} to maximize weekly community standing.`}
                   </p>
                 </div>
               </div>
@@ -627,11 +366,11 @@ export default function DashboardOverview() {
                     </span>
                     <span className="text-[9px] text-[#8a9690] font-semibold block mt-1">
                       {subscription?.plan_type === "builder"
-                        ? "10x entries ticket multiplier active"
+                        ? "10x Impact Score multiplier active"
                         : subscription?.plan_type === "advocate"
-                          ? "3x entries ticket multiplier active"
+                          ? "3x Impact Score multiplier active"
                           : subscription?.plan_type === "scout"
-                            ? "Base draw entries active"
+                            ? "Base Impact Score active"
                             : "No active giving plan"}
                     </span>
                   </div>
@@ -640,25 +379,25 @@ export default function DashboardOverview() {
                   </div>
                 </div>
 
-                {/* Active Tickets Widget */}
+                {/* Supported Causes Widget */}
                 <div className="bg-[#05110D]/50 border border-border/20 p-4.5 rounded-2xl flex items-center justify-between group hover:border-accent/40 hover:bg-[#071611]/70 transition-all duration-300">
                   <div>
                     <span className="text-[8px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-1">
-                      Your Active Tickets
+                      Active Allocations
                     </span>
                     <span className="text-xl font-extrabold text-white font-heading block">
-                      <AnimatedCounter value={activeTicketsCount} /> <span className="text-xs text-muted-foreground font-normal">tickets</span>
+                      <AnimatedCounter value={allocations.length} /> <span className="text-xs text-muted-foreground font-normal">causes</span>
                     </span>
                     <span className="text-[9px] text-emerald-400 font-semibold block mt-1">
-                      Registered in active pools
+                      {totalAllocatedVal}% of contribution routed
                     </span>
                   </div>
                   <div className="w-11 h-11 flex items-center justify-center bg-[#05110D] border border-border/30 rounded-xl text-emerald-400 group-hover:scale-105 transition-transform shadow-inner">
-                    <Ticket className="w-5.5 h-5.5" />
+                    <Heart className="w-5.5 h-5.5" />
                   </div>
                 </div>
 
-                {/* Score Widget */}
+                {/* Total Score Widget */}
                 <div className="bg-[#05110D]/50 border border-border/20 p-4.5 rounded-2xl flex items-center justify-between group hover:border-accent/40 hover:bg-[#071611]/70 transition-all duration-300">
                   <div>
                     <span className="text-[8px] font-extrabold uppercase tracking-widest text-muted-foreground block mb-1">
@@ -701,14 +440,14 @@ export default function DashboardOverview() {
         {/* ── Tab navigation ── */}
         <motion.div variants={itemVariants}>
           <div className="flex gap-6 border-b border-border mb-8 text-sm overflow-x-auto">
-            {["overview", "receipts", "draw-tickets"].map((tab) => (
+            {["overview", "receipts"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`pb-3 capitalize font-bold text-xs uppercase tracking-wider relative whitespace-nowrap ${activeTab === tab ? "text-accent" : "text-muted-foreground hover:text-foreground"
                   }`}
               >
-                {tab.replace("-", " ")}
+                {tab === "overview" ? "Community Overview" : "Audited Receipts"}
                 {activeTab === tab && (
                   <motion.div
                     layoutId="overviewTabLine"
@@ -742,7 +481,7 @@ export default function DashboardOverview() {
                 <div className="w-8 h-8 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0">
                   <Trophy className="w-4 h-4" />
                 </div>
-                <h3 className="font-heading text-lg font-bold text-foreground">Compete</h3>
+                <h3 className="font-heading text-lg font-bold text-foreground">Community Standing</h3>
                 <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold ml-auto">
                   Impact Standings & Leaderboard
                 </span>
@@ -835,14 +574,14 @@ export default function DashboardOverview() {
                     <div>
                       <h3 className="font-heading font-bold text-base text-foreground flex items-center gap-2 mb-6">
                         <Sparkles className="w-4 h-4 text-accent" />
-                        Achievements & Streaks
+                        Achievements & Badges
                       </h3>
                       <div className="space-y-3.5">
                         {[
-                          { name: "First Draw Entry", desc: "Registered your first ticket", unlocked: true, icon: Check },
-                          { name: "Top 25% Standing", desc: leaderboardRank === "Rank unavailable" || leaderboardRank === "Loading..." ? "Climbed the leaderboard" : `Climbed leaderboard to ${leaderboardRank}`, unlocked: true, icon: Trophy },
-                          { name: "Global Advocate", desc: "Active Advocate tier selected", unlocked: true, icon: ShieldCheck },
-                          { name: "5 Draw Streak", desc: "Submit impact scores consistently (3/5)", unlocked: false, progress: 60, icon: Flame }
+                          { name: "Verified Supporter", desc: "Completed initial donation verification", unlocked: true, icon: Check },
+                          { name: "Top Standing", desc: leaderboardRank === "Rank unavailable" || leaderboardRank === "Loading..." ? "Climbed the leaderboard" : `Climbed leaderboard to ${leaderboardRank}`, unlocked: true, icon: Trophy },
+                          { name: "Global Advocate", desc: "Active Advocate giving tier selected", unlocked: true, icon: ShieldCheck },
+                          { name: "Consistent Supporter", desc: "Submit weekly scores consistently (3/5)", unlocked: false, progress: 60, icon: Flame }
                         ].map((ach, idx) => (
                           <div key={idx} className="flex items-start gap-2.5 p-2 rounded-xl bg-secondary/5 border border-border/20">
                             <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${ach.unlocked ? "bg-emerald-950/45 text-emerald-500 border border-emerald-800/40" : "bg-secondary/15 text-muted-foreground border border-border/30"}`}>
@@ -940,15 +679,15 @@ export default function DashboardOverview() {
               <div className="space-y-8">
                 {/* Top Row: Membership Status & Charity Allocations */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-                  {/* Subscription Widget + Contribution Breakdown (stacked) */}
+                  {/* Subscription Widget + Contribution Breakdown */}
                   <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col gap-6 transition-all duration-300">
                     <SubscriptionWidget />
 
-                    {/* Contribution Breakdown & Draw Eligibility */}
+                    {/* Contribution Breakdown */}
                     <Card className="p-6 flex-1 flex flex-col justify-between border-border bg-card">
                       <div>
                         <h3 className="font-heading font-extrabold text-base text-foreground mb-5 flex items-center gap-2">
-                          <Ticket className="w-4 h-4 text-accent" />
+                          <Award className="w-4 h-4 text-accent" />
                           Membership Benefits
                         </h3>
 
@@ -957,7 +696,7 @@ export default function DashboardOverview() {
                           {[
                             { label: "Monthly Contribution", value: `₹${monthlyContribution.toLocaleString("en-IN")}`, accent: true },
                             { label: "Charity Routing", value: `${totalAllocatedVal}% Allocated`, accent: totalAllocatedVal === 100 },
-                            { label: "Active Draw Tickets", value: `${activeTicketsCount || 6} Entries`, accent: activeTicketsCount > 0 },
+                            { label: "Impact Score Multiplier", value: subscription?.plan_type === "builder" ? "10x" : subscription?.plan_type === "advocate" ? "3x" : "Base", accent: true },
                             { label: "Impact Score", value: `${dynamicGivingScore} pts`, accent: true },
                           ].map((row, idx) => (
                             <div key={idx} className="flex justify-between items-center text-xs border-b border-border/25 pb-2 last:border-0 last:pb-0">
@@ -969,12 +708,12 @@ export default function DashboardOverview() {
                           ))}
                         </div>
 
-                        {/* Draw Eligibility Status */}
+                        {/* Impact Status */}
                         <div className="space-y-2.5">
                           <div className="flex justify-between items-center text-[10px]">
-                            <span className="font-bold uppercase tracking-wider text-muted-foreground">Draw Eligibility</span>
+                            <span className="font-bold uppercase tracking-wider text-muted-foreground">Impact Status</span>
                             <span className={`font-extrabold ${hasActivePlan && scores.length > 0 && allocations.length > 0 ? "text-emerald-500" : "text-amber-500"}`}>
-                              {hasActivePlan && scores.length > 0 && allocations.length > 0 ? "Qualified" : "Incomplete"}
+                              {hasActivePlan && scores.length > 0 && allocations.length > 0 ? "Active & Routing" : "Setup Incomplete"}
                             </span>
                           </div>
                           <div className="space-y-1.5">
@@ -1038,7 +777,7 @@ export default function DashboardOverview() {
                                 Choose where your contribution creates impact.
                               </h4>
                               <p className="text-xs text-muted-foreground leading-relaxed">
-                                Your monthly membership contribution is ready to be routed to verified global causes. Select your preferences to qualify for active draws.
+                                Your monthly membership contribution is ready to be routed to verified global causes. Select your preferences to start certified giving.
                               </p>
                             </div>
 
@@ -1202,7 +941,7 @@ export default function DashboardOverview() {
 
                 {/* Bottom Row: Full Width Impact Summary */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
-                  {/* Your Impact This Month & Verified Badge (2/3 width) */}
+                  {/* Your Impact This Month (2/3 width) */}
                   <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="lg:col-span-2 flex flex-col transition-all duration-300">
                     <Card className="p-6 flex-1 flex flex-col justify-between border-border bg-card">
                       <div>
@@ -1319,12 +1058,12 @@ export default function DashboardOverview() {
                           badge: "Independent Audit Log"
                         },
                         {
-                          title: "Draws Verified",
-                          value: "Provably Fair Sweepstakes",
-                          desc: "Drawing prize awards and ticket logs are processed securely using randomized verification boards to ensure fairness.",
-                          icon: Ticket,
+                          title: "Donation Certificates",
+                          value: "Audited Tax Receipts",
+                          desc: "Download official tax-exempt donation certificates and cryptographic execution proofs directly from your billing history.",
+                          icon: Award,
                           color: "text-blue-400 bg-blue-500/5 border-blue-500/10",
-                          badge: "Fairness Audited"
+                          badge: "Tax Exemption Ready"
                         },
                         {
                           title: "Contribution Tracking",
@@ -1400,7 +1139,7 @@ export default function DashboardOverview() {
                           <div className="flex items-center justify-end gap-3.5">
                             <span>{txn.amount}</span>
                             <Badge variant="success">{txn.status}</Badge>
-                            <Link href={txn.docUrl} className="text-muted-foreground hover:text-foreground">
+                            <Link href="/dashboard/billing" className="text-muted-foreground hover:text-foreground">
                               <ExternalLink className="w-3.5 h-3.5" />
                             </Link>
                           </div>
@@ -1412,185 +1151,7 @@ export default function DashboardOverview() {
               </Card>
             </motion.div>
 
-            {/* Section 3: Rewards */}
-            <motion.div
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 80, damping: 14 } }
-              }}
-              className="space-y-6"
-            >
-              <div className="flex items-center gap-3 border-b border-border/60 pb-3">
-                <div className="w-8 h-8 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0">
-                  <Ticket className="w-4 h-4" />
-                </div>
-                <h3 className="font-heading text-lg font-bold text-foreground">Rewards</h3>
-                <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold ml-auto">
-                  Draw Entries & Previous Wins
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-                {/* Active Draw / Current Jackpot */}
-                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300">
-                  <Card className="p-6 flex flex-col justify-between border-border bg-card h-full">
-                    <div>
-                      <h3 className="font-heading font-bold text-base text-foreground flex items-center gap-2 mb-4">
-                        <Flame className="w-4 h-4 text-accent animate-pulse" />
-                        Current Prize Draw
-                      </h3>
-                      <div className="p-4 bg-secondary/10 border border-border/30 rounded-xl space-y-3">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <span className="text-[9px] uppercase font-bold text-muted-foreground block">Active Jackpot Pool</span>
-                            <span className="text-3xl font-black text-accent font-heading block leading-none mt-1">
-                              <AnimatedCounter value={activePrize} />
-                            </span>
-                          </div>
-                          {activeDraw && (
-                            <Badge variant={userEntries.some(e => e.draw_id === activeDraw.id) ? "success" : "outline"} className="text-[8px] font-bold">
-                              {userEntries.some(e => e.draw_id === activeDraw.id) ? "Joined" : "Not Joined"}
-                            </Badge>
-                          )}
-                        </div>
-                        <span className="text-xs font-semibold text-foreground block">
-                          Active Target: {activeDrawSub}
-                        </span>
-                        <span className="text-[10px] text-muted-foreground block">
-                          Draw schedule: {activeDraw?.draw_date ? new Date(activeDraw.draw_date).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" }) : "June 25, 2026"}
-                        </span>
-                      </div>
-                    </div>
-                    <Button asChild variant="accent" className="w-full mt-4 h-9 text-xs font-bold uppercase tracking-wider">
-                      <Link href="/dashboard/draws">
-                        {activeDraw && userEntries.some(e => e.draw_id === activeDraw.id) ? "Manage My Entries" : "Join Draw Pool"}
-                      </Link>
-                    </Button>
-                  </Card>
-                </motion.div>
-
-                {/* Live Activity Feed */}
-                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300">
-                  <Card className="p-6 flex flex-col justify-between border-border bg-card h-full relative overflow-hidden">
-                    <div>
-                      <h3 className="font-heading font-bold text-base text-foreground flex items-center gap-2 mb-6">
-                        <TrendingUp className="w-4 h-4 text-accent animate-pulse" />
-                        Live Activity Feed
-                      </h3>
-                      <div className="space-y-4">
-                        {[
-                          { text: "Sam Whitfield joined June's Eco Retreat draw", time: "2m ago", type: "draw" },
-                          { text: "Apex Water Initiative reached milestone", time: "1h ago", type: "charity" },
-                          { text: "Alicia Torres claimed Eco Retreat prize", time: "1d ago", type: "winner" },
-                          { text: "Hiro Nakamura submitted a 42 impact score", time: "3h ago", type: "score" }
-                        ].map((act, idx) => (
-                          <div key={idx} className="flex items-start justify-between text-xs border-b border-border/20 pb-3 last:border-0 last:pb-0">
-                            <div className="flex items-start gap-2.5">
-                              <span className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${act.type === 'winner' ? 'bg-accent animate-ping' :
-                                  act.type === 'draw' ? 'bg-emerald-500' :
-                                    act.type === 'charity' ? 'bg-blue-500' : 'bg-[#C4A054]/40'
-                                }`} />
-                              <span className="text-muted-foreground leading-relaxed">
-                                {act.text}
-                              </span>
-                            </div>
-                            <span className="text-[9px] text-muted-foreground font-semibold shrink-0 ml-2">{act.time}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </Card>
-                </motion.div>
-
-                {/* Unified Tickets & Winner Claims Tabbed Card */}
-                <motion.div whileHover={{ y: -4, borderColor: "rgba(196, 160, 84, 0.4)" }} className="flex flex-col transition-all duration-300">
-                  <Card className="p-6 flex flex-col justify-between border-border bg-card h-full">
-                    <div>
-                      <div className="flex gap-4 border-b border-border/30 pb-2 mb-4 text-xs font-bold uppercase tracking-wider">
-                        <button
-                          onClick={() => setRewardTab("tickets")}
-                          className={`pb-1.5 border-b-2 transition-all ${rewardTab === "tickets" ? "border-accent text-accent" : "border-transparent text-muted-foreground hover:text-foreground"}`}
-                        >
-                          Tickets ({currentDrawEntries.length})
-                        </button>
-                        <button
-                          onClick={() => setRewardTab("claims")}
-                          className={`pb-1.5 border-b-2 transition-all ${rewardTab === "claims" ? "border-accent text-accent" : "border-transparent text-muted-foreground hover:text-foreground"}`}
-                        >
-                          Claims ({claims.length})
-                        </button>
-                      </div>
-
-                      {rewardTab === "tickets" ? (
-                        <div>
-                          {hasActivePlan && currentDrawEntries.length > 0 ? (
-                            <div className="space-y-2 max-h-[170px] overflow-y-auto pr-1">
-                              {currentDrawEntries.slice(0, 3).map((ticket, i) => (
-                                <div key={i} className="flex justify-between items-center p-2.5 bg-secondary/15 rounded-xl border border-border/30">
-                                  <div>
-                                    <span className="font-mono font-bold text-accent text-xs block">{ticket.ticketNumber}</span>
-                                    <span className="text-muted-foreground text-[9px] font-semibold truncate max-w-[150px] block">
-                                      {ticket.drawName}
-                                    </span>
-                                  </div>
-                                  <Badge variant={ticket.status === "Active" ? "accent" : "outline"} className="text-[8px] py-0.5">{ticket.status}</Badge>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="text-center py-6 border border-dashed border-border/60 rounded-xl bg-secondary/5">
-                              <Ticket className="w-6 h-6 text-muted-foreground/35 mx-auto mb-2" />
-                              <p className="text-[11px] font-semibold text-foreground/80">No Active Tickets</p>
-                              <p className="text-[9.5px] text-muted-foreground mt-1 mb-3">
-                                You don't have any tickets registered for this draw pool.
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <div>
-                          {claims && claims.length > 0 ? (
-                            <div className="space-y-2.5 max-h-[170px] overflow-y-auto pr-1">
-                              {claims.slice(0, 3).map((claim) => (
-                                <div key={claim.id} className="p-2.5 bg-secondary/15 rounded-xl border border-border/40 space-y-1 hover:border-accent/15 transition-all">
-                                  <div className="flex justify-between items-start">
-                                    <span className="text-xs font-bold text-foreground truncate max-w-[110px]">{claim.draw_title || "Prize Claim"}</span>
-                                    <Badge variant={
-                                      claim.status === "paid" ? "success" :
-                                        claim.status === "approved" ? "success" :
-                                          claim.status === "rejected" ? "destructive" : "warning"
-                                    } className="text-[8px] py-0 px-1">
-                                      {claim.status}
-                                    </Badge>
-                                  </div>
-                                  <div className="flex justify-between text-[9px] text-muted-foreground leading-none mt-1">
-                                    <span>Ticket: {claim.ticket_number || "—"}</span>
-                                    <span>{claim.claim_date ? new Date(claim.claim_date).toLocaleDateString() : "Jun 2026"}</span>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <div className="text-center py-6 border border-dashed border-border/60 rounded-xl bg-secondary/5">
-                              <Inbox className="w-6 h-6 text-muted-foreground/35 mx-auto mb-2" />
-                              <p className="text-[11px] font-semibold text-foreground/80">No Winning Claims Yet</p>
-                              <p className="text-[9.5px] text-muted-foreground mt-1 mb-3">
-                                Check completed draws to submit claim screenshots.
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                    <Button asChild variant="outline" className="w-full mt-4 h-9 text-xs font-bold uppercase tracking-wider">
-                      <Link href="/dashboard/draws">View Draw History</Link>
-                    </Button>
-                  </Card>
-                </motion.div>
-              </div>
-            </motion.div>
-
-            {/* Recent Winners Showcase */}
+            {/* Section 3: Community Milestones */}
             <motion.div
               variants={{
                 hidden: { opacity: 0, y: 20 },
@@ -1602,52 +1163,55 @@ export default function DashboardOverview() {
                 <div className="w-8 h-8 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent shrink-0">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
-                <h3 className="font-heading text-lg font-bold text-foreground">Community Success Stories</h3>
+                <h3 className="font-heading text-lg font-bold text-foreground">Community Impact Milestones</h3>
                 <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold ml-auto">
-                  Verified Platform Payouts
+                  Verified Platform Records
                 </span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {[
                   {
-                    title: "Verified Winner",
-                    tier: "Legacy Builder Member",
-                    category: "5 Match Winner",
-                    status: "Verified Payout",
-                    draw: "Patagonia Eco-Retreat",
-                    prize: "7-Night Luxury Eco-Retreat Pass",
-                    ticket: "FND-712-X4B",
-                    proofUrl: "#",
+                    title: "Clean Water Initiative",
+                    badge: "12,000 People Served",
+                    detail: "Apex Water Initiative deployed gravity sand filtration units to 14 rural community clusters.",
                     date: "Jun 19, 2026",
                     hash: "0x3e89...cf40"
                   },
                   {
-                    title: "Verified Winner",
-                    tier: "Global Advocate Member",
-                    category: "4 Match Winner",
-                    status: "Verified Payout",
-                    draw: "Donation Match Rewards",
-                    prize: "Custom Electric Bike Cruiser",
-                    ticket: "FND-556-P8M",
-                    proofUrl: "#",
+                    title: "Forest Canopy Conservation",
+                    badge: "7,400 Hectares Protected",
+                    detail: "Acres of Green completed seasonal woodland patrol and seedling nurturing initiatives.",
                     date: "May 18, 2026",
                     hash: "0x8f2a...22ba"
                   },
                   {
-                    title: "Verified Winner",
-                    tier: "Eco Scout Member",
-                    category: "4 Match Winner",
-                    status: "Verified Payout",
-                    draw: "Community Impact Grants",
-                    prize: "₹1,25,000 Cash Grant Reward",
-                    ticket: "FND-041-K89",
-                    proofUrl: "#",
+                    title: "STEM Girls Fellowship",
+                    badge: "340 Fellowships Funded",
+                    detail: "Empower Global Edu distributed robotics hardware and mentorship access to collegiate scholars.",
                     date: "May 12, 2026",
                     hash: "0x6d9e...88ab"
                   }
-                ].map((winner, idx) => (
-                  <RecentWinnerCard key={idx} winner={winner} />
+                ].map((item, idx) => (
+                  <Card key={idx} className="p-6 flex flex-col justify-between border-border bg-gradient-to-b from-[#0A1C16] to-[#040D09] hover:border-accent/60 hover:scale-[1.02] hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden group shadow-lg">
+                    <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-accent via-accent-foreground to-accent opacity-20 group-hover:opacity-100 transition-opacity" />
+                    <div className="space-y-4">
+                      <div className="flex items-start justify-between border-b border-white/[0.04] pb-3">
+                        <span className="text-xs font-bold text-white font-heading">{item.title}</span>
+                        <Badge variant="outline" className="text-[8px] uppercase tracking-wider font-extrabold text-emerald-400 border-emerald-500/20 bg-emerald-500/5 px-2 py-0.5">
+                          ✓ Verified Outcome
+                        </Badge>
+                      </div>
+                      <div>
+                        <span className="text-sm font-extrabold text-accent block font-heading">{item.badge}</span>
+                        <p className="text-[11px] text-muted-foreground/80 leading-relaxed mt-2">{item.detail}</p>
+                      </div>
+                      <div className="flex justify-between items-center text-[10px] text-muted-foreground pt-3 border-t border-white/[0.04]">
+                        <span>Audit Date: <strong>{item.date}</strong></span>
+                        <span className="font-mono text-accent">{item.hash}</span>
+                      </div>
+                    </div>
+                  </Card>
                 ))}
               </div>
             </motion.div>
@@ -1666,7 +1230,7 @@ export default function DashboardOverview() {
                     <TableHead>Charity Cause</TableHead>
                     <TableHead>Amount</TableHead>
                     <TableHead>Audit Status</TableHead>
-                    <TableHead className="text-right pr-6">Receipt</TableHead>
+                    <TableHead className="text-right pr-6">Receipt / Certificate</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -1682,71 +1246,15 @@ export default function DashboardOverview() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right pr-6">
-                        <a href={txn.docUrl} className="inline-flex items-center gap-1 text-accent font-bold uppercase tracking-wider text-[10px] hover:underline">
-                          Receipt <ExternalLink className="w-3 h-3" />
-                        </a>
+                        <Link href="/dashboard/billing" className="inline-flex items-center gap-1 text-accent font-bold uppercase tracking-wider text-[10px] hover:underline">
+                          View Certificate <ExternalLink className="w-3 h-3" />
+                        </Link>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </Card>
-          </motion.div>
-        )}
-
-        {/* DRAW TICKETS TAB */}
-        {activeTab === "draw-tickets" && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-            <Card className="p-6 bg-secondary/5">
-              <h3 className="font-heading font-bold text-sm text-foreground mb-2">
-                How Draw Eligibility Works
-              </h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Every dollar you subscribe awards points towards your Philanthropy Score. When draws open, tickets are automatically distributed based on score requirements. Keep your streak active to gain multiplier bonuses.
-              </p>
-            </Card>
-            {hasActivePlan && currentDrawEntries.length > 0 ? (
-              <Card className="overflow-hidden">
-                <CardHeader className="bg-secondary/5 py-4 border-b border-border/40">
-                  <CardTitle className="text-sm">Active Draw Tickets</CardTitle>
-                </CardHeader>
-                <Table>
-                  <TableBody>
-                    {currentDrawEntries.map((ticket, i) => (
-                      <TableRow key={i}>
-                        <TableCell className="pl-6 py-5">
-                          <span className="font-mono font-bold text-accent text-sm block">{ticket.ticketNumber}</span>
-                          <span className="text-muted-foreground text-[10px] font-semibold">
-                            For draw: {ticket.drawName}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-right pr-6">
-                          <div className="inline-flex flex-col items-end">
-                            <Badge variant={ticket.status === "Active" ? "accent" : "outline"} className="mb-1.5">{ticket.status}</Badge>
-                            <span className="text-muted-foreground text-[10px]">
-                              Draw schedule: {ticket.date}
-                            </span>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Card>
-            ) : (
-              <EmptyState
-                title="No Active Draw Tickets"
-                description={hasActivePlan ? "You meet the eco-subscription requirements but no draw entries have been recorded yet. Complete your eligibility checklist to generate entries." : "Activate a subscription to automatically receive draw entries and compete for exclusive eco-retreat prizes."}
-                icon={Ticket}
-                action={
-                  <Button asChild variant="accent" size="sm">
-                    <Link href={hasActivePlan ? "/dashboard/draws" : "/dashboard/subscription"}>
-                      {hasActivePlan ? "View Draws Checklist" : "Activate Subscription"} <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </Button>
-                }
-              />
-            )}
           </motion.div>
         )}
       </div>

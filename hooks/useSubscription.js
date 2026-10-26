@@ -15,19 +15,19 @@ export const PLAN_DETAILS = {
     name: "Eco Scout", 
     price: 499, 
     description: "Automate contributions targeting forest preservation.",
-    perks: ["1× draw entry", "+10 score/mo", "Audit receipts"]
+    perks: ["1× score multiplier", "+10 score/mo", "Audit receipts & certificates"]
   },
   advocate: { 
     name: "Global Advocate", 
     price: 1299, 
     description: "Allocation to verified clean water & basic healthcare.",
-    perks: ["3× draw multiplier", "+30 score/mo", "Priority draws", "Cause rotation"]
+    perks: ["3× score multiplier", "+30 score/mo", "Advocate badge", "Cause rotation"]
   },
   builder: { 
     name: "Legacy Builder", 
     price: 4999, 
     description: "Sponsor advanced STEM fellowships and emergency grids.",
-    perks: ["10× draw multiplier", "+150 score/mo", "On-chain receipts", "NGO access"]
+    perks: ["10× score multiplier", "+150 score/mo", "On-chain receipts", "NGO access"]
   }
 };
 

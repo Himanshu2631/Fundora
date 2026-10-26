@@ -52,13 +52,13 @@ const STEPS = [
   },
   {
     number: "4",
-    title: "Earn Draw Entries",
-    description: "Become eligible for monthly rewards.",
+    title: "Earn Impact Badges",
+    description: "Track contributions and earn verified milestones.",
   },
   {
     number: "5",
-    title: "Win Rewards",
-    description: "Participate in monthly prize draws.",
+    title: "Verified Recognition",
+    description: "Receive audited donation receipts and certificates.",
   },
 ];
 
@@ -216,10 +216,10 @@ export default function ResetPassword() {
               <br />
               Track Your Impact.
               <br />
-              <span className="text-[#C4A054]">Unlock Monthly Rewards.</span>
+              <span className="text-[#C4A054]">Earn Verified Recognition.</span>
             </h2>
             <p className="text-xs sm:text-sm text-[#8A9690] leading-relaxed max-w-sm">
-              Sahayata combines community impact tracking, verified charity contributions, and monthly reward draws into a single membership platform.
+              Sahayata combines community impact tracking, verified charity contributions, and audited recognition into a single membership platform.
             </p>
           </div>
 

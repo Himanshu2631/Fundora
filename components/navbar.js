@@ -47,9 +47,8 @@ export default function Navbar() {
     ? [
       { name: "Admin Dashboard", href: "/admin/dashboard", icon: ShieldAlert },
       { name: "User Management", href: "/admin/users", icon: User },
-      { name: "Draw Management", href: "/admin/draws", icon: Ticket },
       { name: "Charity Management", href: "/admin/charities", icon: Heart },
-      { name: "Winners Management", href: "/admin/winners", icon: Trophy },
+      { name: "Viability Assessments", href: "/admin/assessments", icon: Trophy },
       { name: "Reports & Analytics", href: "/admin/analytics", icon: BarChart3 },
     ]
     : [
@@ -58,7 +57,6 @@ export default function Navbar() {
       { name: "Billing & History", href: "/dashboard/billing", icon: Receipt },
       { name: "Impact Scores", href: "/dashboard/scores", icon: Trophy },
       { name: "Charities", href: "/dashboard/charity", icon: Heart },
-      { name: "Draws", href: "/dashboard/draws", icon: Ticket },
       { name: "Settings", href: "/dashboard/settings", icon: Settings },
     ];
 

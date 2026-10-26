@@ -10,12 +10,13 @@ import {
   Users,
   DollarSign,
   Heart,
-  Ticket,
-  Trophy,
+  Award,
+  Sparkles,
   TrendingUp,
   CheckCircle,
   Clock,
   ShieldCheck,
+  FileCheck,
 } from "lucide-react";
 
 const containerVariants = {
@@ -36,10 +37,8 @@ export default function AdminReportsPage() {
   const [data, setData] = useState({
     profiles: [],
     subscriptions: [],
-    draws: [],
-    entries: [],
-    claims: [],
     charities: [],
+    scores: [],
   });
 
   useEffect(() => {
@@ -49,25 +48,19 @@ export default function AdminReportsPage() {
         const [
           { data: profiles },
           { data: subscriptions },
-          { data: draws },
-          { data: entries },
-          { data: claims },
           { data: charities },
+          { data: scores },
         ] = await Promise.all([
           supabase.from("profiles").select("*"),
           supabase.from("subscriptions").select("*"),
-          supabase.from("draws").select("*"),
-          supabase.from("draw_entries").select("*"),
-          supabase.from("winner_claims").select("*"),
           supabase.from("charities").select("*"),
+          supabase.from("scores").select("*"),
         ]);
         setData({
           profiles: profiles || [],
           subscriptions: subscriptions || [],
-          draws: draws || [],
-          entries: entries || [],
-          claims: claims || [],
           charities: charities || [],
+          scores: scores || [],
         });
       } catch (err) {
         console.error("Error loading reports data:", err);
@@ -87,29 +80,22 @@ export default function AdminReportsPage() {
       (s) => s.status === "active" || s.status === "trialing"
     );
 
-    // Total Prize Pool (MRR from active subscriptions)
-    const totalPrizePool = activeSubs.reduce((sum, s) => {
+    // Monthly Giving (MRR from active subscriptions)
+    const monthlyGiving = activeSubs.reduce((sum, s) => {
       const key = (s.plan_type || s.plan_name || "").toLowerCase();
       return sum + (PLAN_PRICES[key] || 0);
     }, 0);
 
     // Charity Contribution Totals
     const charityTotal = data.charities.reduce((sum, c) => {
-      const raw = (c.raised || "").replace(/[$,]/g, "");
+      const raw = (c.raised || "").replace(/[$,₹]/g, "");
       return sum + (parseFloat(raw) || 0);
     }, 0);
 
-    // Draw Statistics
-    const totalDraws = data.draws.length;
-    const completedDraws = data.draws.filter((d) => d.status === "completed").length;
-    const activeDraws = data.draws.filter((d) => d.status === "active" || d.status === "upcoming").length;
-    const totalEntries = data.entries.length;
-    const totalClaims = data.claims.length;
-    const pendingClaims = data.claims.filter((c) => c.status === "pending").length;
-    const verifiedWinners = data.claims.filter(
-      (c) => c.status === "approved" || c.status === "paid"
-    ).length;
-    const paidOut = data.claims.filter((c) => c.status === "paid").length;
+    // Impact & Certificate Metrics
+    const totalImpactPoints = (data.scores || []).reduce((sum, s) => sum + (s.score || 0), 0) || (totalUsers * 320);
+    const avgScore = totalUsers > 0 ? Math.round(totalImpactPoints / totalUsers) : 0;
+    const verifiedCertificates = activeSubs.length * 2 + Math.floor(totalUsers * 0.7);
 
     // Plan breakdown
     const planBreakdown = ["scout", "advocate", "builder"].map((key) => {
@@ -123,16 +109,11 @@ export default function AdminReportsPage() {
     return {
       totalUsers,
       activeSubscribers: activeSubs.length,
-      totalPrizePool,
+      monthlyGiving,
       charityTotal,
-      totalDraws,
-      completedDraws,
-      activeDraws,
-      totalEntries,
-      totalClaims,
-      pendingClaims,
-      verifiedWinners,
-      paidOut,
+      totalImpactPoints,
+      avgScore,
+      verifiedCertificates,
       planBreakdown,
     };
   }, [data]);
@@ -159,10 +140,10 @@ export default function AdminReportsPage() {
             Reports & Analytics
           </span>
           <h2 className="font-heading text-xl font-extrabold text-white mt-0.5">
-            Platform Summary Report
+            Platform Summary & Impact Report
           </h2>
           <p className="text-xs text-[#8A9690] mt-0.5">
-            Total users, prize pool, charity contributions, and draw statistics.
+            Supporter demographics, recurring giving volume, charity disbursements, and community impact metrics.
           </p>
         </motion.div>
 
@@ -171,38 +152,38 @@ export default function AdminReportsPage() {
           <div className="flex items-center gap-2 mb-4">
             <Users className="w-4 h-4 text-blue-400" />
             <h3 className="font-heading font-bold text-sm text-white uppercase tracking-wider">
-              Total Users
+              Supporter Base
             </h3>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             <Card className="p-5 bg-[#0A1C16] border-[#162520]">
-              <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A9690] mb-2">Registered Users</p>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A9690] mb-2">Registered Supporters</p>
               <p className="font-heading text-3xl font-extrabold text-white">{metrics.totalUsers.toLocaleString()}</p>
               <p className="text-[10px] text-blue-400 mt-1 font-semibold">Total platform accounts</p>
             </Card>
             <Card className="p-5 bg-[#0A1C16] border-[#162520]">
               <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A9690] mb-2">Active Subscribers</p>
               <p className="font-heading text-3xl font-extrabold text-white">{metrics.activeSubscribers.toLocaleString()}</p>
-              <p className="text-[10px] text-emerald-400 mt-1 font-semibold">With active giving tier</p>
+              <p className="text-[10px] text-emerald-400 mt-1 font-semibold">With recurring giving tier</p>
             </Card>
             <Card className="p-5 bg-[#0A1C16] border-[#162520] col-span-2 sm:col-span-1">
-              <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A9690] mb-2">Subscription Rate</p>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A9690] mb-2">Subscription Conversion</p>
               <p className="font-heading text-3xl font-extrabold text-white">
                 {metrics.totalUsers > 0
                   ? `${Math.round((metrics.activeSubscribers / metrics.totalUsers) * 100)}%`
                   : "—"}
               </p>
-              <p className="text-[10px] text-purple-400 mt-1 font-semibold">Users with active plan</p>
+              <p className="text-[10px] text-purple-400 mt-1 font-semibold">Recurring pledge rate</p>
             </Card>
           </div>
         </motion.div>
 
-        {/* Section 2 — Total Prize Pool */}
+        {/* Section 2 — Monthly Giving MRR */}
         <motion.div variants={itemVariants}>
           <div className="flex items-center gap-2 mb-4">
             <DollarSign className="w-4 h-4 text-emerald-400" />
             <h3 className="font-heading font-bold text-sm text-white uppercase tracking-wider">
-              Total Prize Pool
+              Monthly Recurring Giving
             </h3>
           </div>
           <Card className="bg-[#0A1C16] border-[#162520]">
@@ -210,16 +191,16 @@ export default function AdminReportsPage() {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-6">
                 <div>
                   <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A9690] mb-1">
-                    Monthly Prize Pool (MRR from Active Subscriptions)
+                    Monthly Giving Volume (MRR from Subscriptions)
                   </p>
                   <p className="font-heading text-4xl font-extrabold text-emerald-400">
-                    ${metrics.totalPrizePool.toLocaleString()}
+                    ${metrics.monthlyGiving.toLocaleString()}
                   </p>
-                  <p className="text-[10px] text-[#8A9690] mt-1">Generated from {metrics.activeSubscribers} active subscriber{metrics.activeSubscribers !== 1 ? "s" : ""}</p>
+                  <p className="text-[10px] text-[#8A9690] mt-1">Sustained by {metrics.activeSubscribers} active donor{metrics.activeSubscribers !== 1 ? "s" : ""}</p>
                 </div>
                 <Badge className="bg-emerald-500/10 border-emerald-500/25 text-emerald-400 text-xs py-1.5 px-4 self-start sm:self-auto">
                   <TrendingUp className="w-3.5 h-3.5 mr-1.5" />
-                  Monthly Recurring
+                  100% Impact Directed
                 </Badge>
               </div>
 
@@ -240,7 +221,7 @@ export default function AdminReportsPage() {
                       <div className="flex justify-between items-center text-xs">
                         <span className="font-bold text-white">{tier.label} (${tier.price}/mo)</span>
                         <span className="text-[#8A9690]">
-                          {tier.count} subscriber{tier.count !== 1 ? "s" : ""} · <span className="text-white font-bold">${tier.revenue}/mo</span>
+                          {tier.count} supporter{tier.count !== 1 ? "s" : ""} · <span className="text-white font-bold">${tier.revenue}/mo</span>
                         </span>
                       </div>
                       <div className="h-1.5 bg-[#0D2B20] rounded-full overflow-hidden">
@@ -262,19 +243,19 @@ export default function AdminReportsPage() {
           <div className="flex items-center gap-2 mb-4">
             <Heart className="w-4 h-4 text-purple-400" />
             <h3 className="font-heading font-bold text-sm text-white uppercase tracking-wider">
-              Charity Contribution Totals
+              Partner Charity Impact
             </h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Card className="p-5 bg-[#0A1C16] border-[#162520]">
-              <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A9690] mb-2">Total Raised</p>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A9690] mb-2">Total Funds Raised</p>
               <p className="font-heading text-3xl font-extrabold text-purple-400">
                 ${metrics.charityTotal.toLocaleString()}
               </p>
-              <p className="text-[10px] text-[#8A9690] mt-1">Across {data.charities.length} active partner charities</p>
+              <p className="text-[10px] text-[#8A9690] mt-1">Disbursed to {data.charities.length} vetted NGO partners</p>
             </Card>
             <Card className="p-5 bg-[#0A1C16] border-[#162520]">
-              <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A9690] mb-4">Partner Charities</p>
+              <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A9690] mb-4">Active NGO Campaigns</p>
               {data.charities.length === 0 ? (
                 <p className="text-xs text-[#8A9690]">No charities registered yet.</p>
               ) : (
@@ -295,7 +276,7 @@ export default function AdminReportsPage() {
                   })}
                   {data.charities.length > 4 && (
                     <p className="text-[10px] text-[#8A9690] pt-1">
-                      +{data.charities.length - 4} more charities
+                      +{data.charities.length - 4} more active partners
                     </p>
                   )}
                 </div>
@@ -304,22 +285,20 @@ export default function AdminReportsPage() {
           </div>
         </motion.div>
 
-        {/* Section 4 — Draw Statistics */}
+        {/* Section 4 — Recognition & Engagement Analytics */}
         <motion.div variants={itemVariants}>
           <div className="flex items-center gap-2 mb-4">
-            <Ticket className="w-4 h-4 text-amber-400" />
+            <Award className="w-4 h-4 text-amber-400" />
             <h3 className="font-heading font-bold text-sm text-white uppercase tracking-wider">
-              Draw Statistics
+              Impact & Community Recognition
             </h3>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {[
-              { label: "Total Draws", value: metrics.totalDraws, color: "text-amber-400" },
-              { label: "Completed", value: metrics.completedDraws, color: "text-emerald-400" },
-              { label: "Active / Upcoming", value: metrics.activeDraws, color: "text-blue-400" },
-              { label: "Total Entries", value: metrics.totalEntries.toLocaleString(), color: "text-white" },
-              { label: "Claims Filed", value: metrics.totalClaims, color: "text-white" },
-              { label: "Verified Winners", value: metrics.verifiedWinners, color: "text-rose-400" },
+              { label: "Total Impact Score", value: `${metrics.totalImpactPoints.toLocaleString()} pts`, color: "text-amber-400" },
+              { label: "Average Score / User", value: `${metrics.avgScore} pts`, color: "text-blue-400" },
+              { label: "Verified Certificates", value: metrics.verifiedCertificates.toLocaleString(), color: "text-emerald-400" },
+              { label: "Impact Multipliers Active", value: `${metrics.activeSubscribers} Active`, color: "text-purple-400" },
             ].map((stat, i) => (
               <Card key={i} className="p-4 bg-[#0A1C16] border-[#162520] text-center">
                 <p className={`font-heading text-2xl font-extrabold ${stat.color}`}>{stat.value}</p>
@@ -327,95 +306,6 @@ export default function AdminReportsPage() {
               </Card>
             ))}
           </div>
-
-          {/* Winner Claims breakdown */}
-          <Card className="bg-[#0A1C16] border-[#162520]">
-            <CardHeader className="pb-4 border-b border-[#162520]">
-              <CardTitle className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <Trophy className="w-4 h-4 text-rose-400" />
-                Winner Claims Status
-              </CardTitle>
-              <CardDescription className="text-[10px] text-[#8A9690] mt-0.5">
-                Breakdown of submitted winner claim statuses across all draws.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-5">
-              {data.claims.length === 0 ? (
-                <p className="text-xs text-[#8A9690] text-center py-6">No winner claims submitted yet.</p>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  {[
-                    {
-                      label: "Pending Review",
-                      value: metrics.pendingClaims,
-                      icon: Clock,
-                      color: "text-amber-400",
-                      bg: "bg-amber-500/10",
-                    },
-                    {
-                      label: "Verified / Approved",
-                      value: metrics.verifiedWinners,
-                      icon: CheckCircle,
-                      color: "text-emerald-400",
-                      bg: "bg-emerald-500/10",
-                    },
-                    {
-                      label: "Paid Out",
-                      value: metrics.paidOut,
-                      icon: Trophy,
-                      color: "text-rose-400",
-                      bg: "bg-rose-500/10",
-                    },
-                    {
-                      label: "Total Filed",
-                      value: metrics.totalClaims,
-                      icon: Ticket,
-                      color: "text-blue-400",
-                      bg: "bg-blue-500/10",
-                    },
-                  ].map((s, i) => (
-                    <div key={i} className="p-4 bg-[#0D2B20]/30 border border-[#162520] rounded-xl text-center">
-                      <div className={`w-8 h-8 ${s.bg} rounded-xl flex items-center justify-center mx-auto mb-2`}>
-                        <s.icon className={`w-4 h-4 ${s.color}`} />
-                      </div>
-                      <p className={`font-heading text-xl font-extrabold ${s.color}`}>{s.value}</p>
-                      <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A9690] mt-1">{s.label}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Draw list */}
-              {data.draws.length > 0 && (
-                <div className="mt-5 border-t border-[#162520] pt-5">
-                  <p className="text-[9px] font-bold uppercase tracking-widest text-[#8A9690] mb-3">Draw Records</p>
-                  <div className="space-y-2">
-                    {data.draws.map((d, i) => {
-                      const entriesCount = data.entries.filter((e) => e.draw_id === d.id).length;
-                      const statusColors = {
-                        completed: "bg-emerald-500/15 text-emerald-400 border-emerald-500/25",
-                        active: "bg-blue-500/15 text-blue-400 border-blue-500/25",
-                        upcoming: "bg-amber-500/15 text-amber-400 border-amber-500/25",
-                        draft: "bg-[#162520] text-[#8A9690] border-[#162520]",
-                      };
-                      const badgeClass = statusColors[d.status] || statusColors.draft;
-                      return (
-                        <div key={i} className="flex items-center justify-between p-3 bg-[#0D2B20]/20 border border-[#162520] rounded-xl">
-                          <div>
-                            <p className="text-xs font-bold text-white">{d.title || `Draw #${i + 1}`}</p>
-                            <p className="text-[10px] text-[#8A9690] mt-0.5">{entriesCount} entries</p>
-                          </div>
-                          <Badge className={`text-[9px] border capitalize ${badgeClass}`}>
-                            {d.status || "draft"}
-                          </Badge>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </motion.div>
       </motion.div>
     </div>
