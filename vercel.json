@@ -2,7 +2,7 @@
   "crons": [
     {
       "path": "/api/cron/viability-assessment",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
